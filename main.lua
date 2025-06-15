@@ -2,15 +2,42 @@ local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local cam_y_offset = 3.63
 local cam_x_offset = 0.0
+local terrainMesh
+
+isDevBuild = false
+
 function lovr.keypressed(key, scancode, rpt)
   pr_control.keypressed(key, scancode, rpt)
 end
+
+function lovr.wheelmoved(dx, dy)
+  pr_control.wheelmoved(dx, dy)
+end
+
 
 function lovr.keyreleased(key, scancode)
   pr_control.keyreleased(key, scancode)
 end
 
-function lovr.load()
+function lovr.load(arg)
+
+  if arg[1] == 'DEVBUILD' then
+    isDevBuild = true
+    print("running in DEVBUILD mode")
+  end
+
+  local vertices = {
+    { -5, 0, -5 },  -- bottom-left
+    {  5, 0, -5 },  -- bottom-right
+    {  5, 0,  5 },  -- top-right
+    { -5, 0,  5 }   -- top-left
+  }
+
+  local indices = { 1, 2, 3, 1, 3, 4 } -- two triangles
+
+  terrainMesh = lovr.graphics.newMesh(vertices)
+  terrainMesh:setIndices(indices)
+
 
   cube = lovr.graphics.newTexture({
     left = 'assets/skybox/desert_skybox_right.png' ,
@@ -62,13 +89,15 @@ function lovr.update(dt)
 end
 
 function lovr.draw(pass)
-  local x, y, z, angle, ax, ay, az 
-  if pr_camera.spectate == false then
-    x, y, z, angle, ax, ay, az = pr_camera.getGameViewPose()
-    pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
-  else 
-    x, y, z, angle, ax, ay, az = pr_camera.getSpecViewPose()
-    pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
+  if not pr_camera.spectate then
+    local x, y, z, angle, ax, ay, az 
+    if pr_camera.spectate == false then
+      x, y, z, angle, ax, ay, az = pr_camera.getGameViewPose()
+      pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
+    else 
+      x, y, z, angle, ax, ay, az = pr_camera.getSpecViewPose()
+      pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
+    end
   end
   pass:setShader(shader)
 
@@ -84,11 +113,14 @@ function lovr.draw(pass)
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')
   -- pass:setWireframe(true)
-  pass:draw(model, 0, 1, -3, 1, lovr.timer.getTime())
+  pass:draw(model, 0, 0, -3, 1, 3.15)
   -- pass:setWireframe(false)
   model:animate('walking', lovr.timer.getTime() % model:getAnimationDuration('walking'))
   
 	pass:setShader() -- Reset to default/unlit
+  pass:setColor(0.4, 0.8, 0.4) -- grassy green
+  pass:draw(terrainMesh)
+  pass:setColor(1 , 1 , 1)
   pass:skybox(cube)
   pass:sphere(lightPos, -1, -3, 0.1) -- Represents light
 end

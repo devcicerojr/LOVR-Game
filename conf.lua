@@ -1,4 +1,4 @@
 function lovr.conf(t)
-  t.modules.headset = false
+  t.modules.headset = true
   t.window.resizable = true
 end

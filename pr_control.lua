@@ -51,8 +51,16 @@ function pr_control.keyreleased(key , scancode)
   end
 end
 
+function pr_control.wheelmoved(dx , dy)
+  if dy > 0 then
+    pr_camera.zoomIn()
+  elseif dy < 0 then
+    pr_camera.zoomOut()
+  end
+end
+
 function pr_control.update(dt)
-  if pr_control.zero_pressed == true then
+  if isDevBuild and pr_control.zero_pressed == true then
     pr_camera.toggleSpec()
     pr_control.zero_pressed = false
   end
