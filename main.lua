@@ -48,39 +48,47 @@ function lovr.load(arg)
     back = 'assets/skybox/desert_skybox_back.png'
   })
   model = lovr.graphics.newModel('Test.glb')
+  -- model = lovr.graphics.newModel('boneco.glb')
 
 	-- set up shader
-  shader = lovr.graphics.newShader([[
-    vec4 lovrmain() {
-      return Projection * View * Transform * VertexPosition;
-    }
-  ]], [[
-    Constants {
-      vec4 ambience;
-      vec4 lightColor;
-      vec3 lightPos;
-      float specularStrength;
-      int metallic;
-    };
+	shader = lovr.graphics.newShader([[
+  vec4 lovrmain() {
+    return DefaultPosition;
+  }
+]], [[
+  Constants {
+    vec4 ambience;
+    vec4 lightColor;
+    vec3 lightPos;
+    float specularStrength;
+    int metallic;
+    float pixelSize;
+    vec2 lovrResolution;
+    int numDivs;
+  };
 
-    vec4 lovrmain() {
-      // Diffuse
-      vec3 norm = normalize(Normal);
-      vec3 lightDir = normalize(lightPos - PositionWorld);
-      float diff = max(dot(norm, lightDir), 0.0);
-      vec4 diffuse = diff * lightColor;
+  vec4 lovrmain() {
+    // Diffuse
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - PositionWorld);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec4 diffuse = diff * lightColor;
 
-      // Specular
-      vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
-      vec3 reflectDir = reflect(-lightDir, norm);
-      float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
-      vec4 specular = specularStrength * spec * lightColor;
+    // Specular
+    vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
+    vec4 specular = specularStrength * spec * lightColor;
 
-      vec4 baseColor = Color * getPixel(ColorTexture, UV);
+    // vec2 snappedUV = floor(UV / pixelSize) * pixelSize;
+    // vec4 baseColor = Color * getPixel(ColorTexture, snappedUV);
+    // return baseColor * (ambience + diffuse + specular);
 
-      return baseColor * (ambience + diffuse + specular);
-    }
-  ]])
+    vec2 snappedUV = (vec2(ivec2(UV * float(numDivs))) + 0.5) / float(numDivs);
+    vec4 baseColor = Color * getPixel(ColorTexture , snappedUV);
+    return baseColor * (ambience + diffuse + specular);
+  }
+]])
   pr_camera.init()
 end
 
@@ -90,25 +98,30 @@ end
 
 function lovr.draw(pass)
   if not pr_camera.spectate then
-    local x, y, z, angle, ax, ay, az 
+    local x, y, z, angle, ax, ay, az
     if pr_camera.spectate == false then
       x, y, z, angle, ax, ay, az = pr_camera.getGameViewPose()
       pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
-    else 
+    else
       x, y, z, angle, ax, ay, az = pr_camera.getSpecViewPose()
       pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
     end
   end
-  pass:setShader(shader)
-
   local lightPos = vec3(10, 40.0, -20.0)
-
-  -- Set shader values
+  local width = lovr.system.getWindowWidth()
+  local height = lovr.system.getWindowHeight()
+  pass:setShader(shader)
   pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
   pass:send('lightPos', lightPos)
   pass:send('specularStrength', 60)
   pass:send('metallic', 200.0)
+  pass:send('pixelSize' , 0.000001)
+  pass:send('lovrResolution', { width, height })
+  pass:send('numDivs' , 32)
+
+
+  -- Set shader values
 
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')
@@ -116,11 +129,11 @@ function lovr.draw(pass)
   pass:draw(model, 0, 0, -3, 1, 3.15)
   -- pass:setWireframe(false)
   model:animate('walking', lovr.timer.getTime() % model:getAnimationDuration('walking'))
-  
-	pass:setShader() -- Reset to default/unlit
+
   pass:setColor(0.4, 0.8, 0.4) -- grassy green
   pass:draw(terrainMesh)
   pass:setColor(1 , 1 , 1)
+	pass:setShader() -- Reset to default/unlit
   pass:skybox(cube)
   pass:sphere(lightPos, -1, -3, 0.1) -- Represents light
 end
