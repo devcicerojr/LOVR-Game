@@ -13,7 +13,6 @@ pr_control.spec_cam = { x = 0 , y = 0 , z = 0 , angle = 0 , ax = 0 , ay = 0 , az
 
 function pr_control.keypressed(key, scancode, rpt)
   -- your code here
-
   if key == "w" then
     pr_control.w_pressed = true
     print("w pressed")

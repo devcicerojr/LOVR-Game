@@ -1,5 +1,6 @@
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
+local game_scene = require'scenes.game_scene'
 local cam_y_offset = 3.63
 local cam_x_offset = 0.0
 local terrainMesh
@@ -26,19 +27,9 @@ function lovr.load(arg)
     print("running in DEVBUILD mode")
   end
 
-  local vertices = {
-    { -5, 0, -5 },  -- bottom-left
-    {  5, 0, -5 },  -- bottom-right
-    {  5, 0,  5 },  -- top-right
-    { -5, 0,  5 }   -- top-left
-  }
+  game_scene.load()
 
-  local indices = { 1, 2, 3, 1, 3, 4 } -- two triangles
-
-  terrainMesh = lovr.graphics.newMesh(vertices)
-  terrainMesh:setIndices(indices)
-
-
+  -- SCENE
   cube = lovr.graphics.newTexture({
     left = 'assets/skybox/desert_skybox_right.png' ,
     right = 'assets/skybox/desert_skybox_left.png' ,
@@ -47,8 +38,8 @@ function lovr.load(arg)
     front = 'assets/skybox/desert_skybox_front.png' ,
     back = 'assets/skybox/desert_skybox_back.png'
   })
-  model = lovr.graphics.newModel('Test.glb')
-  -- model = lovr.graphics.newModel('boneco.glb')
+
+ 
 
 	-- set up shader
 	shader = lovr.graphics.newShader([[
@@ -94,19 +85,16 @@ end
 
 function lovr.update(dt)
   pr_control.update(dt)
+  game_scene.update(dt)
+  pr_camera.updateCamPose(dt)
 end
 
 function lovr.draw(pass)
   if not pr_camera.spectate then
-    local x, y, z, angle, ax, ay, az
-    if pr_camera.spectate == false then
-      x, y, z, angle, ax, ay, az = pr_camera.getGameViewPose()
-      pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
-    else
-      x, y, z, angle, ax, ay, az = pr_camera.getSpecViewPose()
-      pass:setViewPose(1, x + cam_x_offset, y + cam_y_offset, z, -0.436, 1, ay, az)
-    end
+	  pass:setViewPose(1, pr_camera.game_cam.x , pr_camera.game_cam.y , pr_camera.game_cam.z, 
+	  pr_camera.game_cam.angle, pr_camera.game_cam.ax, pr_camera.game_cam.ay, pr_camera.game_cam.az)
   end
+  
   local lightPos = vec3(10, 40.0, -20.0)
   local width = lovr.system.getWindowWidth()
   local height = lovr.system.getWindowHeight()
@@ -118,7 +106,7 @@ function lovr.draw(pass)
   pass:send('metallic', 200.0)
   pass:send('pixelSize' , 0.000001)
   pass:send('lovrResolution', { width, height })
-  pass:send('numDivs' , 32)
+  pass:send('numDivs' , 64)
 
 
   -- Set shader values
@@ -131,7 +119,7 @@ function lovr.draw(pass)
   model:animate('walking', lovr.timer.getTime() % model:getAnimationDuration('walking'))
 
   pass:setColor(0.4, 0.8, 0.4) -- grassy green
-  pass:draw(terrainMesh)
+ 
   pass:setColor(1 , 1 , 1)
 	pass:setShader() -- Reset to default/unlit
   pass:skybox(cube)
