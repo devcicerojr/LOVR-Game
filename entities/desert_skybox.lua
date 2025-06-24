@@ -13,7 +13,11 @@ function desert_skybox.init()
 end
 
 function desert_skybox.draw(pass)
+  pass:setShader()
   pass:skybox(desert_skybox.cube)
+  pass:setShader(default_shader.shader)
+
+  default_shader.setDefaultVals(pass)
 end
 
 return desert_skybox

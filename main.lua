@@ -1,4 +1,4 @@
-local shader = require'shaders/default_shader'
+default_shader = require'shaders/default_shader'
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes.game_scene'
@@ -46,8 +46,10 @@ function lovr.draw(pass)
   local lightPos = vec3(10, 40.0, -20.0)
   local width = lovr.system.getWindowWidth()
   local height = lovr.system.getWindowHeight()
-  game_scene.draw(pass)
-  pass:setShader(shader)
+  -- Set shader values
+
+  
+  pass:setShader(default_shader.shader)
   pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
   pass:send('lightPos', lightPos)
@@ -58,7 +60,7 @@ function lovr.draw(pass)
   pass:send('numDivs' , 64)
   
   
-  -- Set shader values
+  game_scene.draw(pass)
   
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')

@@ -1,4 +1,5 @@
-return lovr.graphics.newShader([[
+default_shader = {}
+default_shader.shader = lovr.graphics.newShader([[
   vec4 lovrmain() {
     return DefaultPosition;
   }
@@ -36,3 +37,23 @@ return lovr.graphics.newShader([[
     return baseColor * (ambience + diffuse + specular);
   }
 ]])
+
+function default_shader.setDefaultVals(pass)
+  local lightPos = vec3(10, 40.0, -20.0)
+  local width = lovr.system.getWindowWidth()
+  local height = lovr.system.getWindowHeight()
+  -- Set shader values
+
+  
+  pass:setShader(default_shader.shader)
+  pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
+  pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
+  pass:send('lightPos', lightPos)
+  pass:send('specularStrength', 60)
+  pass:send('metallic', 200.0)
+  pass:send('pixelSize' , 0.000001)
+  pass:send('lovrResolution', { width, height })
+  pass:send('numDivs' , 64)
+end
+
+return default_shader

@@ -6,7 +6,6 @@ local player = {}
 player.world = {}
 player.model = {}
 player.collider = {}
-player.height = {}
 
 local pr_math = require'pr_math'
 
@@ -14,7 +13,6 @@ local pr_math = require'pr_math'
 
 function player.init()
   -- PLAYER
-  player.height = 1.5
   player.model = lovr.graphics.newModel('assets/models/Test.glb')
   player.collider = player.world:newCapsuleCollider(0, 2, -3, 0.5, 0.5)
   player.collider:setOrientation(k_pi/2 , 1 , 0 , 0)
