@@ -8,4 +8,7 @@ end
 function player.update(dt)
 end
 
+function player.draw(pass)
+end
+
 return player

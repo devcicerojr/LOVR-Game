@@ -14,7 +14,7 @@ end
 function pr_camera.updateCamPose(dt)
 	if pr_camera.spectate == true then
 		local pass = lovr.headset.getPass()
-		local x , y , z , angle, ax , ay , az = pass.getViewPose(pass , 1)
+		local x , y , z , angle, ax , ay , az = pass:getViewPose(1)
 		pr_camera.spec_cam.x = x
 		pr_camera.spec_cam.y = y
 		pr_camera.spec_cam.z = z
@@ -26,7 +26,7 @@ function pr_camera.updateCamPose(dt)
 end
 
 function pr_camera.setSpec(spec_mode)
-  pr_camera.spectate = spec_mode   
+pr_camera.spectate = spec_mode   
 end
 
 function pr_camera.toggleSpec()
@@ -47,7 +47,6 @@ function pr_camera.init()
 	pr_camera.game_cam.ax = 1
 	pr_camera.game_cam.ay = 0
 	pr_camera.game_cam.az = 0
-	lovr.headset.stop()
 end
 
 function pr_camera.getGameViewPose()
@@ -72,7 +71,7 @@ function pr_camera.zoomIn(zval)
 	if pr_camera.spectate then
 		angle, ax, ay, az = pr_camera.spec_cam.angle, pr_camera.spec_cam.ax, pr_camera.spec_cam.ay, pr_camera.spec_cam.az
 		q = lovr.math.quat(angle, ax, ay, az)
-		dir = q.direction(q)
+		dir = q:direction()
 		pr_camera.spec_cam.x = pr_camera.spec_cam.x - dir.x * zval
 		pr_camera.spec_cam.y = pr_camera.spec_cam.y - dir.y * zval
 		pr_camera.spec_cam.z = pr_camera.spec_cam.z - dir.z * zval
@@ -88,7 +87,7 @@ function pr_camera.zoomOut(zval)
 	if pr_camera.spectate then
 		angle, ax, ay, az = pr_camera.spec_cam.angle, pr_camera.spec_cam.ax, pr_camera.spec_cam.ay, pr_camera.spec_cam.az
 		q = lovr.math.quat(angle, ax, ay, az)
-		dir = q.direction(q)
+		dir = q:direction()
 		pr_camera.spec_cam.x = pr_camera.spec_cam.x - dir.x * zval
 		pr_camera.spec_cam.y = pr_camera.spec_cam.y - dir.y * zval
 		pr_camera.spec_cam.z = pr_camera.spec_cam.z - dir.z * zval

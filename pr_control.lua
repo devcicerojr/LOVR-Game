@@ -59,7 +59,7 @@ function pr_control.wheelmoved(dx , dy)
 end
 
 function pr_control.update(dt)
-  if isDevBuild and pr_control.zero_pressed == true then
+  if is_dev_build and pr_control.zero_pressed == true then
     pr_camera.toggleSpec()
     pr_control.zero_pressed = false
   end

@@ -4,8 +4,6 @@ ground.indices = {}
 ground.terrainMesh = {}
 
 function ground.init()
-    print("entry ground.init()")
-
     ground.vertices = {
       { -50, 0, -50 },  -- bottom-left
       {  50, 0, -50 },  -- bottom-right
@@ -20,8 +18,10 @@ function ground.init()
 end
 
 
-function ground.draw()
+function ground.draw(pass)
+  pass:setColor(0.4, 0.8, 0.4) -- grassy green
   pass:draw(ground.terrainMesh)
+  pass:setColor(1 , 1 , 1)
 end
 
 return ground

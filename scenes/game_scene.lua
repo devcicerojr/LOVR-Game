@@ -1,11 +1,12 @@
 package.path = package.path .. " .\\..\\entities\\?.lua"
 local ground  = require'ground'
 local player = require'player'
+local skybox = require'desert_skybox'
 local game_scene = {}
 game_scene.entities = {}
 
 function game_scene.load()
-	print(package.path)
+	table.insert(game_scene.entities, skybox)
 	table.insert(game_scene.entities, ground)
 	table.insert(game_scene.entities, player)
 	for _, entity in ipairs(game_scene.entities) do
@@ -23,10 +24,10 @@ function game_scene.update(dt)
 	end
 end
 
-function game_scene.draw()
+function game_scene.draw(pass)
 	for _, entity in ipairs(game_scene.entities) do
 		if type(entity.draw) == "function" then
-			entity.draw()
+			entity.draw(pass)
 		end
 	end
 end
