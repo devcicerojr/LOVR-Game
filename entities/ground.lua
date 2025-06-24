@@ -1,7 +1,13 @@
 local ground = {}
+ground.world = {}
 ground.vertices = {}
 ground.indices = {}
 ground.terrainMesh = {}
+ground.terrainCollider = {}
+
+function ground.setWorld(wrld)
+  ground.world = wrld
+end
 
 function ground.init()
     ground.vertices = {
@@ -15,6 +21,7 @@ function ground.init()
 
     ground.terrainMesh = lovr.graphics.newMesh(ground.vertices)
     ground.terrainMesh:setIndices(ground.indices)
+    ground.terrainCollider = ground.world:newTerrainCollider(50)
 end
 
 

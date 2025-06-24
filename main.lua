@@ -43,10 +43,10 @@ function lovr.draw(pass)
 	  pr_camera.game_cam.angle, pr_camera.game_cam.ax, pr_camera.game_cam.ay, pr_camera.game_cam.az)
   end
   
-  game_scene.draw(pass)
   local lightPos = vec3(10, 40.0, -20.0)
   local width = lovr.system.getWindowWidth()
   local height = lovr.system.getWindowHeight()
+  game_scene.draw(pass)
   pass:setShader(shader)
   pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
@@ -56,18 +56,15 @@ function lovr.draw(pass)
   pass:send('pixelSize' , 0.000001)
   pass:send('lovrResolution', { width, height })
   pass:send('numDivs' , 64)
-
-
+  
+  
   -- Set shader values
-
+  
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')
-  -- pass:setWireframe(true)
-  pass:draw(model, 0, 0, -3, 1, 3.15)
-  -- pass:setWireframe(false)
-  model:animate('walking', lovr.timer.getTime() % model:getAnimationDuration('walking'))
- 
+  
   pass:setColor(1 , 1 , 1)
+ 
 	pass:setShader() -- Reset to default/unlit
   pass:sphere(lightPos, -1, -3, 0.1) -- Represents light
 end
