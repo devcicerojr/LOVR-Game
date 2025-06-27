@@ -1,7 +1,8 @@
 local ecs = require'../core/pr_ecs'
+local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
-game_scene.world = {}
+-- game_scene.world = {}
 
 -- constants
 k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
@@ -20,8 +21,10 @@ ecs:addSystem(simple_render)
 local animation_render = (require'../systems/pr_animation_render')
 ecs:addSystem(animation_render)
 
+local collider_render = (require'../systems/pr_collider_render')
+ecs:addSystem(collider_render)
+
 function game_scene.load()
-	game_scene.world = lovr.physics.newWorld()
 	ecs.entities[player].position = k_player_spawn_pos
 	-- -- player.world = game_scene.world
 	-- -- ground.setWorld(game_scene.world)
@@ -42,7 +45,7 @@ function game_scene.update(dt)
 	-- 	end
 	-- end
 	ecs:update(dt)
-	game_scene.world:update(dt)
+	lovr_world:update(dt)
 end
 
 function game_scene.draw(pass)
