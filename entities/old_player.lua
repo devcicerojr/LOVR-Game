@@ -7,6 +7,8 @@ player.world = {}
 player.model = {}
 player.collider = {}
 
+require 'pr_control'
+
 local pr_math = require'pr_math'
 
 local collider_radius = 0.5
@@ -26,8 +28,10 @@ end
 
 function player.update(dt)
   local cur_collider_quat = lovr.math.quat(player.collider:getOrientation())
-  -- player.collider:setOrientation(cur_collider_quat:mul(0.1, 0 , 1 , 0):unpack())
-  player.collider:setOrientation(lovr.math.quat(0.1, 0 , 1 , 0) * cur_collider_quat)
+  if pr_control.space_pressed == true then
+    print("pushing")
+    player.collider:applyLinearImpulse(0 , 500 , 0)
+  end
 end
 
 function player.draw(pass)

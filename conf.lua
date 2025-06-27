@@ -14,17 +14,17 @@ function lovr.conf(t)
   t.headset.overlay = false
 
   -- Graphics
-  t.graphics.debug = true
-  t.graphics.vsync = false
+  t.graphics.debug = false
+  t.graphics.vsync = true
   t.graphics.stencil = false
   t.graphics.antialias = true
   t.graphics.shadercache = true
 
   t.modules.headset =  true
   -- Configure the desktop window
-  t.window.width = 0
-  t.window.height = 0
-  t.window.resizable = true
+  t.window.width = 640
+  t.window.height = 360
+  t.window.resizable  = true
   t.window.title = 'JFJR-Game'
   t.window.icon = nil
   t.window.fullscreen = false

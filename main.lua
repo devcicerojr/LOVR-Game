@@ -2,7 +2,7 @@ default_shader = require'shaders/default_shader'
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes.game_scene'
-local terrainMesh
+local terrainMesh = {}
 
 is_dev_build = false
 
@@ -42,31 +42,11 @@ function lovr.draw(pass)
 	  pass:setViewPose(1, pr_camera.game_cam.x , pr_camera.game_cam.y , pr_camera.game_cam.z, 
 	  pr_camera.game_cam.angle, pr_camera.game_cam.ax, pr_camera.game_cam.ay, pr_camera.game_cam.az)
   end
-  
-  local lightPos = vec3(10, 40.0, -20.0)
-  local width = lovr.system.getWindowWidth()
-  local height = lovr.system.getWindowHeight()
-  -- Set shader values
 
-  
-  pass:setShader(default_shader.shader)
-  pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
-  pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
-  pass:send('lightPos', lightPos)
-  pass:send('specularStrength', 60)
-  pass:send('metallic', 200.0)
-  pass:send('pixelSize' , 0.000001)
-  pass:send('lovrResolution', { width, height })
-  pass:send('numDivs' , 64)
-  
-  
   game_scene.draw(pass)
   
-  pass:setBlendMode('alpha', 'alphamultiply')
-  pass:setSampler('nearest')
-  
-  pass:setColor(1 , 1 , 1)
+  -- pass:setBlendMode('alpha', 'alphamultiply')
+  -- pass:setSampler('nearest')
  
-	pass:setShader() -- Reset to default/unlit
-  pass:sphere(lightPos, -1, -3, 0.1) -- Represents light
+	-- pass:setShader()
 end

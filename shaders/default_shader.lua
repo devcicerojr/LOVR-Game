@@ -40,8 +40,8 @@ default_shader.shader = lovr.graphics.newShader([[
 
 function default_shader.setDefaultVals(pass)
   local lightPos = vec3(10, 40.0, -20.0)
-  local width = lovr.system.getWindowWidth()
-  local height = lovr.system.getWindowHeight()
+  local width = 640
+  local height = 360
   -- Set shader values
 
   

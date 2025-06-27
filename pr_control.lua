@@ -1,11 +1,12 @@
 local pr_camera = require'pr_camera'
-local pr_control = {}
+pr_control = {}
 
 pr_control.w_pressed = false
 pr_control.a_pressed = false
 pr_control.s_pressed = false
 pr_control.d_pressed = false
 pr_control.zero_pressed = false
+pr_control.space_pressed = false
 
 pr_control.spectate = false
 pr_control.spec_cam = { x = 0 , y = 0 , z = 0 , angle = 0 , ax = 0 , ay = 0 , az = 0 }
@@ -28,6 +29,9 @@ function pr_control.keypressed(key, scancode, rpt)
   elseif key == "0" then
     pr_control.zero_pressed = true
     print("zero pressed")
+  elseif key == "space" then
+    pr_control.space_pressed = true
+    print("space pressed")
   end
 end
 
@@ -47,6 +51,9 @@ function pr_control.keyreleased(key , scancode)
   elseif key == "0" then
     pr_control.zero_pressed = false;
     print("zero released")
+  elseif key == "space" then
+    pr_control.space_pressed = false;
+    print("space released")
   end
 end
 
