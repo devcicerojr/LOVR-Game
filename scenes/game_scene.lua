@@ -1,7 +1,4 @@
-package.path = package.path .. "; .\\..\\entities\\?.lua" .. "; .\\..\\core\\?.lua" ..
-"; .\\..\\systems\\?.lua"
-
-local ecs = require'pr_ecs'
+local ecs = require'../core/pr_ecs'
 local game_scene = {}
 game_scene.entities = {}
 game_scene.world = {}
@@ -10,12 +7,18 @@ game_scene.world = {}
 k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
 
 -- entities
-local player = (require'pr_player')(ecs)
-local skybox = (require'pr_skybox')(ecs)
+local player = (require'../entities/pr_player')(ecs)
+local skybox = (require'../entities/pr_skybox')(ecs)
 
 -- systems
-local skybox_render = (require'pr_skybox_render')
+local skybox_render = (require'../systems/pr_skybox_render')
 ecs:addSystem(skybox_render)
+
+local simple_render = (require'../systems/pr_simple_render')
+ecs:addSystem(simple_render)
+
+local animation_render = (require'../systems/pr_animation_render')
+ecs:addSystem(animation_render)
 
 function game_scene.load()
 	game_scene.world = lovr.physics.newWorld()

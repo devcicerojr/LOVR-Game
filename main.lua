@@ -1,7 +1,7 @@
 default_shader = require'shaders/default_shader'
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
-local game_scene = require'scenes.game_scene'
+local game_scene = require'scenes/game_scene'
 local terrainMesh = {}
 
 is_dev_build = false
@@ -42,11 +42,11 @@ function lovr.draw(pass)
 	  pass:setViewPose(1, pr_camera.game_cam.x , pr_camera.game_cam.y , pr_camera.game_cam.z, 
 	  pr_camera.game_cam.angle, pr_camera.game_cam.ax, pr_camera.game_cam.ay, pr_camera.game_cam.az)
   end
+  pass:setBlendMode('alpha', 'alphamultiply')
+  pass:setSampler('nearest')
+ 
 
   game_scene.draw(pass)
   
-  -- pass:setBlendMode('alpha', 'alphamultiply')
-  -- pass:setSampler('nearest')
- 
 	-- pass:setShader()
 end
