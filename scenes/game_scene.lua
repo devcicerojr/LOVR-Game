@@ -7,29 +7,40 @@ game_scene.entities = {}
 k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
 
 -- entities
+
 local player = (require'../entities/pr_player')(ecs)
 local skybox = (require'../entities/pr_skybox')(ecs)
+local ground = (require'../entities/pr_ground')(ecs)
 
--- systems
-local skybox_render = (require'../systems/pr_skybox_render')
-ecs:addSystem(skybox_render)
+local render_systems = {
+	"skybox_render",
+	"simple_render",
+	"animation_render",
+	"collider_render",
+	"terrain_render"
+}
 
-local simple_render = (require'../systems/pr_simple_render')
-ecs:addSystem(simple_render)
+local logic_systems = {
+	"model_collider_track"
+}
 
-local animation_render = (require'../systems/pr_animation_render')
-ecs:addSystem(animation_render)
+for _, file in ipairs(render_systems) do
+	local system = require("../systems/pr_" .. file)
+	ecs:addSystem(system)
+end
 
-local collider_render = (require'../systems/pr_collider_render')
-ecs:addSystem(collider_render)
+for _, file in ipairs(logic_systems) do
+	local system = require("../systems/logic/pr_" .. file)
+	ecs:addSystem(system)
+end
 
 function game_scene.load()
 	ecs.entities[player].position = k_player_spawn_pos
 end
 
 function game_scene.update(dt)
-	ecs:update(dt)
 	lovr_world:update(dt)
+	ecs:update(dt)
 end
 
 function game_scene.draw(pass)
