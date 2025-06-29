@@ -5,20 +5,19 @@ require '../core/pr_math'
 return function(ecs)
   local id = ecs:newEntity()
   local collider_rotation_offset = lovr.math.newQuat(k_pi/2, 1, 0, 0)
-  local x, y, z, angle, ax, ay, az, scale = 0, 2, -3, 1, 0, 0, 0, 1.0
+  local entity_transform = lovr.math.newMat4(lovr.math.newVec3(0, 2, -3), lovr.math.newQuat(1, 0, 0, 0))
   local collider_radius, collider_length = 0.5, 0.5
   local collider = lovr_world:newCapsuleCollider(0, 2, -3, collider_radius, collider_length)
+  local transform_offset = lovr.math.newMat4()
+  transform_offset:translate(0, -collider_length/2 - collider_radius  , 0)
+  transform_offset:rotate(k_pi/2, 1, 0, 0)
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
 
-
-
-  -- ecs:addComponent(id , pr_component.Position(0, 0, 0))
   ecs:addComponent(id , pr_component.Model(lovr.graphics.newModel('assets/models/Test.glb')))
   ecs:addComponent(id , pr_component.Animated())
   ecs:addComponent(id , pr_component.Velocity(0, 0, 0))
-  ecs:addComponent(id , pr_component.Collider(collider, "capsule", lovr.math.newVec3(0, -collider_length/2 - collider_radius  , 0), collider_rotation_offset))
-  -- ecs:addComponent(id, pr_component.Scallable(1.0, 1.0, 1.0))
-  ecs:addComponent(id, pr_component.Transform(x, y, z, angle, ax, ay, az, scale))
+  ecs:addComponent(id , pr_component.Collider(collider, "capsule", transform_offset))
+  ecs:addComponent(id, pr_component.Transform(entity_transform))
   return id
 end

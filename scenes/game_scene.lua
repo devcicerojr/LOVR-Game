@@ -35,7 +35,7 @@ for _, file in ipairs(logic_systems) do
 end
 
 function game_scene.load()
-	ecs.entities[player].position = k_player_spawn_pos
+	
 end
 
 function game_scene.update(dt)

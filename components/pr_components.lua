@@ -7,9 +7,9 @@ pr_components.Animated = function ()
   return {type = "animated" , data = {}}
 end
 
-pr_components.Collider = function (collider , shape , offset, quat_rot_offset)
+pr_components.Collider = function (collider , shape , transform_offset)
   return {type = "collider" , data = {collider = collider or nil,
-  shape = shape or "box", offset = offset or lovr.math.newVec3(0, 0, 0), quat_rot_offset = quat_rot_offset or lovr.math.newQuat(1, 0, 0, 0)}}
+  shape = shape or "box", transform_offset = transform_offset or lovr.math.newMat4()}}
 end
 
 pr_components.Model = function ( model )
@@ -28,10 +28,14 @@ pr_components.Scallable = function (x, y, z)
   return {type = "scallable", data = {x = x or 0, y = y or 0, z = z or 0}}
 end
 
-pr_components.Transform = function (x, y, z, angle, ax, ay, az, scale)
-  return {type = "transform", data = {x = x or 0, y = y or 0, z = z or 0,
-  angle = angle or 1, ax = ax or 0, ay = ay or 0, az = az or 0,
-  scale = scale or 1.0}}
+-- pr_components.Transform = function (x, y, z, angle, ax, ay, az, scale)
+--   return {type = "transform", data = {x = x or 0, y = y or 0, z = z or 0,
+--   angle = angle or 1, ax = ax or 0, ay = ay or 0, az = az or 0,
+--   scale = scale or 1.0}}
+-- end
+
+pr_components.Transform = function (transform)
+  return {type = "transform", data = {transform = transform or lovr.math.newMat4()}}
 end
 
 pr_components.SkyboxTexture = function (texture)
