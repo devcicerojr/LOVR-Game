@@ -3,8 +3,8 @@ require'../core/pr_utils'
 
 -- Components
 
-pr_components.Animated = function ()
-  return {type = "animated" , data = {}}
+pr_components.Animated = function (cur_animation_idx)
+  return {type = "animated" , data = {cur_animation_idx = cur_animation_idx or 1}}
 end
 
 pr_components.Collider = function (collider , shape , transform_offset)
@@ -36,6 +36,10 @@ end
 
 pr_components.Transform = function (transform)
   return {type = "transform", data = {transform = transform or lovr.math.newMat4()}}
+end
+
+pr_components.TracksCollider = function()
+  return {type = "tracks_collider", data = {}}
 end
 
 pr_components.SkyboxTexture = function (texture)

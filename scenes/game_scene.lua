@@ -15,7 +15,8 @@ local ground = (require'../entities/pr_ground')(ecs)
 local render_systems = {
 	"skybox_render",
 	"simple_render",
-	"animation_render",
+	"model_with_collider_render",
+	"model_animated_with_collider_render",
 	"collider_render",
 	"terrain_render"
 }
@@ -35,7 +36,7 @@ for _, file in ipairs(logic_systems) do
 end
 
 function game_scene.load()
-	
+	ecs.entities[player].animated.cur_animation_idx = 0
 end
 
 function game_scene.update(dt)

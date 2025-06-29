@@ -16,6 +16,7 @@ return function(ecs)
 
   ecs:addComponent(id , pr_component.Model(lovr.graphics.newModel('assets/models/Test.glb')))
   ecs:addComponent(id , pr_component.Animated())
+  ecs:addComponent(id , pr_component.TracksCollider())
   ecs:addComponent(id , pr_component.Velocity(0, 0, 0))
   ecs:addComponent(id , pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))

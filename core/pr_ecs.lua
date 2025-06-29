@@ -13,7 +13,6 @@ function ECS:newEntity()
 end
 
 function ECS:addComponent(id, component)
-  print(component.type)
   self.entities[id][component.type] = component.data
 end
 
