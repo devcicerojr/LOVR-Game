@@ -3,8 +3,8 @@ require'../core/pr_utils'
 
 -- Components
 
-pr_components.Animated = function (cur_animation_idx)
-  return {type = "animated" , data = {cur_animation_idx = cur_animation_idx or 1}}
+pr_components.AnimationState = function (current)
+  return {type = "animation_state" , data = {current = current or 1}}
 end
 
 pr_components.Collider = function (collider , shape , transform_offset)
@@ -17,7 +17,7 @@ pr_components.Model = function ( model )
 end
 
 pr_components.Mesh = function (mesh , base_color)
-  return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or pr_Colora(1.0,1.0,1.0,1.0)}}
+  return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or lovr.math.newVec4(1.0,1.0,1.0,1.0)}}
 end
 
 pr_components.Position = function (x, y, z)
@@ -27,12 +27,6 @@ end
 pr_components.Scallable = function (x, y, z)
   return {type = "scallable", data = {x = x or 0, y = y or 0, z = z or 0}}
 end
-
--- pr_components.Transform = function (x, y, z, angle, ax, ay, az, scale)
---   return {type = "transform", data = {x = x or 0, y = y or 0, z = z or 0,
---   angle = angle or 1, ax = ax or 0, ay = ay or 0, az = az or 0,
---   scale = scale or 1.0}}
--- end
 
 pr_components.Transform = function (transform)
   return {type = "transform", data = {transform = transform or lovr.math.newMat4()}}

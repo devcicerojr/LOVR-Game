@@ -22,11 +22,12 @@ local render_systems = {
 }
 
 local logic_systems = {
-	"model_collider_track"
+	"model_collider_track",
+	"animated_update"
 }
 
 for _, file in ipairs(render_systems) do
-	local system = require("../systems/pr_" .. file)
+	local system = require("../systems/render/pr_" .. file)
 	ecs:addSystem(system)
 end
 
@@ -36,7 +37,22 @@ for _, file in ipairs(logic_systems) do
 end
 
 function game_scene.load()
-	ecs.entities[player].animated.cur_animation_idx = 0
+	-- spawning player
+	ecs.entities[player].animation_state.current = 0 --idle animation
+	
+
+	-- If entity is non-kinematic, we cant modify its position by changing transform
+	-- we must move the collider instead, and the entity itself will follow
+	ecs.entities[player].transform.transform:translate(0, 2, -3)
+	ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
+	local collider =  ecs.entities[player].collider.collider
+	collider:setKinematic(true)
+	local collider_position = lovr.math.newVec3(collider:getPosition())
+	local collider_orientation = lovr.math.newQuat(collider:getOrientation())
+	collider_position:add(0, 2, -3)
+	collider_orientation:mul(k_pi, 0, 1, 0)
+	collider:setPose(lovr.math.vec3(collider_position:unpack()), lovr.math.quat(collider_orientation:unpack()))
+	collider:setKinematic(false)
 end
 
 function game_scene.update(dt)

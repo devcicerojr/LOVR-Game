@@ -33,7 +33,6 @@ end
 function lovr.update(dt)
   pr_control.update(dt)
   game_scene.update(dt)
-  pr_camera.updateCamPose(dt)
 end
 
 function lovr.draw(pass)
@@ -41,6 +40,8 @@ function lovr.draw(pass)
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam.x , pr_camera.game_cam.y , pr_camera.game_cam.z, 
 	  pr_camera.game_cam.angle, pr_camera.game_cam.ax, pr_camera.game_cam.ay, pr_camera.game_cam.az)
+  else
+    pr_camera.updateSpecCamPose() -- this is only needed because we want to have a track of headset pose inside pr_camera
   end
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')

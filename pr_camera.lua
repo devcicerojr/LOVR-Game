@@ -11,18 +11,18 @@ function pr_camera.update(view)
   pr_camera.spec_cam = view
 end
 
-function pr_camera.updateCamPose(dt)
-	if pr_camera.spectate == true then
-		local pass = lovr.headset.getPass()
-		local x , y , z , angle, ax , ay , az = pass:getViewPose(1)
-		pr_camera.spec_cam.x = x
-		pr_camera.spec_cam.y = y
-		pr_camera.spec_cam.z = z
-		pr_camera.spec_cam.angle = angle
-		pr_camera.spec_cam.ax = ax
-		pr_camera.spec_cam.ay = ay
-		pr_camera.spec_cam.az = az
-	end
+function pr_camera.updateSpecCamPose()
+	
+  local pass = lovr.headset.getPass() -- headset pass is used for spectate camera
+  local x , y , z , angle, ax , ay , az = pass:getViewPose(1)
+  pr_camera.spec_cam.x = x
+  pr_camera.spec_cam.y = y
+  pr_camera.spec_cam.z = z
+  pr_camera.spec_cam.angle = angle
+  pr_camera.spec_cam.ax = ax
+  pr_camera.spec_cam.ay = ay
+  pr_camera.spec_cam.az = az
+	
 end
 
 function pr_camera.setSpec(spec_mode)
@@ -41,9 +41,9 @@ end
 
 function pr_camera.init()
 	pr_camera.game_cam.x = 0
-	pr_camera.game_cam.y = 2.6
-	pr_camera.game_cam.z = 2
-	pr_camera.game_cam.angle = -0.436
+	pr_camera.game_cam.y = 5
+	pr_camera.game_cam.z = 1
+	pr_camera.game_cam.angle = -0.236
 	pr_camera.game_cam.ax = 1
 	pr_camera.game_cam.ay = 0
 	pr_camera.game_cam.az = 0
@@ -75,7 +75,7 @@ function pr_camera.zoomIn(zval)
 		pr_camera.spec_cam.x = pr_camera.spec_cam.x - dir.x * zval
 		pr_camera.spec_cam.y = pr_camera.spec_cam.y - dir.y * zval
 		pr_camera.spec_cam.z = pr_camera.spec_cam.z - dir.z * zval
-	end
+  end
 end
 
 

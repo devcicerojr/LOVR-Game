@@ -1,5 +1,6 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
+local pr_utils = require'../core/pr_utils'
 
 return function(ecs)
   local id = ecs:newEntity()
@@ -17,7 +18,7 @@ return function(ecs)
   local mesh = lovr.graphics.newMesh(vertices)
   mesh:setIndices(indices)
 
-  ecs:addComponent(id, pr_component.Mesh(mesh, pr_Colora(0.4, 0.8, 0.5, 1.0)))
+  ecs:addComponent(id, pr_component.Mesh(mesh, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
   ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider(scale)))
   return id
 end
