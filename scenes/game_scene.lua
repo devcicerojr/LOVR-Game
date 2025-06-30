@@ -1,5 +1,6 @@
 local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
+local pr_utils = require'../core/pr_utils'
 local game_scene = {}
 game_scene.entities = {}
 
@@ -23,7 +24,8 @@ local render_systems = {
 
 local logic_systems = {
 	"model_collider_track",
-	"animated_update"
+	"animated_update",
+	"player_controls_logic"
 }
 
 for _, file in ipairs(render_systems) do
@@ -45,14 +47,15 @@ function game_scene.load()
 	-- we must move the collider instead, and the entity itself will follow
 	ecs.entities[player].transform.transform:translate(0, 2, -3)
 	ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
-	local collider =  ecs.entities[player].collider.collider
-	collider:setKinematic(true)
-	local collider_position = lovr.math.newVec3(collider:getPosition())
-	local collider_orientation = lovr.math.newQuat(collider:getOrientation())
-	collider_position:add(0, 2, -3)
-	collider_orientation:mul(k_pi, 0, 1, 0)
-	collider:setPose(lovr.math.vec3(collider_position:unpack()), lovr.math.quat(collider_orientation:unpack()))
-	collider:setKinematic(false)
+	pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(k_pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
+	-- local collider =  ecs.entities[player].collider.collider
+	-- -- collider:setKinematic(true)
+	-- local collider_position = lovr.math.newVec3(collider:getPosition())
+	-- local collider_orientation = lovr.math.newQuat(collider:getOrientation())
+	-- collider_position:add(0, 2, -3)
+	-- collider_orientation:mul(k_pi, 0, 1, 0)
+	-- collider:setPose(lovr.math.vec3(collider_position:unpack()), lovr.math.quat(collider_orientation:unpack()))
+	-- collider:setKinematic(false)
 end
 
 function game_scene.update(dt)

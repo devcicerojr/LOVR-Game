@@ -1,3 +1,5 @@
+
+local ecs = require'../core/pr_ecs'
 -- Custom Types
 
 
@@ -38,6 +40,22 @@ local pr_utils = {
   
     -- -- Decompose back into position, rotation, and scale
     -- entity_transform:set(current:getPosition(), current:getScale(), current:getOrientation())
+  end ,
+
+  moved = function(id, translated, rotated)
+    local collider = ecs.entities[id].collider.collider
+    if collider and not collider:isKinematic() then
+      translated = translated or lovr.math.vec3(0, 0, 0)
+      rotated = rotated or lovr.math.quat(1, 0, 0 ,0)
+      -- collider:setKinematic(true)
+      local collider_position = lovr.math.newVec3(collider:getPosition())
+      local collider_orientation = lovr.math.newQuat(collider:getOrientation())
+      collider_position:add(translated:unpack())
+      collider_orientation:mul(rotated:unpack())
+      collider:setPose(lovr.math.vec3(collider_position:unpack()), lovr.math.quat(collider_orientation:unpack()))
+      -- collider:setKinematic(false)
+    end
+
   end
 
 }

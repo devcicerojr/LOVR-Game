@@ -41,9 +41,9 @@ end
 
 function pr_camera.init()
 	pr_camera.game_cam.x = 0
-	pr_camera.game_cam.y = 5
+	pr_camera.game_cam.y = 4
 	pr_camera.game_cam.z = 1
-	pr_camera.game_cam.angle = -0.236
+	pr_camera.game_cam.angle = -0.436
 	pr_camera.game_cam.ax = 1
 	pr_camera.game_cam.ay = 0
 	pr_camera.game_cam.az = 0
