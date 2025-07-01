@@ -6,7 +6,7 @@ return function(ecs)
   local id = ecs:newEntity()
   -- ecs:addComponent(id , pr_component.Position(0, 0, 0))
   
-  local scale = 50
+  local scale = 10
   local vertices = {
       { -scale, 0, -scale },  -- bottom-left
       {  scale, 0, -scale },  -- bottom-right
@@ -19,6 +19,6 @@ return function(ecs)
   mesh:setIndices(indices)
 
   ecs:addComponent(id, pr_component.Mesh(mesh, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
-  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider(scale)))
+  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider(scale * 2)))
   return id
 end
