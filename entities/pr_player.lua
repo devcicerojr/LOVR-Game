@@ -14,8 +14,7 @@ return function(ecs)
   -- collider:setKinematic(true)
   -- collider:setPose(transform_offset:getPose())
 
-  local game_cam_pose = lovr.math.newMat4()
-  game_cam_pose:set(lovr.math.vec3(entity_transform:getPosition()):add(0, 4, 1), lovr.math.vec3(1, 1, 1), lovr.math.quat(-0.436, 1, 0, 0))
+  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,4), lovr.math.vec3(1,1,1), lovr.math.quat(-0.436, 1, 0, 0) )
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
 
@@ -26,6 +25,6 @@ return function(ecs)
   ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(1, 1, 1)))
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
-  ecs:addComponent(id, pr_component.Gamecam(game_cam_pose))
+  ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
   return id
 end
