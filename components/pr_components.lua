@@ -12,6 +12,11 @@ pr_components.Collider = function (collider , shape , transform_offset)
   shape = shape or "box", transform_offset = transform_offset or lovr.math.newMat4()}}
 end
 
+pr_components.Gamecam = function (game_cam_pose, is_active)
+  return {type = "game_cam" , data = {game_cam_pose = game_cam_pose or lovr.math.newMat4(),
+  is_active = is_active or true}}
+end
+
 pr_components.Model = function ( model )
   return {type = "model" , data = {model = model or nil}}
 end

@@ -25,7 +25,8 @@ local render_systems = {
 local logic_systems = {
 	"model_collider_track",
 	"animated_update",
-	"player_controls_logic"
+	"player_controls_logic",
+	"game_cam_handle"
 }
 
 for _, file in ipairs(render_systems) do
