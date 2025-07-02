@@ -11,10 +11,12 @@ return {
     
     if entity.collider.shape == "capsule" then
       local radius = entity.collider.collider:getShape():getRadius()
-      local length = entity.collider.collider:getShape():getLength()      
-      pass:setWireframe(true)
-      pass:capsule(x, y, z, radius, length , collider_quat:unpack())
-      pass:setWireframe(false)
+      local length = entity.collider.collider:getShape():getLength()     
+      if (is_dev_build) then
+        pass:setWireframe(true)
+        pass:capsule(x, y, z, radius, length , collider_quat:unpack())
+        pass:setWireframe(false)
+      end   
     end
     
   end

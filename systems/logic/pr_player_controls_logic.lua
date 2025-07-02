@@ -11,22 +11,32 @@ return {
     local movement = lovr.math.vec3(velocity:unpack()):normalize()
     movement.y = 0;
     local direction = lovr.math.vec3(0, 0, 0)
-    local translate_val = {}
-    
+    local translate_val = lovr.math.vec3(0 , 0 , 0)
+    local desired_rot = lovr.math.quat(0 , 0 , 1, 0)
     if collider:isKinematic() then
-      if lovr.system.isKeyDown("w") then
-        direction = lovr.math.vec3(0, 0, -1) -- forward LOVR world
-        direction:mul(velocity)
-        direction:rotate(entity.transform.transform:getOrientation())
-        translate_val = direction * velocity.z * dt
-        entity.transform.transform:translate(translate_val)
-      elseif lovr.system.isKeyDown("s") then
-        direction = lovr.math.vec3(0, 0, 1) -- backward LOVR world
-        direction:mul(velocity)
-        direction:rotate(entity.transform.transform:getOrientation())
-        translate_val = direction * velocity.z * dt
-        entity.transform.transform:translate(translate_val)
+      if lovr.system.isKeyDown("j") then
+        print("rotating")
+        desired_rot = lovr.math.quat(k_pi * dt , 0, 1, 0)
       end
+      if lovr.system.isKeyDown("l") then
+        desired_rot = lovr.math.quat(-k_pi * dt , 0, 1 , 0)
+      end
+      entity.transform.transform:rotate(desired_rot)
+      local orientation = lovr.math.quat(entity.transform.transform:getOrientation())
+      local position = lovr.math.vec3(entity.transform.transform:getPosition())
+      if lovr.system.isKeyDown("i") then
+        direction = lovr.math.vec3(0, 0, 1) -- forward LOVR world
+        -- direction:mul(velocity)
+        direction:rotate(orientation):mul(velocity.z * dt)
+        translate_val = direction
+      elseif lovr.system.isKeyDown("k") then
+        direction = lovr.math.vec3(0, 0, -1) -- backward LOVR world
+        -- direction:mul(velocity)
+        direction:rotate(orientation):mul(velocity.z * dt)
+        translate_val = direction
+      end
+      position:add(translate_val)
+      entity.transform.transform = lovr.math.newMat4(position, orientation)
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)

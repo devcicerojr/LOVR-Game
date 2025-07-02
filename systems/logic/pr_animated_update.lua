@@ -5,9 +5,8 @@ return {
   requires = {"animation_state"},
   update_fn = function(id, c, dt) -- update function
     local animation = ecs.entities[id].animation_state
-    if lovr.system.isKeyDown('i') then
-      animation.current = 1
-    elseif lovr.system.isKeyDown('k') then
+    if lovr.system.isKeyDown('i') or lovr.system.isKeyDown('k') 
+    or lovr.system.isKeyDown('j') or lovr.system.isKeyDown('l') then
       animation.current = 1
     else
       animation.current = 0
