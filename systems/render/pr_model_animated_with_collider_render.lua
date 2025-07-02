@@ -19,7 +19,7 @@ return {
       entity.transform.transform = lovr.math.newMat4(model_pos, model_quat)
     end
     
-
+    print("Player Z pos: ".. lovr.math.vec3(entity.transform.transform:getPosition()).z)
     pass:draw(entity.model.model, entity.transform.transform)
     local cur_animation = nil
     if entity.animation_state.current > 0 then

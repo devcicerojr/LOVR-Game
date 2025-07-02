@@ -14,7 +14,7 @@ return function(ecs)
   collider:setKinematic(true)
   -- collider:setPose(transform_offset:getPose())
 
-  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,4), lovr.math.vec3(1,1,1), lovr.math.quat(-0.436, 1, 0, 0) )
+  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(k_pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
 

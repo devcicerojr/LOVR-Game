@@ -46,8 +46,8 @@ function game_scene.load()
 
 	-- If entity is non-kinematic, we cant modify its position by changing transform
 	-- we must move the collider instead, and the entity itself will follow
-	ecs.entities[player].transform.transform:translate(0, 2, -3)
-	ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
+	ecs.entities[player].transform.transform:translate(0, 2, 0)
+	-- ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
 	pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(k_pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
 	-- local collider =  ecs.entities[player].collider.collider
 	-- -- collider:setKinematic(true)
