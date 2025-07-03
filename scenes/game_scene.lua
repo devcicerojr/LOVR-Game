@@ -11,8 +11,8 @@ k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
 
 local player = (require'../entities/pr_player')(ecs)
 local skybox = (require'../entities/pr_skybox')(ecs)
--- local ground = (require'../entities/pr_ground')(ecs)
-local ground = (require'../entities/pr_heightmap_ground')(ecs)
+local ground = (require'../entities/pr_ground')(ecs)
+-- local ground = (require'../entities/pr_heightmap_ground')(ecs)
 
 local render_systems = {
 	"skybox_render",
@@ -20,7 +20,8 @@ local render_systems = {
 	"model_with_collider_render",
 	"model_animated_with_collider_render",
 	"collider_render",
-	"terrain_render"
+	"terrain_render",
+	"ray_sensor_render"
 }
 
 local logic_systems = {
@@ -28,7 +29,8 @@ local logic_systems = {
 	"player_controls_logic",
 	"game_cam_handle",
 	"animated_update",
-	"gravity_applying"
+	"gravity_applying",
+	"k_gravity_collision_detect"
 }
 
 for _, file in ipairs(render_systems) do

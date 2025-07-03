@@ -37,6 +37,10 @@ pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}
 end
 
+pr_components.RayColliderSensor = function (origin, endpoint)
+  return {type = "ray_collider_sensor", data = {origin = origin or nil, endpoint = endpoint or nil}}
+end
+
 pr_components.Position = function (x, y, z)
   return {type = "position" , data = { x = x or 0 , y = y or 0 , z = z or 0 }}
 end

@@ -44,6 +44,6 @@ return function(ecs)
 
 
   ecs:addComponent(id, pr_component.Mesh(mesh, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
-  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( 10000, image )))
+  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( 200, image )))
   return id
 end
