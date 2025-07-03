@@ -11,7 +11,8 @@ k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
 
 local player = (require'../entities/pr_player')(ecs)
 local skybox = (require'../entities/pr_skybox')(ecs)
-local ground = (require'../entities/pr_ground')(ecs)
+-- local ground = (require'../entities/pr_ground')(ecs)
+local ground = (require'../entities/pr_heightmap_ground')(ecs)
 
 local render_systems = {
 	"skybox_render",

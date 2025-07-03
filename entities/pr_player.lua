@@ -28,6 +28,6 @@ return function(ecs)
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
-  ecs:addComponent(id, pr_component.Gravity(gravity_acc))
+  -- ecs:addComponent(id, pr_component.Gravity(gravity_acc))
   return id
 end

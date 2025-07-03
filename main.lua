@@ -6,6 +6,12 @@ local terrainMesh = {}
 
 is_dev_build = false
 
+
+-- local target_fps = 58
+-- local target_delta = 1 / target_fps
+-- local accumulator = 0
+
+
 function lovr.keypressed(key, scancode, rpt)
   pr_control.keypressed(key, scancode, rpt)
 end
@@ -31,8 +37,19 @@ function lovr.load(arg)
 end
 
 function lovr.update(dt)
-  pr_control.update(dt)
-  game_scene.update(dt)
+  -- accumulator = accumulator + dt
+  -- while accumulator >= target_delta do
+    pr_control.update(dt)
+    game_scene.update(dt)
+    -- accumulator = accumulator - target_delta
+  -- end
+  -- local frame_time = lovr.timer.getTime()
+  -- local sleep_time = target_delta - (lovr.timer.getTime() - frame_time)
+  -- if sleep_time > 0 then
+    -- lovr.timer.sleep(sleep_time)
+  -- end
+
+ 
 end
 
 function lovr.draw(pass)
@@ -46,5 +63,5 @@ function lovr.draw(pass)
   pass:setSampler('nearest')
  
   game_scene.draw(pass)
-  
+
 end
