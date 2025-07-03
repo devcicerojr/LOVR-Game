@@ -29,17 +29,7 @@ local pr_utils = {
   end ,
   
   applyTransform = function(entity_transform , transform)
-    -- Compose current transform into a matrix
-    -- local current = lovr.math.newMat4()
-    -- current:translate(entity_transform:getPosition())
-    -- current:rotate(entity_transform:getOrientation())
-    -- current:scale(entity_transform:getScale())
-  
-    -- Apply the new transform on top
     entity_transform:mul(transform)
-  
-    -- -- Decompose back into position, rotation, and scale
-    -- entity_transform:set(current:getPosition(), current:getScale(), current:getOrientation())
   end ,
 
   moved = function(id, translated, rotated)

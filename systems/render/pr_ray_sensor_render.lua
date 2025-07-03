@@ -1,15 +1,16 @@
-local ecs = require'../core/pr_ecs'
+local pr_ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
-  requires = { "ray_collider_sensor"},
+  requires = { "ray_collider_sensor", "transform"},
   update_fn = function(id, c, pass)
-     local origin = lovr.math.vec3(ecs.entities[id].ray_collider_sensor.origin)
-     local endpoint = lovr.math.vec3(ecs.entities[id].ray_collider_sensor.endpoint)
-     local collider = ecs.entities[id].collider.collider
-     pass:setColor(1, 0, 0, 1)
-     origin:add(collider:getPosition())
-     endpoint:add(collider:getPosition())
-     pass:line(origin.x, origin.y, origin.z, endpoint.x, endpoint.y, endpoint.z)
+    local entity_transform = pr_ecs.entities[id].transform.transform
+
+
+    local origin = lovr.math.vec3(entity_transform:getPosition()):add(pr_ecs.entities[id].ray_collider_sensor.origin_offset)
+    local endpoint = lovr.math.vec3(origin):add(pr_ecs.entities[id].ray_collider_sensor.endpoint_offset)
+
+    pass:setColor(1, 0, 0, 1)
+    pass:line(origin.x, origin.y, origin.z, endpoint.x, endpoint.y, endpoint.z)
   end
 }

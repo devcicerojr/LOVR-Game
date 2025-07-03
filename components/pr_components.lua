@@ -17,8 +17,8 @@ pr_components.Gamecam = function (game_cam_offset, is_active)
   is_active = is_active or true}}
 end
 
-pr_components.Gravity = function (gravity_acc)
-  return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81 }}
+pr_components.Gravity = function (gravity_acc, grounded)
+  return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81, grounded = grounded or false}}
 end
 
 pr_components.IsKinematic = function ()
@@ -37,8 +37,8 @@ pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}
 end
 
-pr_components.RayColliderSensor = function (origin, endpoint)
-  return {type = "ray_collider_sensor", data = {origin = origin or nil, endpoint = endpoint or nil}}
+pr_components.RayColliderSensor = function (origin_offset, endpoint_offset)
+  return {type = "ray_collider_sensor", data = {origin_offset = origin_offset or nil, endpoint_offset = endpoint_offset or nil, no_detection_period = 0}}
 end
 
 pr_components.Position = function (x, y, z)

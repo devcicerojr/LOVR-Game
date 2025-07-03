@@ -59,6 +59,7 @@ end
 function game_scene.update(dt)
 	lovr_world:update(dt)
 	ecs:update(dt)
+	-- lovr_world:interpolate(0.5)
 end
 
 function game_scene.draw(pass)

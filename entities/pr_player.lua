@@ -19,20 +19,19 @@ return function(ecs)
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   
   collider:setKinematic(true)
-  
-  origin = lovr.math.newVec3(collider:getPosition()):add(0, -collider_radius - collider_length/2)
-  endpoint = lovr.math.newVec3(origin):add(0, -1, 0)
+  origin_offset = lovr.math.newVec3(0, 0, 0)
+  endpoint_offset = lovr.math.newVec3(0, -0.2, 0)
   
   ecs:addComponent(id, pr_component.IsKinematic())
   ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/Test.glb')))
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())
-  ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(4, 4, 4)))
+  ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(4, 0, 4)))
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
-  ecs:addComponent(id, pr_component.Gravity(gravity_acc))
-  ecs:addComponent(id, pr_component.RayColliderSensor(origin , endpoint))
+  ecs:addComponent(id, pr_component.Gravity(gravity_acc, false))
+  ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset))
   return id
 end
