@@ -17,6 +17,14 @@ pr_components.Gamecam = function (game_cam_offset, is_active)
   is_active = is_active or true}}
 end
 
+pr_components.Gravity = function (gravity_acc)
+  return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81 }}
+end
+
+pr_components.IsKinematic = function ()
+  return {type = "is_kinematic", data = {}}
+end
+
 pr_components.Model = function ( model )
   return {type = "model" , data = {model = model or nil}}
 end

@@ -45,8 +45,6 @@ function lovr.draw(pass)
   pass:setBlendMode('alpha', 'alphamultiply')
   pass:setSampler('nearest')
  
-
   game_scene.draw(pass)
   
-	-- pass:setShader()
 end

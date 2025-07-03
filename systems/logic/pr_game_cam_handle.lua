@@ -1,12 +1,14 @@
 local pr_ecs = require'../core/pr_ecs'
 local pr_camera = require'pr_camera'
-local pos_smoothing = 100
-local rot_smoothing = 100
+local pos_smoothing = 100000
+local rot_smoothing = 1000
 return {
   phase = "logic",
-  requires = {"game_cam", "transform"},
+  requires = {"game_cam", "transform", "collider" , "is_kinematic"},
   update_fn = function(id, c, dt) --update function
     local entity = pr_ecs.entities[id]
+    local collider = pr_ecs.entities[id].collider.collider
+    
     local entity_transform = entity.transform.transform
     local entity_pos = lovr.math.vec3(entity_transform:getPosition())
     local entity_rot = lovr.math.quat(entity_transform:getOrientation())
@@ -24,6 +26,6 @@ return {
     local new_pos = cur_cam_pos:lerp(target_cam_pos, 1 - math.exp(-pos_smoothing * dt))
     local new_rot = cur_cam_orient:slerp(target_cam_orient, 1, - math.exp(-rot_smoothing * dt))
     pr_camera.game_cam:set(new_pos, lovr.math.vec3(1,1,1), new_rot)
-
+    
   end
 }

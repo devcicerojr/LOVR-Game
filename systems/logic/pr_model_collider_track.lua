@@ -9,10 +9,12 @@ return {
     
     
     if entity.collider.collider:isKinematic() then
-      local entity_transform = ecs.entities[id].transform.transform
-      local new_collider_transform = lovr.math.newMat4(entity_transform:unpack()):mul(lovr.math.newMat4(entity.collider.transform_offset))
+      local entity_transform = lovr.math.mat4(ecs.entities[id].transform.transform)
+      local collider = ecs.entities[id].collider.collider
+      local collider_transform_offset = ecs.entities[id].collider.transform_offset
+      local new_collider_transform = lovr.math.mat4(entity_transform):mul(lovr.math.mat4(collider_transform_offset))
       -- print(lovr.math.vec3(new_collider_transform:getPosition()).y)
-      entity.collider.collider:setPose(lovr.math.newVec3(new_collider_transform:getPosition()), lovr.math.newQuat(new_collider_transform:getOrientation()))
+      collider:setPose(lovr.math.vec3(new_collider_transform:getPosition()), lovr.math.quat(new_collider_transform:getOrientation()))
     end
     
     -- local cx, cy, cz = entity.collider.collider:getPosition()
