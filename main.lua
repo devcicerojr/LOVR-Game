@@ -40,6 +40,9 @@ function lovr.update(dt)
   -- accumulator = accumulator + dt
   -- while accumulator >= target_delta do
     pr_control.update(dt)
+    if pr_control.nine_pressed then
+      game_scene:player_respawn()
+    end
     game_scene.update(dt)
     -- accumulator = accumulator - target_delta
   -- end

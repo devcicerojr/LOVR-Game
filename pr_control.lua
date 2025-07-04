@@ -6,6 +6,7 @@ pr_control.a_pressed = false
 pr_control.s_pressed = false
 pr_control.d_pressed = false
 pr_control.zero_pressed = false
+pr_control.nine_pressed = false
 pr_control.space_pressed = false
 
 pr_control.spectate = false
@@ -29,6 +30,9 @@ function pr_control.keypressed(key, scancode, rpt)
   elseif key == "0" then
     pr_control.zero_pressed = true
     print("zero pressed")
+  elseif key == "9" then
+      pr_control.nine_pressed = true
+    print("nine pressed")
   elseif key == "space" then
     pr_control.space_pressed = true
     print("space pressed")
@@ -51,6 +55,9 @@ function pr_control.keyreleased(key , scancode)
   elseif key == "0" then
     pr_control.zero_pressed = false;
     print("zero released")
+  elseif key == "9" then
+    pr_control.nine_pressed = false;
+    print("nine released")
   elseif key == "space" then
     pr_control.space_pressed = false;
     print("space released")

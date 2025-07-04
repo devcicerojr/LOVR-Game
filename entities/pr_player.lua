@@ -19,8 +19,8 @@ return function(ecs)
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   
   collider:setKinematic(true)
-  origin_offset = lovr.math.newVec3(0, 0, 0)
-  endpoint_offset = lovr.math.newVec3(0, -0.2, 0)
+  origin_offset = lovr.math.newVec3(0, 0.1, 0)
+  endpoint_offset = lovr.math.newVec3(0, -0.6, 0)
   
   ecs:addComponent(id, pr_component.IsKinematic())
   ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/Test.glb')))

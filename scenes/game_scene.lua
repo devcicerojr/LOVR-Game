@@ -11,8 +11,8 @@ k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
 
 local player = (require'../entities/pr_player')(ecs)
 local skybox = (require'../entities/pr_skybox')(ecs)
-local ground = (require'../entities/pr_ground')(ecs)
--- local ground = (require'../entities/pr_heightmap_ground')(ecs)
+-- local ground = (require'../entities/pr_ground')(ecs)
+local ground = (require'../entities/pr_heightmap_ground')(ecs)
 
 local render_systems = {
 	"skybox_render",
@@ -41,6 +41,10 @@ end
 for _, file in ipairs(logic_systems) do
 	local system = require("../systems/logic/pr_" .. file)
 	ecs:addSystem(system)
+end
+
+function game_scene.player_respawn()
+	ecs.entities[player].transform.transform:set(0, 10, 0, 1, 1, 1, 1, 0, 0, 0)
 end
 
 function game_scene.load()

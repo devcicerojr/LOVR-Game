@@ -13,15 +13,20 @@ return function(ecs)
 
   local vertices = {}
   local scaleX, scaleZ = 1.0, 1.0     -- horizontal spacing
-  local scaleY = 20.0                 -- vertical exaggeration
+  local scaleY = 10                -- vertical exaggeration
+
+  -- Calculate the center offset
+  local offsetX = (width - 1) * scaleX / 2
+  local offsetZ = (height - 1) * scaleZ / 2
 
   for z = 0, height - 1 do
     for x = 0, width - 1 do
-      local r, g, b, a = image:getPixel(x, z)  -- returns {r, g, b, a}
-      local y = r * scaleY         -- use red channel for height
-      table.insert(vertices, { x * scaleX, y, z * scaleZ })
+      local r, g, b, a = image:getPixel(x, z)
+      local y = r * scaleY
+      table.insert(vertices, { x * scaleX - offsetX, y, z * scaleZ - offsetZ })
     end
   end
+
 
   local indices = {}
 
@@ -44,6 +49,6 @@ return function(ecs)
 
 
   ecs:addComponent(id, pr_component.Mesh(mesh, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
-  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( 200, image )))
+  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( width, image, scaleY )))
   return id
 end

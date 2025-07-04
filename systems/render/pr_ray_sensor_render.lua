@@ -4,6 +4,10 @@ return {
   phase = "render",
   requires = { "ray_collider_sensor", "transform"},
   update_fn = function(id, c, pass)
+
+    if not is_dev_build then
+      return
+    end
     local entity_transform = pr_ecs.entities[id].transform.transform
 
 

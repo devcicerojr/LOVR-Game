@@ -4,6 +4,9 @@ return {
   phase = "render",
   requires = { "collider" },
   update_fn = function(id , c , pass) -- draw function
+    if not is_dev_build then
+      return
+    end
     local entity = ecs.entities[id]
     local the_collider = entity.collider.collider
     local collider_pos = lovr.math.vec3(the_collider:getPosition())
