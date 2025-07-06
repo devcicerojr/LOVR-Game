@@ -15,7 +15,7 @@ return {
     if entity.collider.shape == "capsule" then
       local radius = the_collider:getShape():getRadius()
       local length = the_collider:getShape():getLength()     
-      if (is_dev_build) then
+      if is_dev_build and draw_wireframes then
         pass:setWireframe(true)
         pass:capsule(collider_pos.x, collider_pos.y, collider_pos.z , radius, length , collider_quat:unpack())
         pass:setWireframe(false)

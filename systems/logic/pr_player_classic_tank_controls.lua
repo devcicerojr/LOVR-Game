@@ -3,7 +3,7 @@ local pr_utils = require'../core/pr_utils'
 
 return {
   phase = "logic", 
-  requires = {"player_controls", "collider", "velocity", "transform"},
+  requires = {"player_controls", "collider", "velocity", "transform", "classic_tank_movement"},
   update_fn = function(id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider

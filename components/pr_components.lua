@@ -12,6 +12,10 @@ pr_components.Collider = function (collider , shape , transform_offset)
   shape = shape or "box", transform_offset = transform_offset or lovr.math.newMat4()}}
 end
 
+pr_components.ClassicTankMovement = function()
+  return {type = "classic_tank_movement", data = {}}
+end
+
 pr_components.Gamecam = function (game_cam_offset, is_active)
   return {type = "game_cam" , data = {game_cam_offset = game_cam_offset or lovr.math.newMat4(),
   is_active = is_active or true}}
@@ -23,6 +27,10 @@ end
 
 pr_components.IsKinematic = function ()
   return {type = "is_kinematic", data = {}}
+end
+
+pr_components.IsTerrain = function ()
+  return {type = "is_terrain", data = {}}
 end
 
 pr_components.Model = function ( model )
@@ -47,6 +55,10 @@ end
 
 pr_components.Scallable = function (x, y, z)
   return {type = "scallable", data = {x = x or 0, y = y or 0, z = z or 0}}
+end
+
+pr_components.TexturedMesh = function (mesh , texture, base_color)  -- Format includes UV
+  return {type = "textured_mesh" , data = {mesh = mesh or nil, texture = texture or nil, base_color = base_color or lovr.math.newVec4(1.0,1.0,1.0,1.0)}}
 end
 
 pr_components.Transform = function (transform)

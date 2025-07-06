@@ -5,14 +5,15 @@ local game_scene = {}
 game_scene.entities = {}
 
 -- constants
-k_player_spawn_pos = { x = 0 , y = 0 , z = -3}
+local k_player_spawn_pos = lovr.math.newVec3(0, 12, 0)
 
 -- entities
 
 local player = (require'../entities/pr_player')(ecs)
-local skybox = (require'../entities/pr_skybox')(ecs)
+-- local skybox = (require'../entities/pr_skybox')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
-local ground = (require'../entities/pr_heightmap_ground')(ecs)
+-- local ground = (require'../entities/pr_heightmap_ground')(ecs)
+local asphalt_ground = (require'../entities/tiles/pr_asphalt_ground')(ecs)
 
 local render_systems = {
 	"skybox_render",
@@ -21,12 +22,13 @@ local render_systems = {
 	"model_animated_with_collider_render",
 	"collider_render",
 	"terrain_render",
-	"ray_sensor_render"
+	"ray_sensor_render",
+	"textured_mesh_render"
 }
 
 local logic_systems = {
 	"model_collider_track",
-	"player_controls_logic",
+	"player_classic_tank_controls",
 	"game_cam_handle",
 	"animated_update",
 	"gravity_applying",
@@ -44,7 +46,7 @@ for _, file in ipairs(logic_systems) do
 end
 
 function game_scene.player_respawn()
-	ecs.entities[player].transform.transform:set(0, 10, 0, 1, 1, 1, 1, 0, 0, 0)
+	ecs.entities[player].transform.transform:set(k_player_spawn_pos.x, k_player_spawn_pos.y, k_player_spawn_pos.z, 1, 1, 1, 1, 0, 0, 0)
 end
 
 function game_scene.load()
@@ -54,7 +56,7 @@ function game_scene.load()
 
 	-- If entity is non-kinematic, we cant modify its position by changing transform
 	-- we must move the collider instead, and the entity itself will follow
-	ecs.entities[player].transform.transform:translate(0, 10, 0)
+	ecs.entities[player].transform.transform:translate(k_player_spawn_pos.x, k_player_spawn_pos.y, k_player_spawn_pos.z)
 	-- ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
 	pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(k_pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
 

@@ -23,7 +23,7 @@ local shader  = lovr.graphics.newShader(unpack(shaderCode))
 
 return {
   phase = "render",
-  requires =  { "mesh" , "terrain_collider"},
+  requires =  { "mesh" , "is_terrain"},
   update_fn = function(id, c, pass) -- draw function
     local color = ecs.entities[id].mesh.base_color
     pass:setShader(shader)

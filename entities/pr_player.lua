@@ -33,5 +33,6 @@ return function(ecs)
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
   ecs:addComponent(id, pr_component.Gravity(gravity_acc, false))
   ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset))
+  ecs:addComponent(id, pr_component.ClassicTankMovement())
   return id
 end

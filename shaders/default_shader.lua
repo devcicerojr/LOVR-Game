@@ -32,8 +32,8 @@ default_shader.shader = lovr.graphics.newShader([[
     // vec4 baseColor = Color * getPixel(ColorTexture, snappedUV);
     // return baseColor * (ambience + diffuse + specular);
 
-    vec2 snappedUV = (vec2(ivec2(UV * float(numDivs))) + 0.5) / float(numDivs);
-    vec4 baseColor = Color * getPixel(ColorTexture , snappedUV);
+    // vec2 snappedUV = (vec2(ivec2(UV * float(numDivs))) + 0.5) / float(numDivs);
+    vec4 baseColor = Color * getPixel(ColorTexture , UV);
     return baseColor * (ambience + diffuse + specular);
   }
 ]])
@@ -54,6 +54,23 @@ function default_shader.setDefaultVals(pass)
   pass:send('pixelSize' , 0.000001)
   pass:send('lovrResolution', { width, height })
   pass:send('numDivs' , 64)
+end
+
+function default_shader.send(ambience, lightColor, lightPos, specularStrength, metallilc, pixelSize, resolution, numDivs)
+  local lightPos = lightPos or vec3(10, 40.0, -20.0)
+
+  -- Set shader values
+
+  
+  pass:setShader(default_shader.shader)
+  pass:send('ambience', ambience)
+  pass:send('lightColor', lightColor)
+  pass:send('lightPos', lightPos)
+  pass:send('specularStrength', specularStrength)
+  pass:send('metallic', metallic)
+  pass:send('pixelSize' , pixelSize)
+  pass:send('lovrResolution', resolution)
+  pass:send('numDivs' , numDivs)
 end
 
 return default_shader

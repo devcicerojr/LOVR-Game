@@ -5,6 +5,7 @@ local game_scene = require'scenes/game_scene'
 local terrainMesh = {}
 
 is_dev_build = false
+draw_wireframes = false
 
 
 -- local target_fps = 58
@@ -25,10 +26,15 @@ function lovr.keyreleased(key, scancode)
 end
 
 function lovr.load(arg)
-
-  if arg[1] == 'DEVBUILD' then
-    is_dev_build = true
-    print("running in DEVBUILD mode")
+  for _, value in ipairs(arg) do
+    if value == 'DEVBUILD' then
+      is_dev_build = true
+      print("running in DEVBUILD mode")
+    end
+    if value == 'NO_WIREFRAMES' then
+      draw_wireframes = false
+      print("no wireframes mode")
+    end
   end
 
   game_scene.load()
