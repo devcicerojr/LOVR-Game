@@ -2,11 +2,11 @@ local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
-  requires = { "model" , "position" , "not_animated"},
+  requires = { "model" , "transform" , "static_prop"},
   update_fn = function(id , c , pass) -- draw function
     -- pass:setShader()
-    pass:draw(ecs.entities[id].model.model , 
-    ecs.entities[id].position.x , ecs.entities[id].position.y , ecs.entities[id].position.z,
-    1 , 0)
+    local model = ecs.entities[id].model.model
+    local transform = ecs.entities[id].transform.transform
+    pass:draw(model , transform)
   end
 }

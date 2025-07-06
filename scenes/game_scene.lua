@@ -10,7 +10,8 @@ local k_player_spawn_pos = lovr.math.newVec3(0, 12, 0)
 -- entities
 
 local player = (require'../entities/pr_player')(ecs)
--- local skybox = (require'../entities/pr_skybox')(ecs)
+local skybox = (require'../entities/pr_skybox')(ecs)
+local pole = (require'../entities/props/pr_pole')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
 -- local ground = (require'../entities/pr_heightmap_ground')(ecs)
 -- local asphalt_ground = (require'../entities/tiles/pr_asphalt_ground')(ecs)

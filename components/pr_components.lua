@@ -80,6 +80,10 @@ pr_components.SkyboxTexture = function (texture)
   return {type = "skybox_texture", data = {cube = texture or nil}}
 end
 
+pr_components.StaticProp = function()
+  return {type = "static_prop", data = {}}
+end
+
 pr_components.TerrainCollider = function (terran_collider)
   return {type = "terrain_collider", data = {collider = terrain_collider or nil}}
 end
