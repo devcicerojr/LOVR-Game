@@ -29,6 +29,7 @@ function lovr.load(arg)
   for _, value in ipairs(arg) do
     if value == 'DEVBUILD' then
       is_dev_build = true
+      draw_wireframes = true
       print("running in DEVBUILD mode")
     end
     if value == 'NO_WIREFRAMES' then
