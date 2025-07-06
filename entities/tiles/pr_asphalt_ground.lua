@@ -2,20 +2,21 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 local pr_utils = require'../core/pr_utils'
 
-return function(ecs)
+return function(ecs, spawn_pos, tile_size)
   local id = ecs:newEntity()
+  local spawn_pos = spawn_pos or lovr.math.newVec3(0, 0, 0)
+  local tile_size = tile_size or 20.0
   -- ecs:addComponent(id , pr_component.Position(0, 0, 0))
   
-  local scale = 10
   local format = {
     { 'VertexPosition', 'vec3' },
     { 'VertexUV', 'vec2' }
   }
   local vertices = {
-      { -scale, 0, -scale, 0, 1},  -- bottom-left
-      {  scale, 0, -scale, 1, 1},  -- bottom-right
-      {  scale, 0,  scale, 1, 0},  -- top-right
-      { -scale, 0,  scale, 0, 0}   -- top-left
+      { -(tile_size/2) + spawn_pos.x, spawn_pos.y, -(tile_size/2) + spawn_pos.z, 0, 1},  -- bottom-left
+      {  (tile_size/2) + spawn_pos.x, spawn_pos.y, -(tile_size/2) + spawn_pos.z, 1, 1},  -- bottom-right
+      {  (tile_size/2) + spawn_pos.x, spawn_pos.y,  (tile_size/2) + spawn_pos.z, 1, 0},  -- top-right
+      { -(tile_size/2) + spawn_pos.x, spawn_pos.y,  (tile_size/2) + spawn_pos.z, 0, 0}   -- top-left
   }
 
   local indices = {1, 2, 3, 1, 3, 4} -- two triangles
@@ -26,8 +27,10 @@ return function(ecs)
   print("loaded texture: " .. texture:getDimensions())
   mesh:setIndices(indices)
 
+  local terrain_collider = lovr_world:newTerrainCollider(tile_size):setPosition(spawn_pos)
+
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
-  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider(scale * 2)))
+  ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
   return id
 end

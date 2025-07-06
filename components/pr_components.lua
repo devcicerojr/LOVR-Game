@@ -25,6 +25,13 @@ pr_components.Gravity = function (gravity_acc, grounded)
   return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81, grounded = grounded or false}}
 end
 
+pr_components.Grid = function (grid)
+  return {type = "grid", data = {grid = grid or {tiles = {},
+    width = 1,
+    height = 1,
+    tileSize = 20}}}
+end
+
 pr_components.IsKinematic = function ()
   return {type = "is_kinematic", data = {}}
 end
@@ -80,5 +87,6 @@ end
 pr_components.Velocity = function (velocity)
   return {type = "velocity" , data = {velocity = velocity or lovr.math.newVec3(1, 1, 1)}}
 end  
+
 
 return pr_components
