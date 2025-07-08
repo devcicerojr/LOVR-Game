@@ -22,7 +22,7 @@ return function(ecs, spawn_pos, tile_size)
   local indices = {1, 2, 3, 1, 3, 4} -- two triangles
   local mesh = lovr.graphics.newMesh(format, vertices)
 
-  local texture = lovr.graphics.newTexture("assets/asphalt.png")
+  local texture = lovr.graphics.newTexture("assets/grass.png")
 
   print("loaded texture: " .. texture:getDimensions())
   mesh:setIndices(indices)

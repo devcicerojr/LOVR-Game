@@ -7,6 +7,10 @@ pr_components.AnimationState = function (current)
   return {type = "animation_state" , data = {current = current or 1}}
 end
 
+pr_components.AccDecMovement = function (current_speed)
+  return {type = "acc_dec_movement" , data = {current_speed = current_speed or 0}}
+end
+
 pr_components.Collider = function (collider , shape , transform_offset)
   return {type = "collider" , data = {collider = collider or nil,
   shape = shape or "box", transform_offset = transform_offset or lovr.math.newMat4()}}
@@ -16,9 +20,9 @@ pr_components.ClassicTankMovement = function()
   return {type = "classic_tank_movement", data = {}}
 end
 
-pr_components.Gamecam = function (game_cam_offset, is_active)
+pr_components.Gamecam = function (game_cam_offset, cam_vel, ang_vel, is_active)
   return {type = "game_cam" , data = {game_cam_offset = game_cam_offset or lovr.math.newMat4(),
-  is_active = is_active or true}}
+  cam_vel = cam_vel or lovr.math.newVec3(), ang_vel = ang_vel or lovr.math.newVec3(), is_active = is_active or true}}
 end
 
 pr_components.Gravity = function (gravity_acc, grounded)
