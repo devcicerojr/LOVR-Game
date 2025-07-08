@@ -24,7 +24,7 @@ return function(ecs, spawn_pos, tile_size)
 
   local texture = lovr.graphics.newTexture("assets/grass.png")
 
-  print("loaded texture: " .. texture:getDimensions())
+  -- print("loaded texture: " .. texture:getDimensions())
   mesh:setIndices(indices)
 
   local terrain_collider = lovr_world:newTerrainCollider(tile_size):setPosition(spawn_pos)

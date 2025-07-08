@@ -2,6 +2,7 @@ default_shader = require'shaders/default_shader'
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'
+local map_parser = require'tools/map_parser'
 local terrainMesh = {}
 
 is_dev_build = false
@@ -35,6 +36,16 @@ function lovr.load(arg)
     if value == 'NO_WIREFRAMES' then
       draw_wireframes = false
       print("no wireframes mode")
+    end
+  end
+
+  local brushes = map_parser.parse_map('levels/unnamed.map')
+  print("Parsed brushes:", #brushes)
+  if #brushes > 0 then
+    print("First brush has faces:", #brushes[1])
+    for i, face in ipairs(brushes[1]) do
+      print("Face " .. i, face.p1[1], face.p1[2], face.p1[3], "Texture:", face.texture)
+      if i >= 3 then break end -- Only print first 3 faces for brevity
     end
   end
 
