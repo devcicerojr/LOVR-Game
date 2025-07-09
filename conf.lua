@@ -17,7 +17,7 @@ function lovr.conf(t)
   t.graphics.debug = false
   t.graphics.vsync = false
   t.graphics.stencil = false
-  t.graphics.antialias = true
+  t.graphics.antialias = false
   t.graphics.shadercache = true
 
   t.modules.headset =  true
