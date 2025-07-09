@@ -44,6 +44,10 @@ pr_components.IsTerrain = function ()
   return {type = "is_terrain", data = {}}
 end
 
+pr_components.IsPlayer = function ()
+  return {type = "is_player", data = {}}
+end
+
 pr_components.Model = function ( model )
   return {type = "model" , data = {model = model or nil}}
 end

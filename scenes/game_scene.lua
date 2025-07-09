@@ -37,6 +37,7 @@ local logic_systems = {
 	"gravity_applying",
 	"k_gravity_collision_detect",
 	"player_acc_dec_movement",
+	"player_head_animation_blend",
 }
 
 for _, file in ipairs(render_systems) do

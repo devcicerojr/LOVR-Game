@@ -1,4 +1,5 @@
 default_shader = require'shaders/default_shader'
+outline_shader = require'shaders/outline_shader'
 local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'

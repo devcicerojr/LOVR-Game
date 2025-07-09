@@ -25,6 +25,7 @@ return function(ecs)
   endpoint_offset = lovr.math.newVec3(0, -0.6, 0)
   
   ecs:addComponent(id, pr_component.IsKinematic())
+  ecs:addComponent(id, pr_component.IsPlayer())
   ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/xaublas.glb')))
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
