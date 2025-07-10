@@ -10,8 +10,7 @@ function getOscillatingValue(dt, frequency, phase)
   -- Update total elapsed time manually
   elapsedTime = elapsedTime + dt
 
-  local amplitude = 0.3
-
+  local amplitude = 0.2
   return amplitude * math.sin(2 * math.pi * frequency * elapsedTime + phase)
 end
 
@@ -23,6 +22,7 @@ return {
   update_fn = function(id, c, dt) -- update function
     local entity = ecs.entities[id]
     local model = entity.model.model
-    model:setNodeOrientation('head', getOscillatingValue(dt), 0, 0, 1, 1)
+    local desired_orientation = lovr.math.quat(getOscillatingValue(dt, 1), 0, 1, 0):mul(lovr.math.quat(0.1, 1, 0 , 0))
+    model:setNodeOrientation('head', desired_orientation , 1)
   end
 }

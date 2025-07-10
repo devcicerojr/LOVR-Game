@@ -15,18 +15,51 @@ end
 function map_parser.parse_map(path)
   local text = read_file(path)
   local brushes = {}
+  local first_entity = true
+  local reading_worldspawn = false
   local inside_worldspawn = false
   local inside_brush = false
   local current_faces = {}
+  local entities = {}
+  local entities_count = 0
+  local reading_entity = false
   
   for line in text:gmatch("[^\r\n]+") do
     line = line:match("^%s*(.-)%s*$") -- trim
 
-    if line == '{' and not inside_worldspawn then
-      inside_worldspawn = true
+    if line == '{' and first_entity then
+      first_entity = false
+      reading_worldspawn = true
+      -- inside_worldspawn = true
       current_faces = {}
-    elseif inside_worldspawn and line:match('^"classname"%s+"worldspawn"$') then
+    elseif line == '{' and not first_entity and not reading_worldspawn and not inside_worldspawn then
+      entities_count = entities_count + 1
+      reading_entity = true
+    elseif reading_entity and line:match('^"classname"%s+"[^"]+"$') then
+      local entity_name = line:match('"[^"]+"$')
+      entities[entities_count] = { name = entity_name }
+    elseif reading_entity and entities[entities_count].name ~= nil and line:match('^"[^"]+"%s+"[^"]+"$') then
+      local field_name = line:match('^%s*"([^"]+)')
+      local values = line:match('"([^"]+)"$')
+      print("field name: " .. field_name)
+      if field_name == "origin" then
+        local x, y, z = values:match('^([%-%d%.]+) +([%-%d%.]+) +([%-%d%.]+)')
+        if x then
+          print("origin found: " .. x .. ", " .. y .. ", " .. z)
+          entities[entities_count][field_name] = {
+            x = tonumber(x),
+            y = tonumber(y),
+            z = tonumber(z)
+          }
+        end
+      end
+    elseif reading_entity and line == '}' then
+      -- end of entity
+      reading_entity = false
+    elseif reading_worldspawn and line:match('^"classname"%s+"worldspawn"$') then
       -- still inside worldspawn header
+      reading_worldspawn = false -- worldspawn was found
+      inside_worldspawn = true
     elseif inside_worldspawn and line == '{' then
       inside_brush = true
       current_faces = {}
@@ -56,6 +89,7 @@ function map_parser.parse_map(path)
   end
 
   print("Parsed brush count: " .. #brushes)
+  print("Parsed entities count: " .. entities_count)
   return brushes
 end
 

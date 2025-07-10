@@ -7,7 +7,7 @@ return function(ecs)
   local id = ecs:newEntity()
   local collider_rotation_offset = lovr.math.newQuat(k_pi/2, 1, 0, 0)
   local entity_transform = lovr.math.newMat4(lovr.math.newVec3(0, 0, 0), lovr.math.newQuat(1, 0, 0 , 0))
-  local collider_radius, collider_length = 0.5, 0.5
+  local collider_radius, collider_length = 0.5, 1.5
   local collider = lovr_world:newCapsuleCollider(0, 0, 0, collider_radius, collider_length)
   local transform_offset = lovr.math.newMat4()
   local gravity_acc = -9.81 --m/s
