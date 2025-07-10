@@ -30,6 +30,9 @@ function pr_control.keypressed(key, scancode, rpt)
   elseif key == "0" then
     pr_control.zero_pressed = true
     print("zero pressed")
+  elseif key == "8" then
+    pr_control.eight_pressed = true
+    print("eight pressed")
   elseif key == "9" then
       pr_control.nine_pressed = true
     print("nine pressed")
@@ -55,6 +58,9 @@ function pr_control.keyreleased(key , scancode)
   elseif key == "0" then
     pr_control.zero_pressed = false;
     print("zero released")
+  elseif key == "8" then
+    pr_control.eight_pressed = false;
+    print("eight released")
   elseif key == "9" then
     pr_control.nine_pressed = false;
     print("nine released")
@@ -76,6 +82,10 @@ function pr_control.update(dt)
   if is_dev_build and pr_control.zero_pressed == true then
     pr_camera.toggleSpec()
     pr_control.zero_pressed = false
+  end
+  if is_dev_build and pr_control.eight_pressed == true then
+    draw_wireframes = not draw_wireframes
+    pr_control.eight_pressed = false
   end
 end
 

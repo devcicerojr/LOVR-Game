@@ -29,7 +29,7 @@ return function(ecs, spawn_pos, tile_size)
 
   local terrain_collider = lovr_world:newTerrainCollider(tile_size):setPosition(spawn_pos)
 
-  ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
+  ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, lovr.math.newVec4(0.5, 0.5, 0.5, 1.0)))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
   return id
