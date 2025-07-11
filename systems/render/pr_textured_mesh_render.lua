@@ -1,6 +1,6 @@
 local ecs = require'../core/pr_ecs'
 
-local skyColor = { 0.608, 0.558, 0.775 }
+local skyColor = { 0.308, 0.258, 0.475 }
 local shaderCode = {[[
 out vec4 fragmentClip;
 
@@ -15,7 +15,7 @@ in vec4 fragmentClip;
 uniform vec3 fogColor;
 
 vec4 lovrmain() {
-  float fogAmount = atan(length(fragmentClip) * 0.1) * 2.0 / PI;
+  float fogAmount = atan(length(fragmentClip) * 0.1) * 0.8 / PI;
   return vec4(mix(Color.rgb, fogColor, fogAmount), Color.a) * getPixel(ColorTexture, UV);
 }]]}
 

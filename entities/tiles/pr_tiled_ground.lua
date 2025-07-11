@@ -6,7 +6,7 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local id = ecs:newEntity()
   local spawn_pos = spawn_pos or lovr.math.newVec3(0, 0, 0)
   local tile_size = tile_size or 20.0
-  local texture_path = texture_path or "assets/grass.png"
+  local texture_path = texture_path or "assets/neutral.png"
   local mesh_color = mesh_color or lovr.math.newVec4(0.5, 0.5, 0.5, 1.0) -- gray
   
   local format = {
