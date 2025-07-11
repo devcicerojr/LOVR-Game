@@ -16,10 +16,6 @@ function ECS:addComponent(id, component)
   self.entities[id][component.type] = component.data
 end
 
--- function ECS:addComponent(id, component_type, component_data)
---   self.entities[id][component_type] = component_data
--- end
-
 function ECS:addSystem( kind , required_components, update_fn )
   table.insert(self[kind .. "_systems"] , 
   { required = required_components , updatefn = update_fn })

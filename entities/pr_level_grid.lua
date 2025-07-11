@@ -20,7 +20,7 @@ return function(ecs, width, height, tile_size)
       tile_spawn_pos.x =  (x - 1) * tile_size + (tile_size / 2) - width/2 * (tile_size)
       tile_spawn_pos.y = 0
       tile_spawn_pos.z = (z - 1) * tile_size + (tile_size /2) - height/2 * (tile_size)
-      grid.tiles[x][z] = (require'../entities/tiles/pr_asphalt_ground')(ecs, tile_spawn_pos, tile_size)
+      grid.tiles[x][z] = (require'../entities/tiles/pr_tiled_ground')(ecs, tile_spawn_pos, tile_size)
     end
   end
 

@@ -5,7 +5,7 @@ local game_scene = {}
 game_scene.entities = {}
 
 -- constants
-local k_player_spawn_pos = lovr.math.newVec3(0, 12, 0)
+local k_player_spawn_pos = lovr.math.newVec3(0, 20, 0)
 
 -- entities
 
@@ -13,10 +13,9 @@ local player = (require'../entities/pr_player')(ecs)
 local skybox = (require'../entities/pr_skybox')(ecs)
 -- local pole = (require'../entities/props/pr_pole')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
--- local ground = (require'../entities/pr_heightmap_ground')(ecs)
+local ground = (require'../entities/pr_heightmap_ground')(ecs, lovr.math.newVec3(1.0, 20.0, 1.0))
 -- local asphalt_ground = (require'../entities/tiles/pr_asphalt_ground')(ecs)
-
-local tile_grid = (require'../entities/pr_level_grid')(ecs, 1, 100)
+-- local tile_grid = (require'../entities/pr_level_grid')(ecs, 8, 10)
 
 local render_systems = {
 	"skybox_render",
@@ -70,7 +69,7 @@ end
 function game_scene.update(dt)
 	lovr_world:update(dt)
 	ecs:update(dt)
-	-- lovr_world:interpolate(0.5)
+	lovr_world:interpolate(0.5)
 end
 
 function game_scene.draw(pass)

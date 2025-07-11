@@ -3,27 +3,27 @@ local pr_component = require'../components/pr_components'
 local pr_utils = require'../core/pr_utils'
 
 
-return function(ecs)
+return function(ecs, scale, mesh_color)
   local id = ecs:newEntity()
   -- ecs:addComponent(id , pr_component.Position(0, 0, 0))
   
   local image = lovr.data.newImage('assets/heightmap_2.png')
   local width = image:getWidth()
   local height = image:getHeight()
+  local scale = scale or lovr.math.vec3(1.0, 10, 1.0)
+  local mesh_color = mesh_color or lovr.math.newVec3(0.5, 0.5, 0.5, 1.0) -- gray
 
   local vertices = {}
-  local scaleX, scaleZ = 1.0, 1.0     -- horizontal spacing
-  local scaleY = 10                -- vertical exaggeration
 
   -- Calculate the center offset
-  local offsetX = (width - 1) * scaleX / 2
-  local offsetZ = (height - 1) * scaleZ / 2
+  local offset_x = (width - 1) * scale.x / 2
+  local offset_z = (height - 1) * scale.z / 2
 
   for z = 0, height - 1 do
     for x = 0, width - 1 do
       local r, g, b, a = image:getPixel(x, z)
-      local y = r * scaleY
-      table.insert(vertices, { x * scaleX - offsetX, y, z * scaleZ - offsetZ })
+      local y = r * scale.y
+      table.insert(vertices, { x * scale.x - offset_x, y, z * scale.z - offset_z })
     end
   end
 
@@ -48,7 +48,8 @@ return function(ecs)
   mesh:setIndices(indices)
 
 
-  ecs:addComponent(id, pr_component.Mesh(mesh, lovr.math.newVec4(0.4, 0.8, 0.5, 1.0)))
-  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( width, image, scaleY )))
+  ecs:addComponent(id, pr_component.Mesh(mesh, mesh_color))
+  ecs:addComponent(id, pr_component.TerrainCollider(lovr_world:newTerrainCollider( width, image, scale.y )))
+  ecs:addComponent(id, pr_component.IsTerrain())
   return id
 end
