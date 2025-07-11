@@ -1,5 +1,4 @@
 local ecs = require'../core/pr_ecs'
-local lovr_world = require'../core/pr_world'
 local pr_utils = require'../core/pr_utils'
 local game_scene = {}
 game_scene.entities = {}
@@ -67,14 +66,12 @@ function game_scene.load()
 end
 
 function game_scene.update(dt)
-	lovr_world:update(dt)
 	ecs:update(dt)
-	lovr_world:interpolate(0.5)
 end
 
 function game_scene.draw(pass)
 	ecs:draw(pass)
-	-- print("FPS: " .. lovr.timer.getFPS())
+	print("FPS: " .. lovr.timer.getFPS())
 end
 
 return game_scene

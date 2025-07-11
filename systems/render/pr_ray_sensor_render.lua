@@ -14,7 +14,9 @@ return {
     local origin = lovr.math.vec3(entity_transform:getPosition()):add(pr_ecs.entities[id].ray_collider_sensor.origin_offset)
     local endpoint = lovr.math.vec3(origin):add(pr_ecs.entities[id].ray_collider_sensor.endpoint_offset)
 
-    pass:setColor(1, 0, 0, 1)
-    pass:line(origin.x, origin.y, origin.z, endpoint.x, endpoint.y, endpoint.z)
+    if is_dev_build and draw_wireframes then
+      pass:setColor(1, 0, 0, 1)
+      pass:line(origin.x, origin.y, origin.z, endpoint.x, endpoint.y, endpoint.z)
+    end
   end
 }

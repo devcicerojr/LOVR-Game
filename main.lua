@@ -4,6 +4,7 @@ local pr_control = require'pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'
 local map_parser = require'tools/map_parser'
+local lovr_world = require'../core/pr_world'
 local terrainMesh = {}
 
 is_dev_build = false
@@ -39,7 +40,7 @@ function lovr.load(arg)
       print("no wireframes mode")
     end
   end
-
+  
   local brushes = map_parser.parse_map('levels/unnamed.map')
   print("Parsed brushes:", #brushes)
   if #brushes > 0 then
@@ -49,29 +50,21 @@ function lovr.load(arg)
       if i >= 3 then break end -- Only print first 3 faces for brevity
     end
   end
-
+  
   game_scene.load()
-
+  
   pr_camera.init()
 end
 
 function lovr.update(dt)
-  -- accumulator = accumulator + dt
-  -- while accumulator >= target_delta do
-    pr_control.update(dt)
-    if pr_control.nine_pressed then
-      game_scene:player_respawn()
-    end
-    game_scene.update(dt)
-    -- accumulator = accumulator - target_delta
-  -- end
-  -- local frame_time = lovr.timer.getTime()
-  -- local sleep_time = target_delta - (lovr.timer.getTime() - frame_time)
-  -- if sleep_time > 0 then
-    -- lovr.timer.sleep(sleep_time)
-  -- end
-
  
+  lovr_world:update(dt)
+  game_scene.update(dt)
+  pr_control.update(dt)
+  if pr_control.nine_pressed then
+    game_scene:player_respawn()
+  end
+  lovr_world:interpolate(dt)
 end
 
 function lovr.draw(pass)
