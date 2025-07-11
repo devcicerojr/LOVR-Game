@@ -2,11 +2,12 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 local pr_utils = require'../core/pr_utils'
 
-return function(ecs, spawn_pos, tile_size)
+return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local id = ecs:newEntity()
   local spawn_pos = spawn_pos or lovr.math.newVec3(0, 0, 0)
   local tile_size = tile_size or 20.0
-  -- ecs:addComponent(id , pr_component.Position(0, 0, 0))
+  local texture_path = texture_path or "assets/grass.png"
+  local mesh_color = mesh_color or lovr.math.newVec4(0.5, 0.5, 0.5, 1.0) -- gray
   
   local format = {
     { 'VertexPosition', 'vec3' },
@@ -22,14 +23,13 @@ return function(ecs, spawn_pos, tile_size)
   local indices = {1, 2, 3, 1, 3, 4} -- two triangles
   local mesh = lovr.graphics.newMesh(format, vertices)
 
-  local texture = lovr.graphics.newTexture("assets/grass.png")
+  local texture = lovr.graphics.newTexture(texture_path)
 
-  -- print("loaded texture: " .. texture:getDimensions())
   mesh:setIndices(indices)
 
   local terrain_collider = lovr_world:newTerrainCollider(tile_size):setPosition(spawn_pos)
 
-  ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, lovr.math.newVec4(0.5, 0.5, 0.5, 1.0)))
+  ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
   return id
