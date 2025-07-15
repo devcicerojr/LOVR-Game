@@ -36,6 +36,10 @@ pr_components.Grid = function (grid)
     tileSize = 20}}}
 end
 
+pr_components.IsBrush = function ()
+  return {type = "is_brush", data = {}}
+end
+
 pr_components.IsKinematic = function ()
   return {type = "is_kinematic", data = {}}
 end

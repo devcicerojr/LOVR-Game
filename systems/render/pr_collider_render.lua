@@ -21,6 +21,11 @@ return {
         pass:setWireframe(false)
       end   
     end
+    if entity.collider.shape == "box" then
+      local width, height, depth = the_collider:getShape():getDimensions()
+      local angle, ax, ay, az = collider_quat:unpack()
+      pass:box(collider_pos.x, collider_pos.y, collider_pos.z, width, height, depth, angle, ax, ay, az, 'line')
+    end
     
   end
 }

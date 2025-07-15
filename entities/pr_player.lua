@@ -2,11 +2,12 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 require '../core/pr_math'
 
-return function(ecs)
+return function(ecs, spawn_pos)
   
   local id = ecs:newEntity()
+  local spawn_pos = spawn_pos or lovr.math.newVec3(0, 20, 0)
   local collider_rotation_offset = lovr.math.newQuat(k_pi/2, 1, 0, 0)
-  local entity_transform = lovr.math.newMat4(lovr.math.newVec3(0, 0, 0), lovr.math.newQuat(1, 0, 0 , 0))
+  local entity_transform = lovr.math.newMat4(spawn_pos, lovr.math.quat(1, 0, 0 , 0))
   local collider_radius, collider_length = 0.5, 1.5
   local collider = lovr_world:newCapsuleCollider(0, 0, 0, collider_radius, collider_length)
   local transform_offset = lovr.math.newMat4()
