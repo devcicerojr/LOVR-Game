@@ -1,5 +1,6 @@
 local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils'
+local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
 local ACCELERATION = 10
@@ -17,6 +18,13 @@ return {
     local moving_backward = lovr.system.isKeyDown("k")
     local desired_dir = nil
     local desired_speed = 0
+
+    local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
+    local col_width = maxx - minx
+    local col_height = maxy - miny
+    local col_depth = maxz - minz
+    
+
     if moving_forward then
       desired_dir = lovr.math.vec3(0, 0, 1)
       desired_speed = velocity.z
@@ -64,8 +72,17 @@ return {
       if acc_dec.current_speed:length() > 0 then
         direction = lovr.math.vec3(acc_dec.current_speed)
         direction:rotate(orientation)
-        translate_val = direction * dt
       end
+      local collided_c = lovr_world:queryBox(position.x, position.y, position.z, col_width, col_height, col_depth, 'wall')
+      -- moves only if doesnt collide with wall
+      if collided_c ~= nil then
+        -- find out the normal of the collision
+        local ray_endpoint = position + (direction * dt)
+        local collided, shape, cx, cy, cz, nx, ny, nz, triangle = lovr_world:raycast(position, ray_endpoint, 'wall')
+        local norm_vec = lovr.math.vec3(nx, ny, nz)
+        direction = direction - norm_vec * direction:dot(norm_vec)
+      end
+      translate_val = direction * dt
       position:add(translate_val)
       entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
     else
