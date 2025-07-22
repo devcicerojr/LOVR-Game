@@ -77,9 +77,21 @@ return {
       -- moves only if doesnt collide with wall
       if collided_c ~= nil then
         -- find out the normal of the collision
-        local ray_endpoint = position + (direction * dt)
-        local collided, shape, cx, cy, cz, nx, ny, nz, triangle = lovr_world:raycast(position, ray_endpoint, 'wall')
-        local norm_vec = lovr.math.vec3(nx, ny, nz)
+        local shifted_val = lovr.math.vec3(0, 0, 0):rotate(orientation)
+        local ray_endpoint = position + direction
+        local collided_1, shape_1, cx_1, cy_1, cz_1, nx_1, ny_1, nz_1, triangle_1 = lovr_world:raycast(position + shifted_val, ray_endpoint, 'wall')
+        shifted_val = lovr.math.vec3(col_width/2, 0, 0):rotate(orientation)
+        local collided_2, shape_2, cx_2, cy_2, cz_2, nx_2, ny_2, nz_2, triangle_2 = lovr_world:raycast(position + shifted_val, ray_endpoint + shifted_val, 'wall')
+        shifted_val = lovr.math.vec3(- col_width/2, 0, 0):rotate(orientation)
+        local collided_3, shape_3, cx_3, cy_3, cz_3, nx_3, ny_3, nz_3, triangle_3 = lovr_world:raycast(position + shifted_val, ray_endpoint + shifted_val, 'wall')
+        local norm_vec = lovr.math.vec3(0,0,0)
+        if collided_1 then
+          norm_vec = lovr.math.vec3(nx_1, ny_1, nz_1)
+        elseif collided_2 then
+          norm_vec = lovr.math.vec3(nx_2, ny_2, nz_2)
+        elseif collided_3 then
+          norm_vec = lovr.math.vec3(nx_3, ny_3, nz_3)
+        end
         direction = direction - norm_vec * direction:dot(norm_vec)
       end
       translate_val = direction * dt
