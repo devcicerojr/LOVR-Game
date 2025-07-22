@@ -2,6 +2,7 @@ local ECS = {
   entities = {},
   logic_systems = {},
   render_systems = {},
+  materials = {},
   next_id = 0
 }
 
@@ -38,7 +39,7 @@ end
 function ECS:update(dt)
 end
 
-function ECS:update_each(required_components, updatefn, dt)
+function ECS:updateEach(required_components, updatefn, dt)
   for id, c in pairs(self.entities) do
     local match = true
     for _, name in ipairs(required_components) do
@@ -53,7 +54,7 @@ function ECS:update_each(required_components, updatefn, dt)
   end
 end
 
-function ECS:render_each(required_components, drawfn, pass)
+function ECS:renderEach(required_components, drawfn, pass)
   for id, c in pairs(self.entities) do
     local match = true
     for _, name in ipairs(required_components) do
@@ -71,15 +72,22 @@ end
 
 function ECS:update(dt)
   for _, system in ipairs(self.logic_systems) do
-    ECS:update_each(system.required , system.updatefn, dt)
+    ECS:updateEach(system.required , system.updatefn, dt)
   end
 end
 
 function ECS:draw(pass)
   for _, system in ipairs(self.render_systems) do
-    ECS:render_each(system.required , system.updatefn, pass)
+    ECS:renderEach(system.required , system.updatefn, pass)
   end
 end
 
+function ECS:addMaterial(name, material)
+  self.materials[name] = material
+end
+
+function ECS:getMaterial(name)
+  return self.materials[name]
+end
 
 return ECS

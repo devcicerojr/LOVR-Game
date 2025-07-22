@@ -14,8 +14,16 @@ local player = (require'../entities/pr_player')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
 -- local ground = (require'../entities/pr_heightmap_ground')(ecs, lovr.math.newVec3(1.0, 20.0, 1.0))
 -- local asphalt_ground = (require'../entities/tiles/pr_asphalt_ground')(ecs)
-local tile_grid = (require'../entities/pr_level_grid')(ecs, 8, 10)
-local wall = (require'../entities/brushes/pr_wall')(ecs)
+-- local tile_grid = (require'../entities/pr_level_grid')(ecs, 8, 10)
+-- local wall = (require'../entities/brushes/pr_wall')(ecs)
+-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, lovr.math.vec3(10, 0, 0))
+
+function build_level()
+	local tile_grid = (require'../entities/pr_level_grid')(ecs, 8, 10)
+	local wall = (require'../entities/brushes/pr_wall')(ecs)
+	local wall2 = (require'../entities/brushes/pr_wall')(ecs, lovr.math.vec3(10, 0, 0))
+end
+	
 
 
 local render_systems = {
@@ -26,7 +34,8 @@ local render_systems = {
 	"collider_render",
 	"terrain_render",
 	"ray_sensor_render",
-	"textured_mesh_render"
+	"textured_mesh_render",
+	"brush_render"
 }
 
 local logic_systems = {
@@ -58,7 +67,7 @@ function game_scene.load()
 	-- spawning player
 	-- ecs.entities[player].animation_state.current = 0 --idle animation
 	
-
+	build_level()
 	-- If entity is non-kinematic, we cant modify its position by changing transform
 	-- we must move the collider instead, and the entity itself will follow
 	-- ecs.entities[player].transform.transform:translate(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z)

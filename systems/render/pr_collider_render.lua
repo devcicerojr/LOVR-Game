@@ -4,7 +4,7 @@ return {
   phase = "render",
   requires = { "collider" },
   update_fn = function(id , c , pass) -- draw function
-    if not is_dev_build then
+    if not is_dev_build or not draw_wireframes then
       return
     end
     local entity = ecs.entities[id]

@@ -11,6 +11,13 @@ pr_components.AccDecMovement = function (current_speed)
   return {type = "acc_dec_movement" , data = {current_speed = current_speed or 0}}
 end
 
+pr_components.Brush = function (texture)
+  return {type = "brush", data = {texture = texture or nil, setTexture = function(self, tex) 
+    tex = tex or nil 
+    self.texture = tex
+  end}}
+end
+
 pr_components.Collider = function (collider , shape , transform_offset)
   return {type = "collider" , data = {collider = collider or nil,
   shape = shape or "box", transform_offset = transform_offset or lovr.math.newMat4()}}
@@ -34,10 +41,6 @@ pr_components.Grid = function (grid)
     width = 1,
     height = 1,
     tileSize = 20}}}
-end
-
-pr_components.IsBrush = function ()
-  return {type = "is_brush", data = {}}
 end
 
 pr_components.IsKinematic = function ()
