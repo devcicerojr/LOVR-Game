@@ -55,10 +55,12 @@ return {
         end
       end
     end
+
     local direction = lovr.math.vec3()
     local translate_val = lovr.math.vec3()
     local desired_rot = lovr.math.quat()
     local adjusted_direction = false
+
     if collider:isKinematic() then
       if lovr.system.isKeyDown("j") then
         desired_rot = lovr.math.quat(k_pi * dt , 0, 1, 0)
@@ -78,43 +80,35 @@ return {
       local collided_c = lovr_world:queryBox(position.x + translate_val.x, position.y + translate_val.y, position.z + translate_val.z, col_width, col_height, col_depth, 'wall')
       if collided_c ~= nil then
         -- find out the normal of the collision
-        local forecast_pos = position
+        local forecast_pos = position 
         local ray_endpoint = forecast_pos + direction
-        local collided_middle, shape_1, cx_1, cy_1, cz_1, nx_1, ny_1, nz_1, triangle_1 = lovr_world:raycast(forecast_pos , ray_endpoint, 'wall')
-        local rotated_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5  , 0 , 1 , 0)
-        ray_endpoint = forecast_pos + rotated_dir
+        local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(forecast_pos , ray_endpoint, 'wall')
         local depth_offset_sig = -1
+        
+        local left_ray_sensor_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5  , 0 , 1 , 0)
+        local right_ray_sensor_dir = lovr.math.vec3(direction):rotate(-math.pi / 2.5  , 0 , 1 , 0)
+        -- If move direction is opposite to the pleyers orientation (moving backwards)
         if direction:dot(orientation:direction()) > 0 then
           depth_offset_sig = 1
-          ray_endpoint = forecast_pos + rotated_dir:rotate(math.pi , 0, 1, 0)
+          left_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
+          right_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
         end
+        ray_endpoint = forecast_pos + left_ray_sensor_dir
+        -- Check for collision on the left side
         local left_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(col_width/2 , 0, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
         
-        local collided_left_side, shape_2, cx_2, cy_2, cz_2, nx_2, ny_2, nz_2, triangle_2 = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
-        rotated_dir = lovr.math.vec3(direction):rotate(-math.pi / 2.5 , 0 , 1 , 0)
-        ray_endpoint = forecast_pos + rotated_dir
-        local collided_right_side, shape_3, cx_3, cy_3, cz_3, nx_3, ny_3, nz_3, triangle_3 = lovr_world:raycast(forecast_pos , ray_endpoint, 'wall')
+        ray_endpoint = forecast_pos + right_ray_sensor_dir
+        local right_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(-col_width/2 , 0, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
-          norm_vec = lovr.math.vec3(nx_1, ny_1, nz_1)
-          print("middle collision")
+          norm_vec = lovr.math.vec3(nx_md, ny_md, nz_md)
         elseif collided_left_side then
-          norm_vec = lovr.math.vec3(nx_2, ny_2, nz_2)
-          print("left collision")
+          norm_vec = lovr.math.vec3(nx_ls, ny_ls, nz_ls)
+        elseif collided_right_side then 
+          norm_vec = lovr.math.vec3(nx_rs, ny_rs, nz_rs)
         end
-          -- -- check if collided with left side
-          -- local ray_dir = lovr.math.vec3(direction)
-          -- local ray_offset = lovr.math.vec3(col_width/2, 0, 0):rotate(orientation)
-          -- ray_dir:normalize():mul(direction:length())
-          -- local lx, ly, lz, lnx, lny, lnz, ltriangle = collided_c:getShape():raycast(position  + translate_val + ray_offset, position + translate_val + ray_dir)
-          -- if lnx and lny and lnz then
-          --   print("normal vec: " .. lnx .. ", " .. lny .. ", " .. lnz)
-          --   print(direction:dot(norm_vec))
-          --   if direction:dot(norm_vec) < 0 then
-          --     norm_vec = lovr.math.vec3(lnx, lny, lnz)
-          --   end
-          -- end
-        
         
         -- Adjust direction to be perpendicular to the normal vector
         direction = direction - norm_vec * direction:dot(norm_vec)
