@@ -36,7 +36,8 @@ return function(ecs, spawn_pos)
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
   ecs:addComponent(id, pr_component.Gravity(gravity_acc, false))
-  ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset))
+  ecs:addComponent(id, pr_component.SensorsArray())
+  ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset)) -- requires sensors_array component to be present
   -- ecs:addComponent(id, pr_component.ClassicTankMovement())
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))
   return id

@@ -14,7 +14,15 @@ function ECS:newEntity()
 end
 
 function ECS:addComponent(id, component)
-  self.entities[id][component.type] = component.data
+  if component.type == "ray_collider_sensor" then
+    if self.entities[id]["sensors_array"] then
+      component.data.callback_ctx_data.id = id
+      local sensors = self.entities[id]["sensors_array"].sensors
+      table.insert(sensors, component.data)
+    end
+  else
+    self.entities[id][component.type] = component.data
+  end
 end
 
 function ECS:addSystem( kind , required_components, update_fn )

@@ -67,12 +67,22 @@ pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}
 end
 
-pr_components.RayColliderSensor = function (origin_offset, endpoint_offset)
-  return {type = "ray_collider_sensor", data = {origin_offset = origin_offset or nil, endpoint_offset = endpoint_offset or nil, no_detection_period = 0}}
+pr_components.RayColliderSensor = function (origin_offset, endpoint_offset, label)
+  local sensor_data = {origin_offset = origin_offset or lovr.math.newVec3(0, 0, 0),
+    endpoint_offset = endpoint_offset or lovr.math.newVec3(0, -1, 0),
+    no_detection_period = 0,
+    label = label or "none",
+    callback_ctx_data = {id = nil, cb_function = nil}}
+  sensor_data.callback_ctx_data.sensor_ref = sensor_data
+  return {type = "ray_collider_sensor", data = sensor_data}
 end
 
 pr_components.Position = function (x, y, z)
   return {type = "position" , data = { x = x or 0 , y = y or 0 , z = z or 0 }}
+end
+
+pr_components.SensorsArray = function ()
+  return {type = "sensors_array", data = {sensors = {}}}
 end
 
 pr_components.Scallable = function (x, y, z)
