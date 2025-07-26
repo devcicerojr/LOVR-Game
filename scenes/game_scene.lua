@@ -40,7 +40,8 @@ local render_systems = {
 	"terrain_render",
 	"ray_sensor_render",
 	"textured_mesh_render",
-	"brush_render"
+	"brush_render",
+	"aabb_sensor_render"
 }
 
 local logic_systems = {
