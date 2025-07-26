@@ -3,10 +3,10 @@ local pr_component = require'../components/pr_components'
 
 return function(ecs, spawn_pos, width, height, depth, texture_path)
   local id = ecs:newEntity()
-  local spawn_pos = spawn_pos or lovr.math.newVec3(0, 0, 0)
   local width = width or 10.0
-  local height = height or 10.0
-  local depth = depth or 5
+  local height = height or 5.0
+  local depth = depth or 2
+  local spawn_pos = spawn_pos or lovr.math.newVec3(0, height / 2, 0)
   local collider = lovr_world:newBoxCollider(spawn_pos, width, height, depth)
   local texture_path = texture_path or "assets/neutral.png"
   local texture = lovr.graphics.newTexture(texture_path)

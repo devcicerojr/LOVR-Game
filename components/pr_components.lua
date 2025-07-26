@@ -3,6 +3,14 @@ require'../core/pr_utils'
 
 -- Components
 
+pr_components.AABBSensor = function (sensor_offset, label, width, height, depth)
+  return {type = "aabb_sensor", data = {sensor_offset = sensor_offset or lovr.math.newVec3(0, 0, 0),
+    label = label or "none",
+    width = width or 1,
+    height = height or 1,
+    depth = depth or 1}}
+end
+
 pr_components.AnimationState = function (current)
   return {type = "animation_state" , data = {current = current or 1}}
 end
@@ -41,6 +49,10 @@ pr_components.Grid = function (grid)
     width = 1,
     height = 1,
     tileSize = 20}}}
+end
+
+pr_components.HasGroundSensor = function ()
+  return {type = "has_ground_sensor", data = {}}
 end
 
 pr_components.IsKinematic = function ()

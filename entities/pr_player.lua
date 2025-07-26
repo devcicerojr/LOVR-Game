@@ -31,13 +31,20 @@ return function(ecs, spawn_pos)
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())
-  ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(5, 0, 5)))
+  ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(10, 0, 10)))
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
   ecs:addComponent(id, pr_component.Gravity(gravity_acc, false))
+
+  local aabb_sensor_offset = lovr.math.newVec3(0, collider_length / 2, 0)
+  ecs:addComponent(id, pr_component.AABBSensor(aabb_sensor_offset, "aabb_sensor", collider_radius, collider_length, collider_radius))
+  -- sensor related components
   ecs:addComponent(id, pr_component.SensorsArray())
-  ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset)) -- requires sensors_array component to be present
+  ecs:addComponent(id, pr_component.HasGroundSensor())
+  ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset, "ground_sensor")) -- requires sensors_array component to be present
+  
+  
   -- ecs:addComponent(id, pr_component.ClassicTankMovement())
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))
   return id

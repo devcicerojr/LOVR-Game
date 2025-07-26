@@ -6,7 +6,7 @@ local createCallbackCtx = function(id)
     sensor_callback = function(collider, shape, x, y, z, nx, ny, nz, tri, fraction)
       if collider ~= nil then
         if collider:getShape():getType() == "terrain" then
-          pr_ecs.entities[id].sensors_array.sensors[1].no_detection_period = 0
+          pr_ecs.entities[id].sensors_array.sensors["ground_sensor"].no_detection_period = 0
           pr_ecs.entities[id].gravity.grounded = true
           pr_ecs.entities[id].velocity.velocity.y = 0
           pr_ecs.entities[id].transform.transform:set(lovr.math.vec3(x, y  , z), lovr.math.quat(pr_ecs.entities[id].transform.transform:getOrientation()))
@@ -18,38 +18,18 @@ local createCallbackCtx = function(id)
   }
 end
 
-
--- local callback_context  = {
---   sensor_callback = function(collider, shape, x, y, z, nx, ny, nz, tri, fraction)
---     print("collided")
---     if collider ~= nil then
---       print("collided and grounded: " .. tostring(pr_ecs.entities[id].gravity.grounded))
---       pr_ecs.entities[id].gravity.grounded = true
---       pr_ecs.entities[id].velocity.velocity.y = 0
---       entity_transform:set(lovr.math.vec3(x, y + radius + length/2, z), lovr.math.quat(entity_transform:getOrientation()))
---     else
---       print("Not coliding")
---       pr_ecs.entities[id].gravity.grounded = false
---     end
---     return 
---   end ,
---   extra_data = {}
--- }
-
 return {
   phase = "logic",
-  requires = {"gravity", "collider", "transform", "is_kinematic", "velocity", "sensors_array"},
+  requires = {"gravity", "collider", "transform", "is_kinematic", "velocity", "sensors_array", "has_ground_sensor"},
   update_fn = function(id, c, dt) -- update function
     -- local ray_collider_sensor = pr_ecs.entities[id].ray_collider_sensor
 
-    local ray_collider_sensor = pr_ecs.entities[id].sensors_array.sensors[1] -- assuming the first sensor is the ray collider sensor
+    local ray_collider_sensor = pr_ecs.entities[id].sensors_array.sensors["ground_sensor"]
     if ray_collider_sensor.callback_ctx_data.cb_function == nil then
       ray_collider_sensor.callback_ctx_data.cb_function = sensor_callback
     end
     local collider = pr_ecs.entities[id].collider.collider
-    local shape = collider:getShape()
-    local shape_type = shape:getType()
-    local shape_center = shape:getPose()
+    local shape = collider:getShape() local shape_type = shape:getType() local shape_center = shape:getPose()
     local entity_transform = pr_ecs.entities[id].transform.transform
     local ray_origin = lovr.math.newVec3(entity_transform:getPosition()):add(ray_collider_sensor.origin_offset)
     local ray_endpoint = lovr.math.vec3(ray_origin):add(ray_collider_sensor.endpoint_offset)
@@ -68,6 +48,5 @@ return {
         end
       end
     end
-    
   end
 }

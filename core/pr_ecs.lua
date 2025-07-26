@@ -17,8 +17,7 @@ function ECS:addComponent(id, component)
   if component.type == "ray_collider_sensor" then
     if self.entities[id]["sensors_array"] then
       component.data.callback_ctx_data.id = id
-      local sensors = self.entities[id]["sensors_array"].sensors
-      table.insert(sensors, component.data)
+      self.entities[id]["sensors_array"].sensors[component.data.label] = component.data
     end
   else
     self.entities[id][component.type] = component.data

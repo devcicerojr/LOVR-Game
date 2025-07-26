@@ -8,11 +8,12 @@ local DECELERATION = 12
 
 return {
   phase = "logic", 
-  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement"},
+  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor"},
   update_fn = function(id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local velocity = ecs.entities[id].velocity.velocity
+    local aabb_sensor = ecs.entities[id].aabb_sensor
     local acc_dec = entity.acc_dec_movement
     local moving_forward = lovr.system.isKeyDown("i")
     local moving_backward = lovr.system.isKeyDown("k")
@@ -77,15 +78,18 @@ return {
         direction:rotate(orientation)
       end
       translate_val = direction * dt
-      local collided_c = lovr_world:queryBox(position.x + translate_val.x, position.y + translate_val.y, position.z + translate_val.z, col_width, col_height, col_depth, 'wall')
+
+      local aabb_rotated_offset = aabb_sensor.sensor_offset:rotate(orientation)
+      local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
+      local collided_c = lovr_world:queryBox(aabb_sensor_pos , lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
       if collided_c ~= nil then
         -- find out the normal of the collision
-        local forecast_pos = position 
+        local forecast_pos = aabb_sensor_pos -- forecast position at the center of the collider
         local ray_endpoint = forecast_pos + direction
         local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(forecast_pos , ray_endpoint, 'wall')
         local depth_offset_sig = -1
         
-        local left_ray_sensor_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5  , 0 , 1 , 0)
+        local left_ray_sensor_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5 , 0 , 1 , 0)
         local right_ray_sensor_dir = lovr.math.vec3(direction):rotate(-math.pi / 2.5  , 0 , 1 , 0)
         -- If move direction is opposite to the pleyers orientation (moving backwards)
         if direction:dot(orientation:direction()) > 0 then
@@ -95,11 +99,11 @@ return {
         end
         ray_endpoint = forecast_pos + left_ray_sensor_dir
         -- Check for collision on the left side
-        local left_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(col_width/2 , 0, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local left_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(0, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
         
         ray_endpoint = forecast_pos + right_ray_sensor_dir
-        local right_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(-col_width/2 , 0, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local right_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(0, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
@@ -113,9 +117,9 @@ return {
         -- Adjust direction to be perpendicular to the normal vector
         direction = direction - norm_vec * direction:dot(norm_vec)
         translate_val = direction * dt
-
+        aabb_sensor_pos = position + translate_val + aabb_rotated_offset
         -- second check for collision after adjusting direction
-        local collided_c2 = lovr_world:queryBox(position.x + translate_val.x, position.y + translate_val.y, position.z + translate_val.z, col_width, col_height, col_depth, 'wall')
+        local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
         if not collided_c2 then position:add(translate_val) end
       else
         position:add(translate_val)

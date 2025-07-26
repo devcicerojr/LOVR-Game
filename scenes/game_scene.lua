@@ -7,7 +7,9 @@ game_scene.entities = {}
 local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 20, 0)
 local GROUND_TILE_WIDTH = 8
 local GROUND_TILE_HEIGHT = 10
-local WALL_2_POS = lovr.math.vec3(10, 0, 0)
+local WALL_HEIGHT = 5
+local WALL_1_POS = lovr.math.vec3(0, WALL_HEIGHT / 2 , 0) -- default wall position
+local WALL_2_POS = lovr.math.vec3(10, WALL_HEIGHT / 2, 0)
 
 -- entities
 
@@ -23,7 +25,7 @@ local player = (require'../entities/pr_player')(ecs)
 
 function build_level()
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
-	local wall = (require'../entities/brushes/pr_wall')(ecs)
+	local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
 	local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
 end
 	
