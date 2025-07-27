@@ -84,6 +84,7 @@ pr_components.RayColliderSensor = function (origin_offset, endpoint_offset, labe
     endpoint_offset = endpoint_offset or lovr.math.newVec3(0, -1, 0),
     no_detection_period = 0,
     label = label or "none",
+    is_active = false,
     callback_ctx_data = {id = nil, cb_function = nil}}
   sensor_data.callback_ctx_data.sensor_ref = sensor_data
   return {type = "ray_collider_sensor", data = sensor_data}

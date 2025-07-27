@@ -9,12 +9,12 @@ return {
       return
     end
     local entity_transform = pr_ecs.entities[id].transform.transform
+    local entity_orientation = entity_transform:getOrientation()
     local ground_sensor = pr_ecs.entities[id].sensors_array.sensors["ground_sensor"]
   
-
-    if ground_sensor then
-      local origin = lovr.math.vec3(entity_transform:getPosition()):add(ground_sensor.origin_offset)
-      local endpoint = lovr.math.vec3(origin):add(ground_sensor.endpoint_offset)
+    for _, sensor in pairs(pr_ecs.entities[id].sensors_array.sensors) do
+      local origin = lovr.math.vec3(entity_transform:getPosition()):add(ground_sensor.origin_offset:rotate(entity_orientation))
+      local endpoint = lovr.math.vec3(entity_transform:getPosition()):add(ground_sensor.endpoint_offset:rotate(entity_orientation))
 
       if is_dev_build and draw_wireframes then
         pass:setColor(1, 0, 0, 1)
