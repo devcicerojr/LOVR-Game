@@ -83,6 +83,7 @@ return {
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
       local collided_c = lovr_world:queryBox(aabb_sensor_pos , lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
       if collided_c ~= nil then
+        aabb_sensor.is_active = true
         -- find out the normal of the collision
         local forecast_pos = aabb_sensor_pos -- forecast position at the center of the collider
         local ray_endpoint = forecast_pos + direction
@@ -122,6 +123,7 @@ return {
         local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
         if not collided_c2 then position:add(translate_val) end
       else
+        aabb_sensor.is_active = false
         position:add(translate_val)
       end
       entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)

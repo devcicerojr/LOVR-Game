@@ -1,0 +1,3 @@
+"C:\Program Files\7-Zip\7z.exe" a -tzip -mx=9 project.lovr *
+
+copy /b lovr.exe+project.lovr MyGame.exe

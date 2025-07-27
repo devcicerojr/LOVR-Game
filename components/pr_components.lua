@@ -8,7 +8,8 @@ pr_components.AABBSensor = function (sensor_offset, label, width, height, depth)
     label = label or "none",
     width = width or 1,
     height = height or 1,
-    depth = depth or 1}}
+    depth = depth or 1,
+    is_active = false}}
 end
 
 pr_components.AnimationState = function (current)
