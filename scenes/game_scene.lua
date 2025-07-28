@@ -95,7 +95,7 @@ end
 
 function game_scene.draw(pass)
 	ecs:draw(pass)
-	print("FPS: " .. lovr.timer.getFPS())
+	-- print("FPS: " .. lovr.timer.getFPS())
 end
 
 return game_scene
