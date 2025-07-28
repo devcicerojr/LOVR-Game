@@ -18,7 +18,6 @@ return {
       local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):rotate(model_quat):add(cx, cy, cz)
       entity.transform.transform = lovr.math.newMat4(model_pos, model_quat)
     end
-    
     pass:draw(entity.model.model, entity.transform.transform)
     -- entity.model.model:animate('walking', lovr.timer.getTime() % 
     -- entity.model.model:getAnimationDuration('walking'))

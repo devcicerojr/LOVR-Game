@@ -7,6 +7,7 @@ local map_parser = require'tools/map_parser'
 local lovr_world = require'../core/pr_world'
 local terrainMesh = {}
 
+
 is_dev_build = false
 draw_wireframes = false
 
@@ -29,6 +30,8 @@ function lovr.keyreleased(key, scancode)
 end
 
 function lovr.load(arg)
+  local window_pass = lovr.graphics.getWindowPass()
+  window_pass:setViewCull(true)
   for _, value in ipairs(arg) do
     if value == 'DEVBUILD' then
       is_dev_build = true
@@ -50,7 +53,7 @@ function lovr.load(arg)
       if i >= 3 then break end -- Only print first 3 faces for brevity
     end
   end
-  
+
   game_scene.load()
   
   pr_camera.init()
@@ -74,7 +77,7 @@ function lovr.draw(pass)
     pr_camera.updateSpecCamPose() -- this is only needed because we want to have a track of headset pose inside pr_camera
   end
   pass:setBlendMode('alpha', 'alphamultiply')
-  pass:setSampler('nearest')
+  pass:setSampler('linear')
  
   game_scene.draw(pass)
 

@@ -17,5 +17,6 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   collider:setTag('wall')
   ecs:addComponent(id, pr_component.Collider(collider, "box", spawn_pos))
   ecs:addComponent(id, pr_component.Brush(texture))
+  ecs:addComponent(id, pr_component.NoMesh())
   return id
 end

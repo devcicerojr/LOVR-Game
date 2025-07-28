@@ -10,10 +10,11 @@ local GROUND_TILE_HEIGHT = 10
 local WALL_HEIGHT = 5
 local WALL_1_POS = lovr.math.vec3(0, WALL_HEIGHT / 2 , 0) -- default wall position
 local WALL_2_POS = lovr.math.vec3(10, WALL_HEIGHT / 2, 0)
+local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 10) -- mesh wall position
 
 -- entities
 
-local player = (require'../entities/pr_player')(ecs)
+local player = {} 
 -- local skybox = (require'../entities/pr_skybox')(ecs)
 -- local pole = (require'../entities/props/pr_pole')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
@@ -24,9 +25,11 @@ local player = (require'../entities/pr_player')(ecs)
 -- local wall2 = (require'../entities/brushes/pr_wall')(ecs, lovr.math.vec3(10, 0, 0))
 
 function build_level()
+	player = (require'../entities/pr_player')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
 	local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
 	local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
+	local mesh_wall = (require'../entities/brushes/pr_mesh_wall')(ecs, WALL_3_POS)
 end
 	
 
@@ -41,7 +44,9 @@ local render_systems = {
 	"ray_sensor_render",
 	"textured_mesh_render",
 	"brush_render",
-	"aabb_sensor_render"
+	"brush_render_no_mesh",
+	"aabb_sensor_render",
+	"textured_mesh_wall_render"
 }
 
 local logic_systems = {
@@ -90,7 +95,7 @@ end
 
 function game_scene.draw(pass)
 	ecs:draw(pass)
-	-- print("FPS: " .. lovr.timer.getFPS())
+	print("FPS: " .. lovr.timer.getFPS())
 end
 
 return game_scene

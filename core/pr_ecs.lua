@@ -1,3 +1,5 @@
+print("ECS MODULE LOADED")
+
 local ECS = {
   entities = {},
   logic_systems = {},
@@ -5,6 +7,30 @@ local ECS = {
   materials = {},
   next_id = 0
 }
+
+-- TODO: Implement a proper class system if needed
+
+-- ECS.__index = ECS
+
+-- function ECS.new()
+--   local instance = {
+--     entities = {},
+--     logic_systems = {},
+--     render_systems = {},
+--     materials = {},
+--     next_id = 0
+--   }
+--   setmetatable(instance, ECS)
+--   return instance
+-- end
+
+function ECS:reset()
+  self.entities = {}
+  self.logic_systems = {}
+  self.render_systems = {}
+  self.materials = {}
+  self.next_id = 0
+end
 
 function ECS:newEntity()
   self.next_id = self.next_id + 1
@@ -90,7 +116,9 @@ function ECS:draw(pass)
 end
 
 function ECS:addMaterial(name, material)
-  self.materials[name] = material
+  if not self.materials[name] then
+    self.materials[name] = material
+  end
 end
 
 function ECS:getMaterial(name)

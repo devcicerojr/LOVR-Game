@@ -3,8 +3,8 @@ local pr_utils = require'../core/pr_utils'
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
-local ACCELERATION = 10
-local DECELERATION = 12
+local ACCELERATION = 7
+local DECELERATION = 15
 
 return {
   phase = "logic", 

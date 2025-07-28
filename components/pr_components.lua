@@ -73,7 +73,11 @@ pr_components.Model = function ( model )
 end
 
 pr_components.Mesh = function (mesh , base_color)
-  return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or lovr.math.newVec4(1.0,1.0,1.0,1.0)}}
+  return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or lovr.math.newVec4(1,1,1,1)}}
+end
+
+pr_components.NoMesh = function ()
+  return {type = "no_mesh", data = {}}
 end
 
 pr_components.PlayerControls = function ()
@@ -103,6 +107,14 @@ pr_components.Scallable = function (x, y, z)
   return {type = "scallable", data = {x = x or 0, y = y or 0, z = z or 0}}
 end
 
+pr_components.SkyboxTexture = function (texture)
+  return {type = "skybox_texture", data = {cube = texture or nil}}
+end
+
+pr_components.StaticProp = function()
+  return {type = "static_prop", data = {}}
+end
+
 pr_components.TexturedMesh = function (mesh , texture, base_color)  -- Format includes UV
   return {type = "textured_mesh" , data = {mesh = mesh or nil, texture = texture or nil, base_color = base_color or lovr.math.newVec4(1.0,1.0,1.0,1.0)}}
 end
@@ -115,13 +127,6 @@ pr_components.TracksCollider = function()
   return {type = "tracks_collider", data = {}}
 end
 
-pr_components.SkyboxTexture = function (texture)
-  return {type = "skybox_texture", data = {cube = texture or nil}}
-end
-
-pr_components.StaticProp = function()
-  return {type = "static_prop", data = {}}
-end
 
 pr_components.TerrainCollider = function (terran_collider)
   return {type = "terrain_collider", data = {collider = terrain_collider or nil}}
