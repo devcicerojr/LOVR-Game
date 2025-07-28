@@ -21,10 +21,10 @@ return {
     local desired_speed = 0
 
     local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
+   
     local col_width = maxx - minx
     local col_height = maxy - miny
     local col_depth = maxz - minz
-    
 
     if moving_forward then
       desired_dir = lovr.math.vec3(0, 0, 1)
@@ -78,16 +78,15 @@ return {
         direction:rotate(orientation)
       end
       translate_val = direction * dt
-
-      local aabb_rotated_offset = aabb_sensor.sensor_offset:rotate(orientation)
+      local pitch, yaw, roll = orientation:getEuler()
+      local aabb_rotated_offset = lovr.math.vec3(aabb_sensor.sensor_offset):rotate(orientation)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
       local collided_c = lovr_world:queryBox(aabb_sensor_pos , lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
       if collided_c ~= nil then
         aabb_sensor.is_active = true
         -- find out the normal of the collision
-        local forecast_pos = aabb_sensor_pos -- forecast position at the center of the collider
-        local ray_endpoint = forecast_pos + direction
-        local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(forecast_pos , ray_endpoint, 'wall')
+        local ray_endpoint = aabb_sensor_pos + direction
+        local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(aabb_sensor_pos , ray_endpoint, 'wall')
         local depth_offset_sig = -1
         
         local left_ray_sensor_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5 , 0 , 1 , 0)
@@ -98,13 +97,13 @@ return {
           left_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
           right_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
         end
-        ray_endpoint = forecast_pos + left_ray_sensor_dir
+        ray_endpoint = aabb_sensor_pos + left_ray_sensor_dir
         -- Check for collision on the left side
-        local left_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(0, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local left_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(0, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
         
-        ray_endpoint = forecast_pos + right_ray_sensor_dir
-        local right_sensor_pos = lovr.math.vec3(position):add(lovr.math.vec3(0, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        ray_endpoint = aabb_sensor_pos + right_ray_sensor_dir
+        local right_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(0, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
@@ -131,7 +130,7 @@ return {
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)
       if acc_dec.current_speed:length() > 0 then
-        direction = acc_dec.current_speed:clone()
+        direction = lovr.math.newVec3(acc_dec.current_speed)
         collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
         collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
         direction:rotate(lovr.math.quat(collider:getOrientation()) * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate())

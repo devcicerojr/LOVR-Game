@@ -17,7 +17,7 @@ pr_components.AnimationState = function (current)
 end
 
 pr_components.AccDecMovement = function (current_speed)
-  return {type = "acc_dec_movement" , data = {current_speed = current_speed or 0}}
+  return {type = "acc_dec_movement" , data = {current_speed = current_speed or lovr.math.newVec3(0, 0, 0)}}
 end
 
 pr_components.Brush = function (texture)
@@ -76,21 +76,22 @@ pr_components.Mesh = function (mesh , base_color)
   return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or lovr.math.newVec4(1,1,1,1)}}
 end
 
-pr_components.NoMesh = function ()
-  return {type = "no_mesh", data = {}}
-end
 
 pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}
 end
 
+pr_components.RawBrush = function ()
+  return {type = "raw_brush", data = {}}
+end
+
 pr_components.RayColliderSensor = function (origin_offset, endpoint_offset, label)
   local sensor_data = {origin_offset = origin_offset or lovr.math.newVec3(0, 0, 0),
-    endpoint_offset = endpoint_offset or lovr.math.newVec3(0, -1, 0),
-    no_detection_period = 0,
-    label = label or "none",
-    is_active = false,
-    callback_ctx_data = {id = nil, cb_function = nil}}
+  endpoint_offset = endpoint_offset or lovr.math.newVec3(0, -1, 0),
+  no_detection_period = 0,
+  label = label or "none",
+  is_active = false,
+  callback_ctx_data = {id = nil, cb_function = nil}}
   sensor_data.callback_ctx_data.sensor_ref = sensor_data
   return {type = "ray_collider_sensor", data = sensor_data}
 end

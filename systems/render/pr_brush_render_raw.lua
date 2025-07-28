@@ -1,8 +1,10 @@
 local ecs = require'../core/pr_ecs'
 
+-- raw brush is a brush that doesn't have any mesh. it's simply a collider
+
 return {
   phase = "render",
-  requires = { "brush" , "collider", "no_mesh"},
+  requires = { "brush" , "collider", "raw_brush"},
   update_fn = function(id, c, pass) -- draw function
     local entity = ecs.entities[id]
     local collider = entity.collider.collider

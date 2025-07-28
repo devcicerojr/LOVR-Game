@@ -22,6 +22,7 @@ return function(ecs, spawn_pos)
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   
   collider:setKinematic(true)
+  collider:setSleepingAllowed(false)
   origin_offset = lovr.math.newVec3(0, 0.1, 0)
   endpoint_offset = lovr.math.newVec3(0, -0.6, 0)
   

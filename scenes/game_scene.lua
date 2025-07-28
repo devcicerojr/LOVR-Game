@@ -1,5 +1,6 @@
 local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils'
+local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
@@ -44,7 +45,7 @@ local render_systems = {
 	"ray_sensor_render",
 	"textured_mesh_render",
 	"brush_render",
-	"brush_render_no_mesh",
+	"brush_render_raw",
 	"aabb_sensor_render",
 	"textured_mesh_wall_render"
 }
@@ -74,7 +75,9 @@ function game_scene.player_respawn()
 	local default_scale = {1, 1, 1}
 	local default_rotation = lovr.math.quat(1, 0, 0, 0) -- no rotation
 	-- ecs.entities[player].velocity.velocity:set(0, 0, 0) -- reset velocity
-	ecs.entities[player].transform.transform:set(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z, unpack(default_scale), default_rotation:unpack())
+	ecs.entities[player].acc_dec_movement.curent_speed = lovr.math.newVec3(0, 0, 0)
+	ecs.entities[player].transform.transform:set(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z, unpack(default_scale), 1, 0, 0, 0)
+
 	-- If entity is non-kinematic, we cant modify its position by changing transform
 	-- we must move the collider instead, and the entity itself will follow
 	-- ecs.entities[player].transform.transform:translate(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z)
