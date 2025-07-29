@@ -77,7 +77,7 @@ function lovr.draw(pass)
     pr_camera.updateSpecCamPose() -- this is only needed because we want to have a track of headset pose inside pr_camera
   end
   pass:setBlendMode('alpha', 'alphamultiply')
-  pass:setSampler('linear')
+  -- pass:setSampler('linear')
  
   game_scene.draw(pass)
 
