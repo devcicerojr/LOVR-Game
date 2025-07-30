@@ -99,11 +99,11 @@ return {
         end
         ray_endpoint = aabb_sensor_pos + left_ray_sensor_dir
         -- Check for collision on the left side
-        local left_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(0, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local left_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(col_width/2, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
         
         ray_endpoint = aabb_sensor_pos + right_ray_sensor_dir
-        local right_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(0, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local right_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(-col_width/2, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
         local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then

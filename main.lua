@@ -30,8 +30,9 @@ function lovr.keyreleased(key, scancode)
 end
 
 function lovr.load(arg)
-  local window_pass = lovr.graphics.getWindowPass()
-  window_pass:setViewCull(true)
+
+  -- local window_pass = lovr.graphics.getWindowPass()
+  -- window_pass:setViewCull(true)
   for _, value in ipairs(arg) do
     if value == 'DEVBUILD' then
       is_dev_build = true
@@ -77,7 +78,7 @@ function lovr.draw(pass)
     pr_camera.updateSpecCamPose() -- this is only needed because we want to have a track of headset pose inside pr_camera
   end
   pass:setBlendMode('alpha', 'alphamultiply')
-  -- pass:setSampler('linear')
+  pass:setSampler('nearest')
  
   game_scene.draw(pass)
 

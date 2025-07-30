@@ -4,6 +4,11 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
+local gTexture = lovr.graphics.newTexture(320 , 180)
+local gpass = lovr.graphics.newPass(gTexture)
+
+
+
 -- constants
 local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 20, 0)
 local GROUND_TILE_WIDTH = 8
@@ -90,15 +95,24 @@ function game_scene.load()
 	-- ecs.entities[player].animation_state.current = 0 --idle animation
 	
 	build_level()
+	
 end
 
 function game_scene.update(dt)
 	ecs:update(dt)
 end
 
-function game_scene.draw(pass)
+function game_scene.draw(dpass)
+	local pass = gpass
+	pass:reset()
+	pass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
+	pass:setProjection(1, dpass:getProjection(1, mat4()))
+
 	ecs:draw(pass)
 	print("FPS: " .. lovr.timer.getFPS() / 2)
+	local pass = dpass
+	pass:fill(gTexture)
+	return lovr.graphics.submit(gpass, dpass)
 end
 
 return game_scene
