@@ -8,15 +8,15 @@ local DECELERATION = 15
 
 return {
   phase = "logic", 
-  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "free_controls"},
+  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "auto_move_forward"},
   update_fn = function(id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local velocity = ecs.entities[id].velocity.velocity
     local aabb_sensor = ecs.entities[id].aabb_sensor
     local acc_dec = entity.acc_dec_movement
-    local moving_forward = lovr.system.isKeyDown("i")
-    local moving_backward = lovr.system.isKeyDown("k")
+    local moving_forward = true -- lovr.system.isKeyDown("i")
+    local moving_backward = false -- lovr.system.isKeyDown("k")
     local desired_dir = nil
     local desired_speed = 0
 
@@ -42,6 +42,9 @@ return {
       local accel_vec = desired_dir * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
       acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
+      if aabb_sensor.is_active then
+        desired_speed = velocity.z / 4
+      end
       if acc_dec.current_speed:length() > desired_speed then
         acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
       end
@@ -125,6 +128,7 @@ return {
         aabb_sensor.is_active = false
         position:add(translate_val)
       end
+
       entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 

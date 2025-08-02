@@ -1,4 +1,21 @@
 {
+  "Lua.runtime.version": "Lua 5.1",
+  "Lua.runtime.path": [
+    "?.lua",
+    "?/init.lua",
+    "lua/?.lua",
+    "lua/?/init.lua"
+  ],
+  "Lua.workspace.library": [
+    "${workspaceFolder}/lua"
+  ],
+  "Lua.diagnostics.globals": [
+    "lovr",
+    "mat4", "vec3", "quat"  // common LÖVR globals
+  ],
+  "Lua.telemetry.enable": false
+
+  ,
   "Lua.diagnostics.disable": [
     "undefined-global"
   ]

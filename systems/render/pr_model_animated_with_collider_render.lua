@@ -48,8 +48,9 @@ return {
     pass:draw(entity.model.model, entity.transform.transform)
     pass:setWireframe(false)
 
-    pass:setShader(default_shader.shader)
-    default_shader.setDefaultVals(pass)
+    -- pass:setShader(default_shader.shader)
+    -- default_shader.setDefaultVals(pass)
+    pass:setShader()
     pass:setColor(1, 1, 1, 1)
     pass:setSampler('nearest')
     pass:setBlendMode('alpha', 'alphamultiply')

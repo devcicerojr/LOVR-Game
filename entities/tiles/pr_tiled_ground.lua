@@ -32,5 +32,6 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
+  ecs:addComponent(id, pr_component.IsDynamicSpawn())
   return id
 end

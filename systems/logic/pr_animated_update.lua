@@ -2,7 +2,7 @@ local ecs = require'../core/pr_ecs'
 
 return {
   phase = "logic",
-  requires = {"animation_state"},
+  requires = {"animation_state", "free_controls"},
   update_fn = function(id, c, dt) -- update function
     local animation = ecs.entities[id].animation_state
     if lovr.system.isKeyDown('i') or lovr.system.isKeyDown('k') 

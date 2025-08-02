@@ -4,24 +4,26 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local gTexture = lovr.graphics.newTexture(320 , 180)
+local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}, mipmaprange = {5 , 6}})
+local gTexture = lovr.graphics.newTexture(320 , 240)
+gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
 
 
 
 -- constants
-local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 20, 0)
-local GROUND_TILE_WIDTH = 8
-local GROUND_TILE_HEIGHT = 10
+local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 2, 0)
+local GROUND_TILE_WIDTH = 2
+local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
 local WALL_1_POS = lovr.math.vec3(0, WALL_HEIGHT / 2 , 0) -- default wall position
 local WALL_2_POS = lovr.math.vec3(10, WALL_HEIGHT / 2, 0)
-local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 10) -- mesh wall position
+local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 40) -- mesh wall position
 
 -- entities
 
 local player = {} 
--- local skybox = (require'../entities/pr_skybox')(ecs)
+local skybox = (require'../entities/pr_skybox')(ecs)
 -- local pole = (require'../entities/props/pr_pole')(ecs)
 -- local ground = (require'../entities/pr_ground')(ecs)
 -- local ground = (require'../entities/pr_heightmap_ground')(ecs, lovr.math.newVec3(1.0, 20.0, 1.0))
@@ -31,11 +33,12 @@ local player = {}
 -- local wall2 = (require'../entities/brushes/pr_wall')(ecs, lovr.math.vec3(10, 0, 0))
 
 function build_level()
-	player = (require'../entities/pr_player')(ecs)
+	player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
-	local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
-	local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
-	local mesh_wall = (require'../entities/brushes/pr_mesh_wall')(ecs, WALL_3_POS)
+	-- local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
+	-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
+	local ch_wall = (require'../entities/brushes/pr_convex_hull_wall')(ecs, WALL_3_POS)
+	-- local mesh_wall = (require'../entities/brushes/pr_mesh_wall')(ecs, WALL_3_POS)
 end
 	
 
@@ -62,7 +65,10 @@ local logic_systems = {
 	"animated_update",
 	"gravity_applying",
 	"k_gravity_collision_detect",
-	"player_acc_dec_movement",
+
+	-- "player_acc_dec_movement",
+	"player_acc_dec_auto_movement",
+	
 	"player_head_animation_blend",
 }
 
@@ -107,7 +113,6 @@ function game_scene.draw(dpass)
 	pass:reset()
 	pass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
 	pass:setProjection(1, dpass:getProjection(1, mat4()))
-
 	ecs:draw(pass)
 	print("FPS: " .. lovr.timer.getFPS() / 2)
 	local pass = dpass

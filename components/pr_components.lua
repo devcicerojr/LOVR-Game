@@ -20,6 +20,10 @@ pr_components.AccDecMovement = function (current_speed)
   return {type = "acc_dec_movement" , data = {current_speed = current_speed or lovr.math.newVec3(0, 0, 0)}}
 end
 
+pr_components.AutoMoveForward = function ()
+  return {type = "auto_move_forward", data = {}}
+end
+
 pr_components.Brush = function (texture)
   return {type = "brush", data = {texture = texture or nil, setTexture = function(self, tex) 
     tex = tex or nil 
@@ -34,6 +38,10 @@ end
 
 pr_components.ClassicTankMovement = function()
   return {type = "classic_tank_movement", data = {}}
+end
+
+pr_components.FreeControls = function()
+  return {type  = "free_controls" , data = {}}
 end
 
 pr_components.Gamecam = function (game_cam_offset, cam_vel, ang_vel, is_active)
@@ -54,6 +62,10 @@ end
 
 pr_components.HasGroundSensor = function ()
   return {type = "has_ground_sensor", data = {}}
+end
+
+pr_components.IsDynamicSpawn = function ()
+  return {type = "is_dynamic_spawn", data = {}}
 end
 
 pr_components.IsKinematic = function ()

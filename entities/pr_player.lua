@@ -13,6 +13,7 @@ return function(ecs, spawn_pos)
   local transform_offset = lovr.math.newMat4()
   local gravity_acc = -9.81 --m/s
   local current_speed = lovr.math.newVec3(0, 0, 0)
+  local VELOCITY = lovr.math.newVec3(20 , 0 , 20)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
   transform_offset:rotate(k_pi/2, 1, 0, 0)
   -- collider:setPose(transform_offset:getPose())
@@ -32,7 +33,7 @@ return function(ecs, spawn_pos)
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())
-  ecs:addComponent(id, pr_component.Velocity(lovr.math.newVec3(6, 0, 6)))
+  ecs:addComponent(id, pr_component.Velocity(VELOCITY))
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
@@ -48,5 +49,8 @@ return function(ecs, spawn_pos)
   
   -- ecs:addComponent(id, pr_component.ClassicTankMovement())
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))
+
+  -- ecs:addComponent(id, pr_component.FreeControls())
+  ecs:addComponent(id, pr_component.AutoMoveForward())
   return id
 end
