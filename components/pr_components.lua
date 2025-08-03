@@ -64,8 +64,8 @@ pr_components.HasGroundSensor = function ()
   return {type = "has_ground_sensor", data = {}}
 end
 
-pr_components.IsDynamicSpawn = function ()
-  return {type = "is_dynamic_spawn", data = {}}
+pr_components.DynamicSpawner = function ()
+  return {type = "dynamic_spawner", data = {}}
 end
 
 pr_components.IsKinematic = function ()
@@ -141,8 +141,8 @@ pr_components.TracksCollider = function()
 end
 
 
-pr_components.TerrainCollider = function (terran_collider)
-  return {type = "terrain_collider", data = {collider = terrain_collider or nil}}
+pr_components.TerrainCollider = function (terrain_collider)
+  return {type = "terrain_collider", data = {terrain_collider = terrain_collider or nil}}
 end
 
 pr_components.Velocity = function (velocity)

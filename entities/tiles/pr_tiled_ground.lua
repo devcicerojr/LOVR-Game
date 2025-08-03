@@ -26,12 +26,15 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local texture = lovr.graphics.newTexture(texture_path)
 
   mesh:setIndices(indices)
-
-  local terrain_collider = lovr_world:newTerrainCollider(tile_size):setPosition(spawn_pos)
-
+  
+  local terrain_collider =  lovr_world:newTerrainCollider(tile_size)
+  terrain_collider:setPosition(spawn_pos)
+  if terrain_collider == nil then
+    print("Created nil terrain collider")
+  end
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
-  ecs:addComponent(id, pr_component.IsDynamicSpawn())
+  ecs:addComponent(id, pr_component.DynamicSpawner())
   return id
 end

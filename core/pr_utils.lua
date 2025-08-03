@@ -2,6 +2,28 @@
 local ecs = require'../core/pr_ecs'
 -- Custom Types
 
+-- Save original print
+local original_print = print
+
+-- Override print
+function print(...)
+  -- Get caller info (level 2 = caller of print)
+  local info = debug.getinfo(2, "Sl")  -- S = source, l = current line
+
+  -- Format source info
+  local source = info.short_src or "?"
+  local line = info.currentline or "?"
+
+  -- Convert all arguments to strings
+  local args = {...}
+  for i = 1, #args do
+    args[i] = tostring(args[i])
+  end
+
+  -- Prepend file and line info
+  original_print(string.format("[%s:%d]", source, line), table.concat(args, "\t"))
+end
+
 
 
 local pr_Colora_mt = {

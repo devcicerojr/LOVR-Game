@@ -5,6 +5,7 @@
 -- Sample contributed by andi mcc
 
 local shader = require 'shader'
+local pr_utils = require 'core/pr_utils'
 
 local mirror = lovr.mirror              -- Backup lovr.mirror before it is overwritten
 local font = lovr.graphics.newFont(24)  -- Font appropriate for screen-space usage
