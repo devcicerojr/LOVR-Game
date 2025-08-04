@@ -38,6 +38,8 @@ function build_level()
 	-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
 	-- local ch_wall = (require'../entities/brushes/pr_convex_hull_wall')(ecs, WALL_3_POS)
 	-- local mesh_wall = (require'../entities/brushes/pr_mesh_wall')(ecs, WALL_3_POS)
+
+	local side_walls_grid = (require'../entities/dont_stop_delivery/pr_side_walls_grid')(ecs)
 end
 	
 

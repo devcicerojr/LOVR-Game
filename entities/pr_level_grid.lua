@@ -25,4 +25,5 @@ return function(ecs, width, height, tile_size)
   end
 
   ecs:addComponent(id, pr_component.Grid(grid))
+  return id
 end
