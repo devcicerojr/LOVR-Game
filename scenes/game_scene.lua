@@ -4,8 +4,8 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}, mipmaprange = {5 , 6}})
-local gTexture = lovr.graphics.newTexture(640 , 360)
+local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}})
+local gTexture = lovr.graphics.newTexture(640 , 480)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
 
@@ -71,7 +71,8 @@ local logic_systems = {
 	"player_acc_dec_auto_movement",
 	
 	"player_head_animation_blend",
-	"dynamic_tile_spawner"
+	"dynamic_tile_spawner",
+	"dynamic_wall_spawner"
 }
 
 for _, file in ipairs(render_systems) do
@@ -81,7 +82,7 @@ end
 
 for _, file in ipairs(logic_systems) do
 	local system = require("../systems/logic/pr_" .. file)
-	if file == "dynamic_tile_spawner" then
+	if file == "dynamic_tile_spawner" or file == "dynamic_wall_spawner" then
 		system.set_player_id(player)
 	end
 	ecs:addSystem(system)

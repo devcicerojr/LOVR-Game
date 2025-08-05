@@ -13,11 +13,15 @@ return {
 
     local collider_pos = lovr.math.vec3(collider:getPosition())
     local collider_quat = lovr.math.quat(collider:getOrientation())
+    -- local sampler = lovr.graphics.newSampler({wrap = {'repeat', 'repeat', 'repeat'}})
+    -- pass:setSampler(sampler)
+    pass:setMaterial(ecs:getMaterial("mesh_wall_material"))
     if shape == "mesh" then
       local angle, ax, ay, az = collider_quat:unpack()
       pass:draw(mesh , collider_pos.x, collider_pos.y, collider_pos.z, 1 , angle, ax, ay, az)
     elseif shape == "convex_shape" then
       pass:draw(mesh, collider_pos.x, collider_pos.y, collider_pos.z, 1, angle, ax, ay, az)
     end
+    pass:setSampler()
   end
 }

@@ -42,9 +42,9 @@ return {
       local accel_vec = desired_dir * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
       acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
-      if aabb_sensor.is_active then
-        desired_speed = velocity.z / 4
-      end
+      -- if aabb_sensor.is_active then
+      --   desired_speed = velocity.z / 3
+      -- end
       if acc_dec.current_speed:length() > desired_speed then
         acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
       end

@@ -66,11 +66,13 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
 
   local texture_path = texture_path or "assets/neutral.png"
   local texture = lovr.graphics.newTexture(texture_path)
+  -- local sampler = lovr.graphics.newSampler({wrap = {'border', 'border', 'border'}})
+  -- texture:setSampler(sampler)
   local material = lovr.graphics.newMaterial({texture = texture,
-  uvScale = {0.5, height / width},})
+  uvScale = {1 , 1},})
   
-  -- ecs:addMaterial("mesh_wall_material", material)
-  mesh:setMaterial(material)
+  ecs:addMaterial("mesh_wall_material", material)
+  -- mesh:setMaterial(material)
 
   local collider = lovr_world:newConvexCollider(spawn_pos, mesh, scale)
   collider:setPosition(spawn_pos)
@@ -81,5 +83,6 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.Collider(collider, "convex_shape", spawn_pos))
   ecs:addComponent(id, pr_component.Brush(texture))
+  ecs:addComponent(id, pr_component.DynamicSpawner())
   return id
 end

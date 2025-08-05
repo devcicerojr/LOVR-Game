@@ -12,9 +12,9 @@ return function(ecs)
     for z = 1, height do
       local spawn_pos = lovr.math.newVec3()
       spawn_pos.x = ( x_distance/(3 - x) - (x_distance/(x) ) )
-      spawn_pos.y = 5
+      spawn_pos.y = 10
       spawn_pos.z = (z - 1) * z_length + (z_length / 2) - height/2 * (z_length)
-      local sie_wall_id = (require'../entities/brushes/pr_convex_hull_wall')(ecs , spawn_pos, 1, 10, 20)
+      local sie_wall_id = (require'../entities/brushes/pr_convex_hull_wall')(ecs , spawn_pos, 1, 20, 20)
     end
   end
 

@@ -61,7 +61,7 @@ function lovr.load(arg)
 end
 
 function lovr.update(dt)
- 
+  if dt > 0.05 then dt = 0.05 end
   lovr_world:update(dt)
   game_scene.update(dt)
   pr_control.update(dt)
@@ -73,7 +73,8 @@ end
 function lovr.draw(pass)
   
   pass:setBlendMode('add', 'alphamultiply')
-  pass:setSampler('nearest')
+  local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}, wrap = {'repeat', 'repeat', 'repeat'}})
+  pass:setSampler(sampler)
  
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam:getPose())

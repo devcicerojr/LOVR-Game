@@ -33,26 +33,26 @@ return {
     
     pass:setShader(outline_shader.shader)
     outline_shader.setDefaultVals(pass)
-    pass:setSampler('linear')
+    pass:setSampler('nearest')
     pass:setCullMode('front')
     pass:setDepthTest('gequal')
     pass:setDepthWrite(true)
     pass:setColor(0, 0, 0, 1)
     pass:send('outlineColor', {0.0, 0.0, 0.0, 1.0})
-    pass:send('outlineThickness', 0.012)
-    -- pass:draw(entity.model.model, lovr.math.vec3(entity.transform.transform:getPosition()), lovr.math.vec3(1.04, 1.04, 1.05), lovr.math.quat(entity.transform.transform:getOrientation()))
+    pass:send('outlineThickness', 0.01)
+    
     pass:setDepthOffset(-10000)
+    pass:setSampler('nearest')
     pass:draw(entity.model.model, entity.transform.transform)
     pass:setDepthOffset()
-    pass:setWireframe(true)
-    pass:draw(entity.model.model, entity.transform.transform)
+    -- pass:setWireframe(true)
+    -- pass:draw(entity.model.model, entity.transform.transform)
     pass:setWireframe(false)
 
     -- pass:setShader(default_shader.shader)
     -- default_shader.setDefaultVals(pass)
     pass:setShader()
     pass:setColor(1, 1, 1, 1)
-    pass:setSampler('nearest')
     pass:setBlendMode('alpha', 'alphamultiply')
     pass:setCullMode('back')
     pass:setDepthTest('gequal')
@@ -62,12 +62,6 @@ return {
 
     pass:setShader()
     pass:setCullMode('none')
-    pass:setDepthTest('gequal')
-    pass:setDepthWrite(true)
-
-
-    
-    
 
     -- print("Cur Animation: " .. (cur_animation and cur_animation or "idle"))
     end
