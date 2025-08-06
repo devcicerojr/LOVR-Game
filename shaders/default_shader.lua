@@ -56,21 +56,21 @@ function default_shader.setDefaultVals(pass)
   pass:send('numDivs' , 64)
 end
 
-function default_shader.send(ambience, lightColor, lightPos, specularStrength, metallilc, pixelSize, resolution, numDivs)
-  local lightPos = lightPos or vec3(10, 40.0, -20.0)
+function default_shader.send(pass, ambience, lightColor, lightPos, specularStrength, metallilc, pixelSize, resolution, numDivs)
+  -- local lightPos = lightPos or vec3(10, 40.0, -20.0)
 
-  -- Set shader values
+  -- -- Set shader values
 
   
-  pass:setShader(default_shader.shader)
-  pass:send('ambience', ambience)
-  pass:send('lightColor', lightColor)
-  pass:send('lightPos', lightPos)
-  pass:send('specularStrength', specularStrength)
-  pass:send('metallic', metallic)
-  pass:send('pixelSize' , pixelSize)
-  pass:send('lovrResolution', resolution)
-  pass:send('numDivs' , numDivs)
+  -- pass:setShader(default_shader.shader)
+  -- pass:send('ambience', ambience)
+  -- pass:send('lightColor', lightColor)
+  -- pass:send('lightPos', lightPos)
+  -- pass:send('specularStrength', specularStrength)
+  -- pass:send('metallic', metallic)
+  -- pass:send('pixelSize' , pixelSize)
+  -- pass:send('lovrResolution', resolution)
+  -- pass:send('numDivs' , numDivs)
 end
 
 return default_shader

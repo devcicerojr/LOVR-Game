@@ -28,8 +28,6 @@ return {
     else
       entity.model.model:animate(1, 0)
     end
-
-    
     
     pass:setShader(outline_shader.shader)
     outline_shader.setDefaultVals(pass)
@@ -51,7 +49,8 @@ return {
 
     -- pass:setShader(default_shader.shader)
     -- default_shader.setDefaultVals(pass)
-    pass:setShader()
+    pass:setShader(environment_shader.shader)
+    environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
     pass:setColor(1, 1, 1, 1)
     pass:setBlendMode('alpha', 'alphamultiply')
     pass:setCullMode('back')

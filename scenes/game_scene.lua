@@ -8,6 +8,8 @@ local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'neare
 local gTexture = lovr.graphics.newTexture(640 , 480)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
+gpass:setShader(environment_shader.shader)
+environment_shader.setDefaultVals(gpass)
 
 
 

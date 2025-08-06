@@ -16,19 +16,23 @@ environment_shader.shader = lovr.graphics.newShader(
     uniform vec3 fogColor;
 
     vec4 lovrmain() {
-      float fogAmount = atan(length(fragmentClip) * 0.1) * 2.0 / PI;
-      return vec4(mix(Color.rgb, fogColor, fogAmount), Color.a);
+      float fogAmount = atan(length(fragmentClip) * 0.4) * 3.65 / PI;
+      return vec4(mix(Color.rgb, fogColor, fogAmount), Color.a) *  getPixel(ColorTexture, UV);
     }
   ]]
 )
 
 function environment_shader.setDefaultVals(pass)
-
+  print("GOT HERE")
+  local fog_color = vec3(0.1 , 0.4, 1.0)
+  pass:send('fogColor', fog_color)
 end
 
-function environment_shader.send(fog_color)
-
+function environment_shader.send(pass , fog_color)
+  local fog_color = fog_color or vec3(1.0 , 1.0, 1.0)
+  pass:send('fogColor', fog_color)
 end
 
 
 return environment_shader
+
