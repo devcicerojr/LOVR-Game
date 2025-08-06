@@ -4,7 +4,7 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}})
+local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(640 , 480)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
