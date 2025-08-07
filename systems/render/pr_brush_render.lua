@@ -2,7 +2,7 @@ local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
-  requires = { "brush" , "collider", "textured_mesh"},
+  requires = { "brush" , "collider", "textured_mesh", "is_camera_blocker"},
   update_fn = function(id, c, pass) -- draw function
     local entity = ecs.entities[id]
     local collider = entity.collider.collider
@@ -15,6 +15,12 @@ return {
     local collider_quat = lovr.math.quat(collider:getOrientation())
     -- local sampler = lovr.graphics.newSampler({wrap = {'repeat', 'repeat', 'repeat'}})
     -- pass:setSampler(sampler)
+    local is_blocking_camera = entity.is_camera_blocker.is_blocking
+    if is_blocking_camera then
+      pass:setShader(test_shader.shader)
+      pass:send('isObstructing', is_blocking_camera)
+    end
+
     pass:setMaterial(ecs:getMaterial("mesh_wall_material"))
     if shape == "mesh" then
       local angle, ax, ay, az = collider_quat:unpack()
@@ -22,6 +28,6 @@ return {
     elseif shape == "convex_shape" then
       pass:draw(mesh, collider_pos.x, collider_pos.y, collider_pos.z, 1, angle, ax, ay, az)
     end
-    pass:setSampler()
+    pass:setShader(environment_shader.shader)
   end
 }

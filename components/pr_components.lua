@@ -108,6 +108,7 @@ pr_components.RayColliderSensor = function (origin_offset, endpoint_offset, labe
   label = label or "none",
   is_active = false,
   callback_ctx_data = {id = nil, cb_function = nil}}
+  
   sensor_data.callback_ctx_data.sensor_ref = sensor_data
   return {type = "ray_collider_sensor", data = sensor_data}
 end

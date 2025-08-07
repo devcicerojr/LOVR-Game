@@ -38,7 +38,7 @@ return {
     if shape_type == "capsule" then
       local radius = shape:getRadius()
       local length = shape:getLength()
-      local cb_obj = createCallbackCtx(ray_collider_sensor.callback_ctx_data.id)
+      local cb_obj = createCallbackCtx(id)
       local c_collider = lovr_world:raycast(ray_origin, ray_endpoint, nil, cb_obj.sensor_callback)
       if c_collider == nil then
         -- count a timer, and set grounded to false if timer increased enough

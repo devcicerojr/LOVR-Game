@@ -75,7 +75,8 @@ local logic_systems = {
 	
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
-	"dynamic_wall_spawner"
+	"dynamic_wall_spawner",
+	"wall_dithering_transparency"
 }
 
 for _, file in ipairs(render_systems) do
@@ -85,9 +86,9 @@ end
 
 for _, file in ipairs(logic_systems) do
 	local system = require("../systems/logic/pr_" .. file)
-	if file == "dynamic_tile_spawner" or file == "dynamic_wall_spawner" then
-		system.set_player_id(player)
-	end
+	-- if file == "dynamic_tile_spawner" or file == "dynamic_wall_spawner" then
+	-- 	system.set_player_id(player)
+	-- end
 	ecs:addSystem(system)
 end
 

@@ -125,4 +125,30 @@ function ECS:getMaterial(name)
   return self.materials[name]
 end
 
+function ECS:getEntityByTag(tag) -- must be unique tag. Function will return at first match
+  local ret_id = nil
+  for id , c in pairs(self.entities) do
+    local match = true
+    for _, name in ipairs({tag}) do
+      if not c[name] then
+        match = false
+        break
+      end
+    end
+    if match then
+      ret_id = id
+    end
+  end
+  return ret_id
+end
+
+function ECS:clearObstructingVals()
+  local obstruct_tag = 'is_camera_blocker'
+  for id , c in pairs(self.entities) do
+    if c[obstruct_tag] then
+      self.entities[id].is_camera_blocker.is_blocking = false
+    end
+  end
+end
+
 return ECS

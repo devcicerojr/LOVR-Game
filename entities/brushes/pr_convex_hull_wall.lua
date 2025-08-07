@@ -78,12 +78,13 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   collider:setPosition(spawn_pos)
   collider:setKinematic(true)
   collider:setTag('wall')
+  collider:setUserData({id = id or nil})
 
   local mesh_color = lovr.math.newVec4(0.5, 0.5, 0.5, 1)
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.Collider(collider, "convex_shape", spawn_pos))
   ecs:addComponent(id, pr_component.Brush(texture))
   ecs:addComponent(id, pr_component.DynamicSpawner())
-  ecs:addComponent(id, pr_component.isCameraBlocker())
+  ecs:addComponent(id, pr_component.IsCameraBlocker())
   return id
 end
