@@ -84,5 +84,6 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   ecs:addComponent(id, pr_component.Collider(collider, "convex_shape", spawn_pos))
   ecs:addComponent(id, pr_component.Brush(texture))
   ecs:addComponent(id, pr_component.DynamicSpawner())
+  ecs:addComponent(id, pr_component.isCameraBlocker())
   return id
 end

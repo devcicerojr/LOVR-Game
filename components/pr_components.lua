@@ -40,6 +40,10 @@ pr_components.ClassicTankMovement = function()
   return {type = "classic_tank_movement", data = {}}
 end
 
+pr_components.DynamicSpawner = function ()
+  return {type = "dynamic_spawner", data = {}}
+end
+
 pr_components.FreeControls = function()
   return {type  = "free_controls" , data = {}}
 end
@@ -64,8 +68,8 @@ pr_components.HasGroundSensor = function ()
   return {type = "has_ground_sensor", data = {}}
 end
 
-pr_components.DynamicSpawner = function ()
-  return {type = "dynamic_spawner", data = {}}
+pr_components.IsCameraBlocker = function ()
+  return {type = "is_camera_blocker", data = {is_blocking = false}}
 end
 
 pr_components.IsKinematic = function ()

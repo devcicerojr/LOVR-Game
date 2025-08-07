@@ -4,8 +4,9 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
+local scene_resolution = {width = 1080 , height = 960}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
-local gTexture = lovr.graphics.newTexture(1080, 960)
+local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
 gpass:setShader(environment_shader.shader)
