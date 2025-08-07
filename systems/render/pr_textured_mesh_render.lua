@@ -13,11 +13,11 @@ return {
 
 
     pass:setShader(environment_shader.shader)
-    environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
+    environment_shader.send(pass, vec3(1, 1, 1))
     -- pass:setShader(default_shader.shader)
     -- default_shader.setDefaultVals(pass)
     -- pass:send('fogColor', { lovr.math.gammaToLinear(unpack(skyColor)) })
-    pass:setColor(1.0, 1.0, 1.0)
+    pass:setColor(0.5, 0.5, 0.5)
     -- pass:setDepthOffset(-10000) -- Ensures wireframe stays on top
     pass:setMaterial(texture)
     pass:draw(mesh)
