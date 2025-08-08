@@ -18,6 +18,7 @@ return {
     local is_blocking_camera = entity.is_camera_blocker.is_blocking
     if is_blocking_camera then
       pass:setShader(test_shader.shader)
+      test_shader.setDefaultVals(pass)
       pass:send('isObstructing', is_blocking_camera)
     end
 

@@ -17,7 +17,6 @@ return {
     pr_ecs:clearObstructingVals()
     local obstruct_collider = lovr_world:raycast(game_cam_pos_world , player_pos , 'wall')
     if obstruct_collider then
-      print("Obstructing collider")
       local collider_data = obstruct_collider:getUserData()
       if not collider_data then
         print("NIL collider user data")

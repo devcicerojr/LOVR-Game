@@ -75,31 +75,43 @@ test_shader.shader = lovr.graphics.newShader(
       ) / 64.0;
       return threshold;
     }
-
-  vec4 lovrmain() {
-    vec4 texColor = getPixel(ColorTexture, UV);
-    vec4 baseColor = vec4(Color.rgb, Color.a) * texColor;
-
-    // Dithering transparency logic
-    if (isObstructing) {
-      float threshold = bayerDither16x16(gl_FragCoord.xy);
-      if (threshold > 0.3) // 0. = desired transparency level
-        discard;
-    }
-
-    // Fog blending based on clip-space depth
-    float fogAmount = atan(length(fragmentClip) * 0.02) * 2.0 / PI;
-    vec3 finalColor = mix(baseColor.rgb, fogColor.rgb, fogAmount);
-
-    return vec4(finalColor, baseColor.a);
+    
+  float circularDither(vec2 fragCoord, float scale) {
+    vec2 grid = mod(fragCoord.xy, scale);
+    vec2 center = vec2(scale * 0.5);
+    float dist = length(grid - center);
+    return dist / (scale * 0.5); // normalized [0,1]
   }
 
-  ]]
+
+  vec4 lovrmain() {
+  vec4 texColor = getPixel(ColorTexture, UV);
+  vec4 baseColor = vec4(Color.rgb, Color.a) * texColor;
+
+  // Only apply fog if fragment survives
+
+  float fogAmount = atan(length(fragmentClip) * 0.02) * 2.0 / PI;
+
+  vec4 finalColor = vec4(mix(baseColor.rgb , fogColor, fogAmount), baseColor.a) * getPixel(ColorTexture , UV);
+  
+  // Dithering transparency logic
+  if (isObstructing) {
+    float dist = length(screenUV.xy);
+    if (dist < 3.0) {
+      float threshold = circularDither(gl_FragCoord.xy , 12.0);
+      if (threshold > 0.6) {
+        discard;
+      }
+    }
+  }
+
+  return finalColor;
+}
+]]
 )
 
 function test_shader.setDefaultVals(pass)
-  print("GOT HERE")
-  local fog_color = vec3(0.1 , 0.4, 1.0)
+  local fog_color = vec3(0.5 , 0.5, 0.5)
   pass:send('fogColor', fog_color)
 end
 

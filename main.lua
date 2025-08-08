@@ -74,7 +74,7 @@ end
 
 function lovr.draw(pass)
   
-  pass:setBlendMode('add', 'alphamultiply')
+  pass:setBlendMode('alpha', 'alphamultiply')
   local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}, wrap = {'repeat', 'repeat', 'repeat'}})
   pass:setSampler(sampler)
  
