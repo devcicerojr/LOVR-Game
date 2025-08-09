@@ -12,17 +12,22 @@ return {
     local game_cam_pos_offset = vec3(game_cam.game_cam_offset:getPosition())
     game_cam_pos_offset:rotate(player_orientation)
     local game_cam_pos_world = vec3(player_pos):add(game_cam_pos_offset)
-
+    local direction = vec3(player_pos - game_cam_pos_world)
+    direction:normalize()
 
     pr_ecs:clearObstructingVals()
-    local obstruct_collider = lovr_world:raycast(game_cam_pos_world , player_pos , 'wall')
+    local obstruct_collider, shape, cx, cy, cz , nx, ny, nz= lovr_world:raycast(game_cam_pos_world , player_pos , 'wall')
     if obstruct_collider then
       local collider_data = obstruct_collider:getUserData()
+      local norm = vec3(nx, ny, nz)
       if not collider_data then
         print("NIL collider user data")
       else
-        local wall_id = collider_data.id
-        pr_ecs.entities[wall_id].is_camera_blocker.is_blocking = true
+        local normalized_norm = direction:dot(norm)
+        if normalized_norm < 0 then
+          local wall_id = collider_data.id
+          pr_ecs.entities[wall_id].is_camera_blocker.is_blocking = true
+        end
       end
     end
   end

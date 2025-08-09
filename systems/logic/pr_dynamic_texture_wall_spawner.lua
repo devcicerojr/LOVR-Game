@@ -3,7 +3,7 @@ local player_id = nil
 
 return {
   phase = "logic",
-  requires = {"raw_brush", "collider", "brush", "dynamic_spawner"},
+  requires = {"textured_mesh", "collider", "brush", "dynamic_spawner"},
   update_fn = function(id, c, dt) --update function
     if not player_id then
       player_id = pr_ecs:getEntityByTag('is_player')
@@ -19,7 +19,7 @@ return {
       collider:destroy()
       pr_ecs.entities[id] = nil
       local spawn_pos = lovr.math.newVec3(pos_x, pos_y, pos_z + 400)
-      local spanwned_tile = (require'../entities/brushes/pr_wall')(pr_ecs, spawn_pos, 1, 20, 20)
+      local spanwned_tile = (require'../entities/brushes/pr_convex_hull_wall')(pr_ecs, spawn_pos, 1, 20, 20)
     end
 
   end

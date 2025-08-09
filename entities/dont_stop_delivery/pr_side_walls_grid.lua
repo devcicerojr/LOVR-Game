@@ -2,8 +2,8 @@ local pr_component = require'../components/pr_components'
 
 return function(ecs)
   local id = ecs:newEntity()
-  local x_distance = 40
-  local z_length = 20
+  local x_distance = 41 -- distance between walls in X axis
+  local z_length = 20 -- how many lines of entities on z axis
   local width = 2 -- 1 to the left, 1 to the right
   local height = 20 -- 10 lines forward, 10 lines backwards
 
@@ -14,7 +14,7 @@ return function(ecs)
       spawn_pos.x = ( x_distance/(3 - x) - (x_distance/(x) ) )
       spawn_pos.y = 10
       spawn_pos.z = (z - 1) * z_length + (z_length / 2) - height/2 * (z_length)
-      local sie_wall_id = (require'../entities/brushes/pr_convex_hull_wall')(ecs , spawn_pos, 1, 20, 20)
+      local sie_wall_id = (require'../entities/brushes/pr_wall')(ecs , spawn_pos, 1, 20, 20)
     end
   end
 

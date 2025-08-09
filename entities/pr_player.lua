@@ -50,7 +50,7 @@ return function(ecs, spawn_pos)
   -- ecs:addComponent(id, pr_component.ClassicTankMovement())
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))
 
-  ecs:addComponent(id, pr_component.FreeControls())
-  -- ecs:addComponent(id, pr_component.AutoMoveForward())
+  -- ecs:addComponent(id, pr_component.FreeControls())
+  ecs:addComponent(id, pr_component.AutoMoveForward())
   return id
 end

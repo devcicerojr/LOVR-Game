@@ -20,7 +20,9 @@ return {
     pass:setColor(0.5, 0.5, 0.5)
     -- pass:setDepthOffset(-10000) -- Ensures wireframe stays on top
     pass:setMaterial(texture)
+    pass:setDepthOffset(-1000)
     pass:draw(mesh)
+    pass:setDepthOffset()
     -- pass:setDepthOffset()
     -- pass:setWireframe(true)
     -- pass:setColor(0.788, 0.502, 0.712, 0.2)

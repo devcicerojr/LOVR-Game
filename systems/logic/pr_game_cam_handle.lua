@@ -4,6 +4,8 @@ local SPRING_STIFFNESS = 40
 local SPRING_DAMPING = 10 -- You can tweak this value for more/less smoothing
 local ROT_SMOOTHING = 6 -- You can tweak this value for more/less smoothing
 
+-- Camera follows entity from behind ALL THE TIME
+
 return {
   phase = "logic",
   requires = {"game_cam", "transform", "collider" , "is_kinematic"},

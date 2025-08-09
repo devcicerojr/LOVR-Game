@@ -4,7 +4,7 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local scene_resolution = {width = 1080 , height = 960}
+local scene_resolution = {width = 480 , height = 320}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
@@ -16,7 +16,7 @@ environment_shader.setDefaultVals(gpass)
 
 -- constants
 local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 2, 0)
-local GROUND_TILE_WIDTH = 2
+local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
 local WALL_1_POS = lovr.math.vec3(0, WALL_HEIGHT / 2 , 0) -- default wall position
@@ -65,18 +65,19 @@ local render_systems = {
 local logic_systems = {
 	"model_collider_track",
 	"player_classic_tank_controls",
-	"game_cam_handle",
+	-- "game_cam_handle",
+	"game_cam_fixed_orientation",
 	"animated_update",
 	"gravity_applying",
 	"k_gravity_collision_detect",
 
-	"player_acc_dec_movement",
-	-- "player_acc_dec_auto_movement",
+	-- "player_acc_dec_movement",
+	"player_acc_dec_auto_movement",
 	
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
 	"dynamic_wall_spawner",
-	"wall_dithering_transparency"
+	"game_cam_obstruction_logic"
 }
 
 for _, file in ipairs(render_systems) do
