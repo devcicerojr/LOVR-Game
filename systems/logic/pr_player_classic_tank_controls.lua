@@ -15,10 +15,10 @@ return {
     local desired_rot = lovr.math.quat()
     if collider:isKinematic() then
       if lovr.system.isKeyDown("j") then
-        desired_rot = lovr.math.quat(k_pi * dt , 0, 1, 0)
+        desired_rot = lovr.math.quat(math.pi * dt , 0, 1, 0)
       end
       if lovr.system.isKeyDown("l") then
-        desired_rot = lovr.math.quat(-k_pi * dt , 0, 1 , 0)
+        desired_rot = lovr.math.quat(-math.pi * dt , 0, 1 , 0)
       end
       entity.transform.transform:rotate(desired_rot)
       local orientation = lovr.math.quat(entity.transform.transform:getOrientation())

@@ -27,15 +27,15 @@ return {
     local col_depth = maxz - minz
 
     if moving_forward then
-      desired_dir = lovr.math.vec3(0, 0, 1)
+      desired_dir = vec3(0, 0, 1)
       desired_speed = velocity.z
     elseif moving_backward then
-      desired_dir = lovr.math.vec3(0, 0, -1)
+      desired_dir = vec3(0, 0, -1)
       desired_speed = velocity.z
     end
     -- Calculate current speed along desired direction
     local current_speed_len = acc_dec.current_speed:length()
-    local current_dir = current_speed_len > 0 and lovr.math.vec3(acc_dec.current_speed):normalize() or lovr.math.vec3(0,0,0)
+    local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or vec3(0,0,0)
     if desired_dir then
       -- Accelerate towards desired direction and speed
       local dot = acc_dec.current_speed:dot(desired_dir)
@@ -46,7 +46,7 @@ return {
       --   desired_speed = velocity.z / 3
       -- end
       if acc_dec.current_speed:length() > desired_speed then
-        acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
+        acc_dec.current_speed:normalize():mul(desired_speed)
       end
     else
       -- No input: decelerate to zero
@@ -60,17 +60,17 @@ return {
       end
     end
 
-    local direction = lovr.math.vec3()
-    local translate_val = lovr.math.vec3()
-    local desired_rot = lovr.math.quat()
+    local direction = vec3()
+    local translate_val = vec3()
+    local desired_rot = quat()
     local adjusted_direction = false
 
     if collider:isKinematic() then
       if lovr.system.isKeyDown("j") then
-        desired_rot = lovr.math.quat(k_pi * dt , 0, 1, 0)
+        desired_rot = quat(math.pi * dt , 0, 1, 0)
       end
       if lovr.system.isKeyDown("l") then
-        desired_rot = lovr.math.quat(-k_pi * dt , 0, 1 , 0)
+        desired_rot = quat(-math.pi * dt , 0, 1 , 0)
       end
       entity.transform.transform:rotate(desired_rot)
       local orientation = lovr.math.quat(entity.transform.transform:getOrientation())
@@ -129,7 +129,7 @@ return {
         position:add(translate_val)
       end
 
-      entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
+      entity.transform.transform:set(position, orientation) -- move the entity transform (kinematic)
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)

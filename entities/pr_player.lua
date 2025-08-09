@@ -6,7 +6,7 @@ return function(ecs, spawn_pos)
   
   local id = ecs:newEntity()
   local spawn_pos = spawn_pos or lovr.math.newVec3(0, 20, 0)
-  local collider_rotation_offset = lovr.math.newQuat(k_pi/2, 1, 0, 0)
+  local collider_rotation_offset = lovr.math.newQuat(math.pi/2, 1, 0, 0)
   local entity_transform = lovr.math.newMat4(spawn_pos, lovr.math.quat(1, 0, 0 , 0))
   local collider_radius, collider_length = 0.5, 1.5
   local collider = lovr_world:newCapsuleCollider(0, 0, 0, collider_radius, collider_length)
@@ -15,10 +15,10 @@ return function(ecs, spawn_pos)
   local current_speed = lovr.math.newVec3(0, 0, 0)
   local VELOCITY = lovr.math.newVec3(12 , 0 , 12)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
-  transform_offset:rotate(k_pi/2, 1, 0, 0)
+  transform_offset:rotate(math.pi/2, 1, 0, 0)
   -- collider:setPose(transform_offset:getPose())
   
-  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(k_pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
+  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(math.pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   

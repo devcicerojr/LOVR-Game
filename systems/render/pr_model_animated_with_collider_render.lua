@@ -15,7 +15,7 @@ return {
       
       local model_quat = collider_quat * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate()
       local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):mul(-1,-1,-1):rotate(model_quat):add(cx, cy, cz)
-      entity.transform.transform = lovr.math.newMat4(model_pos, model_quat)
+      entity.transform.transform:set(model_pos, model_quat)
     end
     
     local cur_animation = nil

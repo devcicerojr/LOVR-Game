@@ -26,6 +26,11 @@ return {
       local angle, ax, ay, az = collider_quat:unpack()
       pass:box(collider_pos.x, collider_pos.y, collider_pos.z, width, height, depth, angle, ax, ay, az, 'line')
     end
+    if entity.collider.shape == "sphere" then
+      local radius = the_collider:getShape():getRadius()
+      local angle, ax, ay, az = collider_quat:unpack()
+      pass:sphere(collider_pos.x, collider_pos.y, collider_pos.z, radius,  angle, ax, ay, az)
+    end
     
   end
 }

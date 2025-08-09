@@ -37,6 +37,7 @@ local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 function build_level()
 	local skybox = (require'../entities/pr_skybox')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
+	local sphere_collect = (require'../entities/dont_stop_delivery/pr_sphere_collectable')(ecs, vec3(0, 1, 15))
 	-- local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
 	-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
 	-- local ch_wall = (require'../entities/brushes/pr_convex_hull_wall')(ecs, WALL_3_POS)
@@ -103,8 +104,8 @@ function game_scene.player_respawn()
 	-- If entity is non-kinematic, we cant modify its position by changing transform
 	-- we must move the collider instead, and the entity itself will follow
 	-- ecs.entities[player].transform.transform:translate(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z)
-	-- ecs.entities[player].transform.transform:rotate(k_pi, 0, 1, 0)
-	-- pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(k_pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
+	-- ecs.entities[player].transform.transform:rotate(math.pi, 0, 1, 0)
+	-- pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(math.pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
 end
 
 function game_scene.load()

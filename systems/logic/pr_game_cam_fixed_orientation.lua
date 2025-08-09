@@ -1,6 +1,6 @@
 local pr_ecs = require'../core/pr_ecs'
 local pr_camera = require'pr_camera'
-local SPRING_STIFFNESS = 40
+local SPRING_STIFFNESS = 60
 local SPRING_DAMPING = 10 -- You can tweak this value for more/less smoothing
 local ROT_SMOOTHING = 6 -- You can tweak this value for more/less smoothing
 
@@ -12,15 +12,14 @@ return {
   update_fn = function(id, c, dt) --update function
     local entity = pr_ecs.entities[id]
     local collider = pr_ecs.entities[id].collider.collider
-    local entity_transform = entity.transform.transform
-    local entity_pos = lovr.math.vec3(entity_transform:getPosition())
-    local entity_rot = lovr.math.quat(entity_transform:getOrientation())
-    local game_cam_pos_offset = lovr.math.vec3(entity.game_cam.game_cam_offset:getPosition())
+    local entity_transform = mat4(entity.transform.transform)
+    local game_cam_pos_offset = vec3(entity.game_cam.game_cam_offset:getPosition())
     -- entity.game_cam.game_cam_offset:setOrientation(quat(1, 0, 1, 0) -- make sure game_cam looks forward
 
     -- game_cam_pos_offset:rotate(entity_rot)
-    local cur_cam_pos = lovr.math.vec3(pr_camera.game_cam:getPosition())
-    local target_cam_pos = lovr.math.vec3(entity_transform:getPosition()):add(game_cam_pos_offset)
+    local cur_cam_pos = vec3(pr_camera.game_cam:getPosition())
+    local target_cam_pos = vec3(entity_transform:getPosition()):add(game_cam_pos_offset)
+    local new_pos = target_cam_pos
     -- Spring-damper for position only
     -- entity.game_cam.cam_vel = entity.game_cam.cam_vel or lovr.math.vec3(0,0,0)
     -- local to_target = target_cam_pos - cur_cam_pos
@@ -38,9 +37,10 @@ return {
     -- local t = 1 - math.exp(-ROT_SMOOTHING * dt)
     -- local new_rot = cur_rot:slerp(target_rot, t)
     -- pr_camera.game_cam:set(new_pos, lovr.math.vec3(1,1,1), new_rot)
-    local added_y_rotation = ((target_cam_pos.x) * k_pi / 180)
-    target_cam_pos.x = target_cam_pos.x / 1.5
-    local cam_rotation = quat(k_pi + added_y_rotation, 0, 1, 0) * quat(- k_pi / 6, 1, 0, 0) 
-    pr_camera.game_cam:set(target_cam_pos, lovr.math.vec3(1,1,1), cam_rotation)
+    local entity_pos = vec3(entity_transform:getPosition())
+    local added_y_rotation = ((entity_pos.x) * math.pi / 180)
+    new_pos.x = entity_pos.x / 1.5
+    local cam_rotation = quat(math.pi + added_y_rotation, 0, 1, 0) * quat(- math.pi / 6, 1, 0, 0) 
+    pr_camera.game_cam:set(new_pos, lovr.math.vec3(1,1,1), cam_rotation)
   end
 }
