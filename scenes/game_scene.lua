@@ -81,6 +81,10 @@ local logic_systems = {
 	"game_cam_obstruction_logic"
 }
 
+local async_systems = {
+	"spawn_collectables"
+}
+
 for _, file in ipairs(render_systems) do
 	local system = require("../systems/render/pr_" .. file)
 	ecs:addSystem(system)
@@ -91,6 +95,11 @@ for _, file in ipairs(logic_systems) do
 	-- if file == "dynamic_tile_spawner" or file == "dynamic_wall_spawner" then
 	-- 	system.set_player_id(player)
 	-- end
+	ecs:addSystem(system)
+end
+
+for _, file in ipairs(async_systems) do
+	local system = require("../systems/logic/async/pr_" .. file)
 	ecs:addSystem(system)
 end
 
@@ -126,7 +135,7 @@ function game_scene.draw(dpass)
 	pass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
 	pass:setProjection(1, dpass:getProjection(1, mat4()))
 	ecs:draw(pass)
-	print("FPS: " .. lovr.timer.getFPS() / 2)
+	-- print("FPS: " .. lovr.timer.getFPS() / 2)
 	local pass = dpass
 	pass:fill(gTexture)
 	return lovr.graphics.submit(gpass, dpass)

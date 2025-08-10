@@ -17,6 +17,6 @@ return function(ecs, spawn_pos)
 
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Collider(collider, "sphere", transform_offset))
-
+  print("pos: " .. spawn_pos.x .. " " .. spawn_pos.y .. " " .. spawn_pos.z)
   return id
 end

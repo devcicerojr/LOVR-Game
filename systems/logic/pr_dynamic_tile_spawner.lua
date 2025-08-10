@@ -1,6 +1,8 @@
 local pr_ecs = require'../core/pr_ecs'
 local player_id = nil
 
+local latest_z_val = -99999999999
+
 return {
   phase = "logic",
   requires = {"dynamic_spawner", "is_terrain", "terrain_collider"},
@@ -20,6 +22,10 @@ return {
       pr_ecs.entities[id] = nil
       local spawn_pos = lovr.math.newVec3(pos_x, pos_y, pos_z + 400)
       local spanwned_tile = (require'../entities/tiles/pr_tiled_ground')(pr_ecs, spawn_pos)
+      if pos_z > latest_z_val then
+        latest_z_val = pos_z
+        pr_event_bus:emit('terrain_tile_spawned', pr_ecs, spawn_pos)
+      end
     end
 
   end
