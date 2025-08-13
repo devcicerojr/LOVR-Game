@@ -2,8 +2,8 @@ local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
-local ACCELERATION = 15
-local DECELERATION = 60
+local ACCELERATION = 50
+local DECELERATION = 90
 
 return {
   phase = "logic", 
@@ -58,18 +58,16 @@ return {
       desired_speed = vec3(desired_dir):normalize():length() * velocity.z
       entity.transform.transform:set(vec3(entity.transform.transform:getPosition()), desired_rot)
     else
-      desired_dir = quat(entity.transform.transform:getOrientation()):direction()
+      desired_dir = vec3(0, 0, 0)
       desired_speed = 0
     end
-    desired_dir:normalize()
     local current_speed_len = acc_dec.current_speed:length()
     local current_dir = current_speed_len > 0 and lovr.math.vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
     if desired_speed > 0 then
       -- Accelerate towards desired direction and speed
       local dot = acc_dec.current_speed:dot(desired_dir)
       local accel_vec = desired_dir * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
-      -- local accel_vec = desired_dir * ACCELERATION * dt
-      acc_dec.current_speed = lovr.math.newVec3(vec3(desired_dir) * current_speed_len):add(accel_vec)
+      acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
       if acc_dec.current_speed:length() > desired_speed then
         acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
