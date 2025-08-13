@@ -1,53 +1,76 @@
 local ecs = require'../core/pr_ecs'
-local pr_utils = require'../core/pr_utils'
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
-local ACCELERATION = 7
-local DECELERATION = 15
+local ACCELERATION = 50
+local DECELERATION = 90
 
 return {
   phase = "logic", 
-  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "auto_move_forward"},
+  requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "all_dir_controls"},
   update_fn = function(id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local velocity = ecs.entities[id].velocity.velocity
     local aabb_sensor = ecs.entities[id].aabb_sensor
     local acc_dec = entity.acc_dec_movement
-    local moving_forward = true -- lovr.system.isKeyDown("i")
-    local moving_backward = false -- lovr.system.isKeyDown("k")
+    local moving_forward = lovr.system.isKeyDown("i")
+    local moving_backward = lovr.system.isKeyDown("k")
     local desired_dir = vec3(0, 0, 0)
+    local desired_rot = quat(0, 0 , 0, 1)
     local desired_speed = 0
+    local forward_vec = vec3(0, 0, 1)
 
     local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
    
     local col_width = maxx - minx
     local col_height = maxy - miny
     local col_depth = maxz - minz
-
+    local player_controlling = false
     if moving_forward then
       desired_dir:add(0, 0, 1)
+      player_controlling = true
     end
     if moving_backward then
       desired_dir:add(0, 0, -1)
+      player_controlling = true
     end
-    desired_speed = desired_dir.z * velocity.z
-
-    -- Calculate current speed along desired direction
+    if lovr.system.isKeyDown("j") then
+      desired_dir:add(1, 0, 0)
+      player_controlling = true
+    end
+    if  lovr.system.isKeyDown("l") then
+      desired_dir:add(-1, 0, 0)
+      player_controlling = true
+    end
+    local rotation_angle = 0
+    if desired_dir:length() == 0 then
+      desired_dir:set(0, 0, 1) -- default forward direction
+    else
+      rotation_angle = vec3(desired_dir):angle(forward_vec)
+      if desired_dir:dot(vec3(1, 0, 0)) < 0 then
+        rotation_angle = -rotation_angle
+      end
+    end
+    desired_rot = quat(rotation_angle, 0, 1, 0)
+    
+    if player_controlling then
+      desired_speed = vec3(desired_dir):normalize():length() * velocity.z
+      entity.transform.transform:set(vec3(entity.transform.transform:getPosition()), desired_rot)
+    else
+      desired_dir = vec3(0, 0, 0)
+      desired_speed = 0
+    end
     local current_speed_len = acc_dec.current_speed:length()
-    local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or vec3(0,0,0)
-    if desired_dir then
+    local current_dir = current_speed_len > 0 and lovr.math.vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
+    if desired_speed > 0 then
       -- Accelerate towards desired direction and speed
       local dot = acc_dec.current_speed:dot(desired_dir)
       local accel_vec = desired_dir * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
       acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
-      -- if aabb_sensor.is_active then
-      --   desired_speed = velocity.z / 3
-      -- end
       if acc_dec.current_speed:length() > desired_speed then
-        acc_dec.current_speed:normalize():mul(desired_speed)
+        acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
       end
     else
       -- No input: decelerate to zero
@@ -61,28 +84,20 @@ return {
       end
     end
 
-    local direction = vec3()
-    local translate_val = vec3()
-    local desired_rot = quat()
+    local direction = vec3(desired_dir)
+    -- local translate_val = acc_dec.current_speed:length() * dt
+    local translate_val = vec3(acc_dec.current_speed) * dt
     local adjusted_direction = false
 
-    if lovr.system.isKeyDown("j") then
-      desired_rot:mul(quat(math.pi * dt , 0, 1, 0))
-    end
-    if lovr.system.isKeyDown("l") then
-      desired_rot:mul(quat(-math.pi * dt , 0, 1 , 0))
-    end
-
     if collider:isKinematic() then
-      entity.transform.transform:rotate(desired_rot)
       local orientation = lovr.math.quat(entity.transform.transform:getOrientation())
       local position = lovr.math.vec3(entity.transform.transform:getPosition())
       -- Move using current_speed in local forward/backward direction
-      if acc_dec.current_speed:length() > 0 then
-        direction = lovr.math.vec3(acc_dec.current_speed)
-        direction:rotate(orientation)
-      end
-      translate_val = direction * dt
+      -- if acc_dec.current_speed:length() > 0 then
+      --   direction = lovr.math.vec3(acc_dec.current_speed)
+      --   direction:rotate(orientation)
+      -- end
+      -- translate_val = direction * dt
       local pitch, yaw, roll = orientation:getEuler()
       local aabb_rotated_offset = lovr.math.vec3(aabb_sensor.sensor_offset):rotate(orientation)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
@@ -130,8 +145,7 @@ return {
         aabb_sensor.is_active = false
         position:add(translate_val)
       end
-
-      entity.transform.transform:set(position, orientation) -- move the entity transform (kinematic)
+      entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)

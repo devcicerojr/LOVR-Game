@@ -12,13 +12,18 @@ pr_components.AABBSensor = function (sensor_offset, label, width, height, depth)
     is_active = false}}
 end
 
+pr_components.AccDecMovement = function (current_speed)
+  return {type = "acc_dec_movement" , data = {current_speed = current_speed or lovr.math.newVec3(0, 0, 0)}}
+end
+
+pr_components.AllDirControls = function ()
+  return {type = "all_dir_controls", data = {}}
+end
+
 pr_components.AnimationState = function (current)
   return {type = "animation_state" , data = {current = current or 1}}
 end
 
-pr_components.AccDecMovement = function (current_speed)
-  return {type = "acc_dec_movement" , data = {current_speed = current_speed or lovr.math.newVec3(0, 0, 0)}}
-end
 
 pr_components.AutoMoveForward = function ()
   return {type = "auto_move_forward", data = {}}

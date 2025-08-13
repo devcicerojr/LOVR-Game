@@ -17,7 +17,7 @@ return {
     local acc_dec = entity.acc_dec_movement
     local moving_forward = lovr.system.isKeyDown("i")
     local moving_backward = lovr.system.isKeyDown("k")
-    local desired_dir = nil
+    local desired_dir = vec3(0, 0, 0)
     local desired_speed = 0
 
     local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
@@ -27,10 +27,11 @@ return {
     local col_depth = maxz - minz
 
     if moving_forward then
-      desired_dir = lovr.math.vec3(0, 0, 1)
+      desired_dir:add(0, 0, 1)
       desired_speed = velocity.z
-    elseif moving_backward then
-      desired_dir = lovr.math.vec3(0, 0, -1)
+    end
+    if moving_backward then
+      desired_dir:add(0, 0, -1)
       desired_speed = velocity.z
     end
     -- Calculate current speed along desired direction

@@ -13,7 +13,7 @@ return function(ecs, spawn_pos)
   local transform_offset = lovr.math.newMat4()
   local gravity_acc = -9.81 --m/s
   local current_speed = lovr.math.newVec3(0, 0, 0)
-  local VELOCITY = lovr.math.newVec3(12 , 0 , 12)
+  local VELOCITY = lovr.math.newVec3(28 , 0 , 28)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
   transform_offset:rotate(math.pi/2, 1, 0, 0)
   -- collider:setPose(transform_offset:getPose())
@@ -51,6 +51,7 @@ return function(ecs, spawn_pos)
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))
 
   -- ecs:addComponent(id, pr_component.FreeControls())
-  ecs:addComponent(id, pr_component.AutoMoveForward())
+  -- ecs:addComponent(id, pr_component.AutoMoveForward())
+  ecs:addComponent(id, pr_component.AllDirControls())
   return id
 end

@@ -73,7 +73,8 @@ local logic_systems = {
 	"k_gravity_collision_detect",
 
 	-- "player_acc_dec_movement",
-	"player_acc_dec_auto_movement",
+	-- "player_acc_dec_auto_movement",
+	"player_acc_dec_all_dir_movement",
 	
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
