@@ -22,7 +22,7 @@ return {
     if entity.animation_state.current > 0 then
       cur_animation = entity.model.model:getAnimationName(entity.animation_state.current)
       if cur_animation then
-        entity.model.model:animate(cur_animation, lovr.timer.getTime() * 3 % 
+        entity.model.model:animate(cur_animation, lovr.timer.getTime() * 3 %
         entity.model.model:getAnimationDuration(cur_animation))
       end
     else
@@ -45,6 +45,10 @@ return {
     -- pass:setWireframe(false)
     -- pass:setDepthOffset()
 
+    local collider_pos = vec3(entity.collider.collider:getPosition())
+    local collider_quat = quat(entity.collider.collider:getOrientation())
+    collider_quat = collider_quat * quat(entity.collider.transform_offset:getOrientation()):conjugate()
+    collider_pos:add(vec3(entity.collider.transform_offset:getPosition()) * -1)
     
     pass:setSampler('nearest')
     pass:setShader(environment_shader.shader)
@@ -54,7 +58,7 @@ return {
     pass:setCullMode('back')
     pass:setDepthTest('gequal')
     pass:setDepthWrite(true)
-    pass:draw(entity.model.model, entity.transform.transform)
+    pass:draw(entity.model.model, mat4(collider_pos, collider_quat))
 
     pass:setShader()
     pass:setCullMode('none')

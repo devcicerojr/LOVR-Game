@@ -6,7 +6,7 @@ local ACCELERATION = 50
 local DECELERATION = 90
 
 return {
-  phase = "logic", 
+  phase = "logic",
   requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "all_dir_controls"},
   update_fn = function(id, c, dt) --update function
     local entity = ecs.entities[id]
@@ -22,11 +22,13 @@ return {
     local forward_vec = vec3(0, 0, 1)
 
     local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
-   
+
     local col_width = maxx - minx
     local col_height = maxy - miny
     local col_depth = maxz - minz
     local player_controlling = false
+
+    moving_forward = true
     if moving_forward then
       desired_dir:add(0, 0, 1)
       player_controlling = true
@@ -43,6 +45,10 @@ return {
       desired_dir:add(-1, 0, 0)
       player_controlling = true
     end
+    if lovr.system.isKeyDown("l") and lovr.system.isKeyDown("j") or moving_forward and moving_backward then
+      desired_dir:set(0, 0, 0) -- stop movement if both forward and backward keys are pressed
+      player_controlling = false
+    end
     local rotation_angle = 0
     if desired_dir:length() == 0 then
       desired_dir:set(0, 0, 1) -- default forward direction
@@ -53,10 +59,10 @@ return {
       end
     end
     desired_rot = quat(rotation_angle, 0, 1, 0)
-    
+
     if player_controlling then
       desired_speed = vec3(desired_dir):normalize():length() * velocity.z
-      entity.transform.transform:set(vec3(entity.transform.transform:getPosition()), desired_rot)
+      -- entity.transform.transform:set(vec3(entity.transform.transform:getPosition()), desired_rot)
     else
       desired_dir = vec3(0, 0, 0)
       desired_speed = 0
@@ -84,22 +90,22 @@ return {
       end
     end
 
-    local direction = vec3(desired_dir)
-    -- local translate_val = acc_dec.current_speed:length() * dt
+
+
+
     local translate_val = vec3(acc_dec.current_speed) * dt
-    local adjusted_direction = false
+    local movement_angle = translate_val:angle(forward_vec)
+    if translate_val:dot(vec3(1, 0, 0)) < 0 then
+      movement_angle = -movement_angle
+    end
+    local movement_rot = quat(movement_angle, 0, 1, 0)
+    local direction = vec3(translate_val):normalize()
 
     if collider:isKinematic() then
-      local orientation = lovr.math.quat(entity.transform.transform:getOrientation())
-      local position = lovr.math.vec3(entity.transform.transform:getPosition())
-      -- Move using current_speed in local forward/backward direction
-      -- if acc_dec.current_speed:length() > 0 then
-      --   direction = lovr.math.vec3(acc_dec.current_speed)
-      --   direction:rotate(orientation)
-      -- end
-      -- translate_val = direction * dt
-      local pitch, yaw, roll = orientation:getEuler()
-      local aabb_rotated_offset = lovr.math.vec3(aabb_sensor.sensor_offset):rotate(orientation)
+
+      local position = vec3(entity.transform.transform:getPosition())
+
+      local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
       local collided_c = lovr_world:queryBox(aabb_sensor_pos , lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
       if collided_c ~= nil then
@@ -107,36 +113,35 @@ return {
         -- find out the normal of the collision
         local ray_endpoint = aabb_sensor_pos + direction
         local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(aabb_sensor_pos , ray_endpoint, 'wall')
-        local depth_offset_sig = -1
-        
-        local left_ray_sensor_dir = lovr.math.vec3(direction):rotate(math.pi / 2.5 , 0 , 1 , 0)
-        local right_ray_sensor_dir = lovr.math.vec3(direction):rotate(-math.pi / 2.5  , 0 , 1 , 0)
-        -- If move direction is opposite to the pleyers orientation (moving backwards)
-        if direction:dot(orientation:direction()) > 0 then
-          depth_offset_sig = 1
-          left_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
-          right_ray_sensor_dir:rotate(math.pi , 0 , 1 , 0)
-        end
+
+        local left_ray_sensor_dir = vec3(direction):rotate(math.pi / 2.5 , 0 , 1 , 0)
+        local right_ray_sensor_dir = vec3(direction):rotate(-math.pi / 2.5  , 0 , 1 , 0)
+
         ray_endpoint = aabb_sensor_pos + left_ray_sensor_dir
         -- Check for collision on the left side
-        local left_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(col_width/2, col_height / 2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local left_sensor_pos = vec3(aabb_sensor_pos):add(vec3(col_width/2, col_height / 2,  -col_depth/2 ))
         local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
-        
+
         ray_endpoint = aabb_sensor_pos + right_ray_sensor_dir
-        local right_sensor_pos = lovr.math.vec3(aabb_sensor_pos):add(lovr.math.vec3(-col_width/2, col_height/2, depth_offset_sig * col_depth/2 ):rotate(orientation))
+        local right_sensor_pos = vec3(aabb_sensor_pos):add(vec3(-col_width/2, col_height/2, -col_depth/2 ))
         local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
+          print("middle")
           norm_vec = lovr.math.vec3(nx_md, ny_md, nz_md)
         elseif collided_left_side then
+          print("left")
+          acc_dec.current_speed.x = 0
           norm_vec = lovr.math.vec3(nx_ls, ny_ls, nz_ls)
-        elseif collided_right_side then 
+        elseif collided_right_side then
+          print("right")
+          acc_dec.current_speed.x = 0
           norm_vec = lovr.math.vec3(nx_rs, ny_rs, nz_rs)
         end
-        
+
         -- Adjust direction to be perpendicular to the normal vector
         direction = direction - norm_vec * direction:dot(norm_vec)
-        translate_val = direction * dt
+        translate_val = direction * acc_dec.current_speed:length() * dt
         aabb_sensor_pos = position + translate_val + aabb_rotated_offset
         -- second check for collision after adjusting direction
         local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
@@ -145,9 +150,9 @@ return {
         aabb_sensor.is_active = false
         position:add(translate_val)
       end
-      entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
+      entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
     else
-      local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
+      local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0)
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)
       if acc_dec.current_speed:length() > 0 then
         direction = lovr.math.newVec3(acc_dec.current_speed)

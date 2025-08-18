@@ -85,6 +85,10 @@ pr_components.IsTerrain = function ()
   return {type = "is_terrain", data = {}}
 end
 
+pr_components.IsCollectable = function ()
+  return {type = "is_collectable", data = {}}
+end
+
 pr_components.IsPlayer = function ()
   return {type = "is_player", data = {}}
 end

@@ -1,6 +1,9 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 
+local texture = nil
+local material = nil
+
 return function(ecs, spawn_pos, width, height, depth, texture_path)
   local id = ecs:newEntity()
   local width = width or 10.0
@@ -65,14 +68,14 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   mesh:setIndices(indices)
 
   local texture_path = texture_path or "assets/neutral.png"
-  local texture = lovr.graphics.newTexture(texture_path)
-  -- local sampler = lovr.graphics.newSampler({wrap = {'border', 'border', 'border'}})
-  -- texture:setSampler(sampler)
-  local material = lovr.graphics.newMaterial({texture = texture,
-  uvScale = {1 , 1},})
+  if texture == nil then
+    texture = lovr.graphics.newTexture(texture_path)
+  end
   
-  ecs:addMaterial("mesh_wall_material", material)
-  -- mesh:setMaterial(material)
+  if material == nil then
+    material = lovr.graphics.newMaterial({texture = texture, uvScale = {1, width / height}})
+    ecs:addMaterial("mesh_wall_material", material)
+  end
 
   local collider = lovr_world:newConvexCollider(spawn_pos, mesh, scale)
   collider:setPosition(spawn_pos)

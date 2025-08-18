@@ -12,11 +12,12 @@ return function(ecs, spawn_pos)
   local collider = lovr_world:newSphereCollider(spawn_pos, SPHERE_RADIUS)
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setKinematic(true)
+  collider:setUserData(id)
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.IsKinematic())
-
+  ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/collectable.glb')  ))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Collider(collider, "sphere", transform_offset))
-  print("pos: " .. spawn_pos.x .. " " .. spawn_pos.y .. " " .. spawn_pos.z)
+  ecs:addComponent(id, pr_component.IsCollectable())
   return id
 end

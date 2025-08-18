@@ -1,6 +1,8 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 
+local texture = nil
+
 return function(ecs, spawn_pos, width, height, depth, texture_path)
   local id = ecs:newEntity()
   local width = width or 10.0
@@ -65,7 +67,9 @@ local indices = {
   mesh:setIndices(indices)
 
   local texture_path = texture_path or "assets/neutral.png"
-  local texture = lovr.graphics.newTexture(texture_path)
+  if texture == nil then
+    texture = lovr.graphics.newTexture(texture_path)
+  end
   local material = lovr.graphics.newMaterial({texture = texture,
   uvScale = {1, width / height},})
   

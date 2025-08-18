@@ -1,5 +1,6 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
+local texture = nil
 
 return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local id = ecs:newEntity()
@@ -21,8 +22,9 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
 
   local indices = {1, 2, 3, 1, 3, 4} -- two triangles
   local mesh = lovr.graphics.newMesh(format, vertices)
-
-  local texture = lovr.graphics.newTexture(texture_path)
+  if texture == nil then
+    texture = lovr.graphics.newTexture(texture_path)
+  end
 
   mesh:setIndices(indices)
   

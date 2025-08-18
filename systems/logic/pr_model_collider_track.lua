@@ -1,6 +1,9 @@
 local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils'
 
+
+-- Makes sure the collider is updated with the entity's transform
+-- This is necessary for kinematic colliders to work properly
 return {
   phase = "logic",
   requires = {"model", "transform", "collider"},

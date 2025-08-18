@@ -60,7 +60,8 @@ local render_systems = {
 	"brush_render",
 	"brush_render_raw",
 	"aabb_sensor_render",
-	"textured_mesh_wall_render"
+	"textured_mesh_wall_render",
+	"collectable_render"
 }
 
 local logic_systems = {
@@ -74,12 +75,15 @@ local logic_systems = {
 
 	-- "player_acc_dec_movement",
 	-- "player_acc_dec_auto_movement",
-	"player_acc_dec_all_dir_movement",
+	-- "player_acc_dec_all_dir_movement",
+	"player_acc_dec_all_dir_movement_slide",
 	
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
 	"dynamic_wall_spawner",
-	"game_cam_obstruction_logic"
+	"game_cam_obstruction_logic",
+	"collectable_update",
+	"sphere_collectable_deleter"
 }
 
 local async_systems = {

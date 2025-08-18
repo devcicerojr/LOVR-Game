@@ -1,5 +1,6 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
+local texture = nil
 
 return function(ecs, spawn_pos, width, height, depth, texture_path)
   local id = ecs:newEntity()
@@ -8,9 +9,10 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
   local depth = depth or 2
   local spawn_pos = spawn_pos or lovr.math.newVec3(0, height / 2, 0)
   local collider = lovr_world:newBoxCollider(spawn_pos, width, height, depth)
-  local texture = nil
   if texture_path then
-    texture = lovr.graphics.newTexture(texture_path)
+    if texture == nil then
+      texture = lovr.graphics.newTexture(texture_path)
+    end
     local material = lovr.graphics.newMaterial({texture = texture,
       uvScale = {1, width / height},})
     ecs:addMaterial("wall_material", material)  

@@ -24,6 +24,7 @@ return function(ecs, spawn_pos)
   
   collider:setKinematic(true)
   collider:setSleepingAllowed(false)
+  collider:setContinuous(true)
   origin_offset = lovr.math.newVec3(0, 0.1, 0)
   endpoint_offset = lovr.math.newVec3(0, -0.6, 0)
   
