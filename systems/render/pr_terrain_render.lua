@@ -26,16 +26,16 @@ return {
   requires =  { "mesh" , "is_terrain"},
   update_fn = function(id, c, pass) -- draw function
     local color = ecs.entities[id].mesh.base_color
-    pass:setShader(shader)
-    pass:send('fogColor', { lovr.math.gammaToLinear(unpack(skyColor)) })
+    -- pass:setShader(shader)
+    -- pass:send('fogColor', { lovr.math.gammaToLinear(unpack(skyColor)) })
 
-    pass:setColor(color.r, color.g, color.b)
-    pass:setDepthOffset(-10000) -- Ensures wireframe stays on top
+    -- pass:setColor(color.r, color.g, color.b)
+    -- pass:setDepthOffset(-10000) -- Ensures wireframe stays on top
     pass:draw(ecs.entities[id].mesh.mesh)
-    pass:setDepthOffset()
-    pass:setWireframe(true)
-    pass:setColor(0.788, 0.502, 0.712, 0.2)
-    pass:draw(ecs.entities[id].mesh.mesh)
+    -- pass:setDepthOffset()
+    -- pass:setWireframe(true)
+    -- pass:setColor(0.788, 0.502, 0.712, 0.2)
+    -- pass:draw(ecs.entities[id].mesh.mesh)
     pass:setShader()
   end
 }

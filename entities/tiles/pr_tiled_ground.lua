@@ -2,7 +2,7 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 local pr_utils = require'../core/pr_utils'
 
-local texture = nil
+local textures = {}
 
 return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local id = ecs:newEntity()
@@ -25,8 +25,8 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local indices = {1, 2, 3, 1, 3, 4} -- two triangles
   local mesh = lovr.graphics.newMesh(format, vertices)
 
-  if texture == nil then
-    texture = lovr.graphics.newTexture(texture_path)
+  if textures[texture_path] == nil then
+    textures[texture_path] = lovr.graphics.newTexture(texture_path)
   end
 
   mesh:setIndices(indices)
@@ -36,7 +36,7 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   if terrain_collider == nil then
     print("Created nil terrain collider")
   end
-  ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
+  ecs:addComponent(id, pr_component.TexturedMesh(mesh, textures[texture_path], mesh_color))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
   ecs:addComponent(id, pr_component.DynamicSpawner())

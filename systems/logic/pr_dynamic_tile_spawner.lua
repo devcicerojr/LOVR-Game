@@ -21,7 +21,14 @@ return {
       collider:destroy()
       pr_ecs.entities[id] = nil
       local spawn_pos = lovr.math.newVec3(pos_x, pos_y, pos_z + 400)
-      local spanwned_tile = (require'../entities/tiles/pr_tiled_ground')(pr_ecs, spawn_pos)
+      local spawned_tile = nil
+      if spawn_pos.x == -10 then
+        spawned_tile = (require'../entities/tiles/pr_tiled_ground')(pr_ecs, spawn_pos, 20, "assets/left_side_asphalt.png")
+      elseif spawn_pos.x == 10 then
+        spawned_tile = (require'../entities/tiles/pr_tiled_ground')(pr_ecs, spawn_pos, 20, "assets/right_side_asphalt.png")
+      else
+        spawned_tile = (require'../entities/tiles/pr_tiled_ground')(pr_ecs, spawn_pos)
+      end
       if pos_z > latest_z_val then
         latest_z_val = pos_z
         pr_event_bus:emit('terrain_tile_spawned', pr_ecs, spawn_pos)

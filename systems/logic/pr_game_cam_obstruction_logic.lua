@@ -20,9 +20,7 @@ return {
     if obstruct_collider then
       local collider_data = obstruct_collider:getUserData()
       local norm = vec3(nx, ny, nz)
-      if not collider_data then
-        print("NIL collider user data")
-      else
+      if collider_data then
         local normalized_norm = direction:dot(norm)
         if normalized_norm < 0 then
           local wall_id = collider_data.id
