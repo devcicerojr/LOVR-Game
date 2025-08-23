@@ -38,7 +38,8 @@ local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 function build_level()
 	local skybox = (require'../entities/pr_skybox')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
-	local sphere_collect = (require'../entities/dont_stop_delivery/pr_sphere_collectable')(ecs, vec3(0, 1, 15))
+	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)
+	-- local sphere_collect = (require'../entities/dont_stop_delivery/pr_sphere_collectable')(ecs, vec3(0, 1, 15))
 	-- local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
 	-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
 	-- local ch_wall = (require'../entities/brushes/pr_convex_hull_wall')(ecs, WALL_3_POS)
@@ -62,7 +63,8 @@ local render_systems = {
 	"brush_render_raw",
 	"aabb_sensor_render",
 	"textured_mesh_wall_render",
-	"collectable_render"
+	"collectable_render",
+	"collectable_blink_render"
 }
 
 local logic_systems = {
@@ -84,6 +86,7 @@ local logic_systems = {
 	"dynamic_wall_spawner",
 	"game_cam_obstruction_logic",
 	"collectable_update",
+	"collectable_blink_update",
 	"sphere_collectable_deleter"
 }
 

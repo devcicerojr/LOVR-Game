@@ -106,6 +106,10 @@ pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}
 end
 
+pr_components.Position = function (x, y, z)
+  return {type = "position" , data = { x = x or 0 , y = y or 0 , z = z or 0 }}
+end
+
 pr_components.RawBrush = function ()
   return {type = "raw_brush", data = {}}
 end
@@ -122,8 +126,8 @@ pr_components.RayColliderSensor = function (origin_offset, endpoint_offset, labe
   return {type = "ray_collider_sensor", data = sensor_data}
 end
 
-pr_components.Position = function (x, y, z)
-  return {type = "position" , data = { x = x or 0 , y = y or 0 , z = z or 0 }}
+pr_components.Rotation = function (rotation)
+  return {type = "rotation", data = {rotation = rotation or lovr.math.newQuat(0, 0, 0, 1)}}
 end
 
 pr_components.SensorsArray = function ()
@@ -152,6 +156,10 @@ end
 
 pr_components.TracksCollider = function()
   return {type = "tracks_collider", data = {}}
+end
+
+pr_components.TracksEntity = function (entity_id, transform_offset)
+  return {type = "tracks_entity", data = {entity_id = entity_id or nil, transform_offset = transform_offset or lovr.math.newMat4()}}
 end
 
 

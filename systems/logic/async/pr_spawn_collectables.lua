@@ -7,7 +7,14 @@ local spawn_collectables_system = {
   end
 }
 
+local TILE_SPAWN_FACTOR = 3
+local EVENT_COUNTER = 0
+
 pr_event_bus:on('terrain_tile_spawned', function(ecs, spawn_pos)
+  EVENT_COUNTER = EVENT_COUNTER + 1
+  if EVENT_COUNTER % TILE_SPAWN_FACTOR ~= 0 then
+    return
+  end
   local collectable_pos = vec3(spawn_pos)
   collectable_pos.y = 1
   collectable_pos.x = math.random(-15, 15)
