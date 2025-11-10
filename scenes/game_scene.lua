@@ -91,7 +91,8 @@ local logic_systems = {
 }
 
 local async_systems = {
-	"spawn_collectables"
+	"spawn_collectables",
+	"collect_coin_effect"
 }
 
 for _, file in ipairs(render_systems) do

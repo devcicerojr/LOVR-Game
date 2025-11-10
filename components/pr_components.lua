@@ -77,6 +77,10 @@ pr_components.IsCameraBlocker = function ()
   return {type = "is_camera_blocker", data = {is_blocking = false}}
 end
 
+pr_components.IsCollectedCoinEffect = function ()
+  return {type = "is_collected_coin_effect", data = {}}
+end
+
 pr_components.IsKinematic = function ()
   return {type = "is_kinematic", data = {}}
 end
@@ -140,6 +144,10 @@ end
 
 pr_components.SkyboxTexture = function (texture)
   return {type = "skybox_texture", data = {cube = texture or nil}}
+end
+
+pr_components.StateMachine = function(state_machine)
+  return {type = "state_machine", data = {state_machine = state_machine or {}}}
 end
 
 pr_components.StaticProp = function()

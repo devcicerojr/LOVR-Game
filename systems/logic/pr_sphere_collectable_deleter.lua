@@ -16,8 +16,10 @@ return {
     local collider = pr_ecs.entities[id].collider.collider
     
     if player_pos_z - position_z >= 200 then
+      print("Deleting collectable")
       pr_ecs.entities[id] = nil
       collider:destroy()
+      pr_event_bus:emit('coin_collected', pr_ecs)
     end
   end
 }
