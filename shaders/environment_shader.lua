@@ -16,7 +16,7 @@ environment_shader.shader = lovr.graphics.newShader(
     uniform vec3 fogColor;
 
     vec4 lovrmain() {
-      float fogAmount = atan(length(fragmentClip) * 0.02) * 2 / PI;
+      float fogAmount = atan(length(fragmentClip) * 0.08) * 2 / PI;
       return vec4(mix(Color.rgb, fogColor, fogAmount ), Color.a) * getPixel(ColorTexture, UV);
     }
   ]]

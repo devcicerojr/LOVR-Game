@@ -9,9 +9,9 @@ local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'neare
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
-gpass:setShader(environment_shader.shader)
+-- gpass:setShader(environment_shader.shader)
 gpass:setBlendMode('alpha' , 'alphamultiply')
-environment_shader.setDefaultVals(gpass)
+-- environment_shader.setDefaultVals(gpass)
 
 
 

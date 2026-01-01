@@ -4,6 +4,14 @@ function lovr.conf(t)
   -- Physics
   t.modules.physics = true
 
+  -- Audio
+  t.modules.audio = true
+
+   -- Audio
+  t.audio.spatializer = nil
+  t.audio.samplerate = 48000
+  t.audio.start = true
+
   -- Headset settings
   t.headset.drivers = { 'openxr', 'simulator' }
   t.headset.start = false

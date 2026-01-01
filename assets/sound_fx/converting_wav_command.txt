@@ -1,0 +1,1 @@
+ffmpeg -i <original.wav> -ar 44100 -ac 2 -sample_fmt s16 <output.wav>
