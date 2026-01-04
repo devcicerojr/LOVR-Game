@@ -69,9 +69,6 @@ function ECS:addSystem(system)
 end
 
 
-function ECS:update(dt)
-end
-
 function ECS:updateEach(required_components, updatefn, dt)
   for id, c in pairs(self.entities) do
     local match = true

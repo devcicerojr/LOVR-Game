@@ -15,14 +15,12 @@ return {
     local position_x = select(1 , entity_transform:getPosition())
     local position_z = select(3 , entity_transform:getPosition())
     local collider = pr_ecs.entities[id].collider.collider
-    
     if math.abs(player_pos_z - position_z) < 0.5
        and math.abs(player_pos_x - position_x) < 0.8 then
-      print("Deleting collectable")
-      collider:destroy()
-      -- TODO: delete entities in a separate place to avoid issues during iteration
-      pr_ecs.entities[id] = nil
-      pr_event_bus:emit('coin_collected', pr_ecs)
+      pr_event_bus:emit('coin_collected', pr_ecs, id)
+    end
+    if player_pos_z - position_z > 200 then
+      pr_event_bus:emit('coin_expired', pr_ecs, id)
     end
   end
 }

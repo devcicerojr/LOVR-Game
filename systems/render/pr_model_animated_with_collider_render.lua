@@ -50,18 +50,18 @@ return {
     collider_quat = collider_quat * quat(entity.collider.transform_offset:getOrientation()):conjugate()
     collider_pos:add(vec3(entity.collider.transform_offset:getPosition()) * -1)
     
-    pass:setSampler('nearest')
+    -- pass:setSampler('linear')
     -- pass:setShader(environment_shader.shader)
     -- environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
     pass:setColor(0.7, 0.7, 0.7)
-    pass:setBlendMode('alpha', 'alphamultiply')
-    pass:setCullMode('back')
-    pass:setDepthTest('gequal')
-    pass:setDepthWrite(true)
+    -- pass:setBlendMode('alpha', 'alphamultiply')
+    -- pass:setCullMode('back')
+    -- pass:setDepthTest('gequal')
+    -- pass:setDepthWrite(true)
     pass:draw(entity.model.model, mat4(collider_pos, collider_quat))
 
-    pass:setShader()
-    pass:setCullMode('none')
+    -- pass:setShader()
+    -- pass:setCullMode('none')
 
     -- print("Cur Animation: " .. (cur_animation and cur_animation or "idle"))
     end

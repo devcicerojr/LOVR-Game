@@ -5,7 +5,7 @@ local game_scene = {}
 game_scene.entities = {}
 
 local scene_resolution = {width = 1920 , height = 1080}
-local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
+local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
@@ -64,7 +64,8 @@ local render_systems = {
 	"aabb_sensor_render",
 	"textured_mesh_wall_render",
 	"collectable_render",
-	"collectable_blink_render"
+	"collectable_blink_render",
+	"car_obstacle_render"
 }
 
 local logic_systems = {
@@ -87,12 +88,14 @@ local logic_systems = {
 	"game_cam_obstruction_logic",
 	"collectable_update",
 	"collectable_blink_update",
-	"sphere_collectable_deleter"
+	"sphere_collectable_deleter",
+	"car_obstacle_update"
 }
 
 local async_systems = {
 	"spawn_collectables",
-	"collect_coin_effect"
+	"spawn_car_obstacles",
+	"collectable_events"
 }
 
 for _, file in ipairs(render_systems) do

@@ -2,7 +2,7 @@ local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
-  requires = { "model" , "non-animated", "transform", "tracks_collider"},
+  requires = { "model" , "non_animated", "transform", "tracks_collider"},
   update_fn = function(id , c , pass) -- draw function
     -- pass:setShader()
     local entity = ecs.entities[id]
