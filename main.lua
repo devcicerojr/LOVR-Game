@@ -75,10 +75,7 @@ function lovr.update(dt)
 end
 
 function lovr.draw(pass)
-  pass:setBlendMode('alpha', 'alphamultiply')
-  local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}, wrap = {'repeat', 'repeat', 'repeat'}})
-  pass:setSampler(sampler)
- 
+  pass:setSampler('nearest')
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam:getPose())
   else

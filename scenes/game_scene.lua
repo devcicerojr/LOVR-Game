@@ -5,7 +5,7 @@ local game_scene = {}
 game_scene.entities = {}
 
 local scene_resolution = {width = 1920 , height = 1080}
-local sampler = lovr.graphics.newSampler({filter = {'linear', 'linear', 'linear'}})
+local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
 local gpass = lovr.graphics.newPass(gTexture)
@@ -145,6 +145,7 @@ end
 function game_scene.draw(dpass)
 	local pass = gpass
 	pass:reset()
+	pass:setSampler('nearest')
 	pass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
 	pass:setProjection(1, dpass:getProjection(1, mat4()))
 	ecs:draw(pass)

@@ -1,6 +1,6 @@
 local pr_ecs = require'../core/pr_ecs'
 
-local car_speed = lovr.math.newVec3(0, 0, -100)
+local car_speed = lovr.math.newVec3(0, 0, 0)
 
 return {
   phase = "logic",
