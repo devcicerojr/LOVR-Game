@@ -12,9 +12,9 @@ return {
     local texture = ecs.entities[id].textured_mesh.texture
 
     -- pass:setShader(cel_shader.shader)
-    pass:setColor(1 , 1 , 1 , 1 )
-    pass:setShader(environment_shader.shader)
-    environment_shader.send(pass, vec3(.05, 0.05, 0.08))
+    -- pass:setColor(1 , 1 , 1 , 1 )
+    -- pass:setShader(environment_shader.shader)
+    -- environment_shader.send(pass, vec3(.05, 0.05, 0.08))
     -- pass:setShader(default_shader.shader)
     -- default_shader.setDefaultVals(pass)
     -- pass:setColor(0.5, 0.5, 0.5)
@@ -30,6 +30,6 @@ return {
     -- pass:draw(mesh)
     -- pass:setShader(default_shader.shader)
     -- default_shader.setDefaultVals(pass)
-    pass:setShader()
+    -- pass:setShader()
   end
 }

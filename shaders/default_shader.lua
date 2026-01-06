@@ -46,7 +46,7 @@ function default_shader.setDefaultVals(pass)
 
   
   pass:setShader(default_shader.shader)
-  pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
+  pass:send('ambience', {0.1, 0.1, 0.1, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
   pass:send('lightPos', lightPos)
   pass:send('specularStrength', 10)

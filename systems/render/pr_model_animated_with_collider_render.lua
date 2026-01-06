@@ -53,7 +53,7 @@ return {
     -- pass:setSampler('linear')
     -- pass:setShader(environment_shader.shader)
     -- environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
-    pass:setColor(0.7, 0.7, 0.7)
+    -- pass:setColor(0.7, 0.7, 0.7)
     -- pass:setBlendMode('alpha', 'alphamultiply')
     -- pass:setCullMode('back')
     -- pass:setDepthTest('gequal')

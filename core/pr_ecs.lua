@@ -5,7 +5,8 @@ local ECS = {
   logic_systems = {},
   render_systems = {},
   materials = {},
-  next_id = 0
+  next_id = 0,
+  ids_for_deletion = {}
 }
 
 -- TODO: Implement a proper class system if needed
@@ -146,6 +147,13 @@ function ECS:clearObstructingVals()
       self.entities[id].is_camera_blocker.is_blocking = false
     end
   end
+end
+
+function ECS:deleteDeadEntities()
+  for _, id in ipairs(self.ids_for_deletion) do
+    self.entities[id] = nil
+  end
+  self.ids_for_deletion = {}
 end
 
 return ECS

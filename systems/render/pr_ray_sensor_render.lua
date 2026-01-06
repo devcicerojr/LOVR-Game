@@ -19,6 +19,7 @@ return {
       if is_dev_build and draw_wireframes then
         pass:setColor(1, 0, 0, 1)
         pass:line(origin.x, origin.y, origin.z, endpoint.x, endpoint.y, endpoint.z)
+        pass:setColor(1, 1, 1, 1)
       end
     end
   end

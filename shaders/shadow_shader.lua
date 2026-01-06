@@ -26,7 +26,8 @@ shadow_shader.shader = lovr.graphics.newShader([[
   }
 
   vec4 lovrmain() {
-    vec4 shadowMultiplyer;
+    vec4 shadowMultiplyer;]
+    
     if (
       (length( player.xz - PositionWorld.xz) <  player.w   &&    player.y > PositionWorld.y) ||
       (isInShadow())

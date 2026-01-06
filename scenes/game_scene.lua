@@ -4,14 +4,14 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local scene_resolution = {width = 1920 , height = 1080}
+local scene_resolution = {width = 1280 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 gTexture:setSampler(sampler)
-local gpass = lovr.graphics.newPass(gTexture)
--- gpass:setShader(environment_shader.shader)
-gpass:setBlendMode('alpha' , 'alphamultiply')
--- environment_shader.setDefaultVals(gpass)
+
+local gpass = lovr.graphics.newPass(gTexture) --global pass
+
+
 
 
 
@@ -140,17 +140,25 @@ end
 
 function game_scene.update(dt)
 	ecs:update(dt)
+	ecs:deleteDeadEntities()
 end
 
 function game_scene.draw(dpass)
-	local pass = gpass
-	pass:reset()
-	pass:setSampler('nearest')
-	pass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
-	pass:setProjection(1, dpass:getProjection(1, mat4()))
-	ecs:draw(pass)
+	
+
+	-- Shader configurations
+	gpass:reset()
+	gpass:setSampler('nearest')
+	gpass:setShader(environment_shader.shader)
+	environment_shader.setDefaultVals(gpass)
+
+	gpass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
+	gpass:setProjection(1, dpass:getProjection(1, mat4()))
+
+	ecs:draw(gpass)
 	-- print("FPS: " .. lovr.timer.getFPS() / 2)
 	local pass = dpass
+	pass:setSampler('nearest')
 	pass:fill(gTexture)
 	return lovr.graphics.submit(gpass, dpass)
 end
