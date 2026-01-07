@@ -31,6 +31,7 @@ function ECS:reset()
   self.render_systems = {}
   self.materials = {}
   self.next_id = 0
+  self.ids_for_deletion = {}
 end
 
 function ECS:newEntity()
@@ -71,8 +72,10 @@ end
 
 
 function ECS:updateEach(required_components, updatefn, dt)
+  local count = 0
   for id, c in pairs(self.entities) do
     local match = true
+    count = count + 1
     for _, name in ipairs(required_components) do
       if not c[name] then
         match = false
@@ -83,6 +86,7 @@ function ECS:updateEach(required_components, updatefn, dt)
       updatefn(id, c, dt)
     end
   end
+  print("Ecs contains "..count.." elements")
 end
 
 function ECS:renderEach(required_components, drawfn, pass)
@@ -151,6 +155,7 @@ end
 
 function ECS:deleteDeadEntities()
   for _, id in ipairs(self.ids_for_deletion) do
+    print("Deleting entity")
     self.entities[id] = nil
   end
   self.ids_for_deletion = {}

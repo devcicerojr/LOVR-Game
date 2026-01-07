@@ -10,6 +10,7 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
   local tile_size = tile_size or 20.0
   local texture_path = texture_path or "assets/neutral.png"
   local mesh_color = mesh_color or lovr.math.newVec4(0.5, 0.5, 0.5, 1.0) -- gray
+  local entity_transform = lovr.math.newMat4(spawn_pos , quat(0 , 0 , 0 , 1))
   
   local format = {
     { 'VertexPosition', 'vec3' },
@@ -37,6 +38,7 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
     print("Created nil terrain collider")
   end
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, textures[texture_path], mesh_color))
+  ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.TerrainCollider(terrain_collider))
   ecs:addComponent(id, pr_component.IsTerrain())
   ecs:addComponent(id, pr_component.DynamicSpawner())

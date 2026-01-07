@@ -14,7 +14,10 @@ return {
     local position = vec3(entity_transform:getPosition())
     local orientation = quat(entity_transform:getOrientation())
 
+    pass:setShader()
     pass:setColor(1, 1, 1, 1)
     pass:draw(model, position, vec3(1.5, 1, 1),  lovr.timer.getTime() * 3, 0, 1, 0)
+    pass:setShader(environment_shader.shader)
+    environment_shader.setDefaultVals(pass)
   end
 }

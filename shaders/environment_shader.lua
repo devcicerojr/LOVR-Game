@@ -44,8 +44,10 @@ environment_shader.shader = lovr.graphics.newShader(
 )
 
 function environment_shader.setDefaultVals(pass)
-  local fog_color = vec3(0.8 , 0.4, 1.0)
+  local fog_color = vec3(0.1 , 0.1, 0.1)
   local lightPos = vec3(10, 40.0, -20.0)
+  pass:setAlphaToCoverage(false)
+  pass:send('fogColor', fog_color)
   pass:send('ambience', {0.3, 0.3, 0.3, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
   pass:send('lightPos', lightPos)

@@ -144,11 +144,9 @@ function game_scene.update(dt)
 end
 
 function game_scene.draw(dpass)
-	
-
 	-- Shader configurations
 	gpass:reset()
-	gpass:setSampler('nearest')
+	gpass:setSampler('linear')
 	gpass:setShader(environment_shader.shader)
 	environment_shader.setDefaultVals(gpass)
 
