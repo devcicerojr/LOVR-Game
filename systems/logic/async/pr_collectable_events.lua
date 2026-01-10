@@ -7,7 +7,7 @@ local collectable_events_system = {
   end
 }
 
-local source = lovr.audio.newSource('assets/sound_fx/collecting.wav')
+local source = lovr.audio.newSource('assets/sound_fx/collecting.wav', {spatial = false})
 source:setLooping(false)
 
 pr_event_bus:on('coin_collected', function(ecs, id)
@@ -25,7 +25,6 @@ end)
 
 
 pr_event_bus:on('coin_expired', function(ecs, id)
-  print("Collectable expired")
   local collider = ecs.entities[id].collider.collider
   if not collider:isDestroyed() then
     collider:destroy()

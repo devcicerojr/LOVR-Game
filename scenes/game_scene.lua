@@ -133,7 +133,6 @@ end
 function game_scene.load()
 	-- spawning player
 	-- ecs.entities[player].animation_state.current = 0 --idle animation
-	
 	build_level()
 	
 end

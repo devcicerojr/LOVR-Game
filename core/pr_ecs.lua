@@ -86,7 +86,6 @@ function ECS:updateEach(required_components, updatefn, dt)
       updatefn(id, c, dt)
     end
   end
-  print("Ecs contains "..count.." elements")
 end
 
 function ECS:renderEach(required_components, drawfn, pass)
@@ -155,7 +154,6 @@ end
 
 function ECS:deleteDeadEntities()
   for _, id in ipairs(self.ids_for_deletion) do
-    print("Deleting entity")
     self.entities[id] = nil
   end
   self.ids_for_deletion = {}

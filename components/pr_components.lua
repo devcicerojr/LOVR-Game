@@ -24,6 +24,9 @@ pr_components.AnimationState = function (current)
   return {type = "animation_state" , data = {current = current or 1}}
 end
 
+pr_components.AudioSource = function (source)
+  return {type = "audio_source", data = {source = source or nil}}
+end
 
 pr_components.AutoMoveForward = function ()
   return {type = "auto_move_forward", data = {}}

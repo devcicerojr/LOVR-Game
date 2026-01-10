@@ -9,16 +9,10 @@ local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'
 local map_parser = require'tools/map_parser'
 local lovr_world = require'core/pr_world'
-local terrainMesh = {}
 
 
 is_dev_build = false
 draw_wireframes = false
-
-
--- local target_fps = 58
--- local target_delta = 1 / target_fps
--- local accumulator = 0
 
 
 function lovr.keypressed(key, scancode, rpt)
@@ -34,9 +28,10 @@ function lovr.keyreleased(key, scancode)
 end
 
 function lovr.load(arg)
-
-  -- local window_pass = lovr.graphics.getWindowPass()
-  -- window_pass:setViewCull(true)
+  local window_pass = lovr.graphics.getWindowPass()
+  window_pass:setViewCull(true)
+  window_pass:setDepthTest('less')
+  
   for _, value in ipairs(arg) do
     if value == 'DEVBUILD' then
       is_dev_build = true
@@ -75,7 +70,7 @@ function lovr.update(dt)
 end
 
 function lovr.draw(pass)
-  pass:setSampler('nearest')
+  -- pass:setSampler('nearest')
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam:getPose())
   else
@@ -85,37 +80,37 @@ function lovr.draw(pass)
 
 end
 
-function lovr.run()
-  local updates_per_draw = 2
-  local update_count = 0
-  if lovr.timer then lovr.timer.step() end
-  if lovr.load then lovr.load(arg) end
-  return function()
-    if lovr.system then lovr.system.pollEvents() end
-    if lovr.event then
-      for name, a, b, c, d in lovr.event.poll() do
-        if name == 'restart' then return 'restart', lovr.restart and lovr.restart()
-        elseif name == 'quit' and (not lovr.quit or not lovr.quit(a)) then return a or 0
-        elseif name ~= 'quit' and lovr.handlers[name] then lovr.handlers[name](a, b, c, d) end
-      end
-    end
-    local dt = 0
-    if lovr.timer then dt = lovr.timer.step() end
-    if lovr.headset and lovr.headset.isActive() then dt = lovr.headset.update() end
-    if lovr.update then 
-      lovr.update(dt) 
-      update_count = update_count + 1
-    end
-    if lovr.graphics  and update_count >= updates_per_draw then
-      update_count = 0
-      local headset = lovr.headset and lovr.headset.getPass()
-      if headset and (not lovr.draw or lovr.draw(headset)) then headset = nil end
-      local window = lovr.graphics.getWindowPass()
-      if window and (not lovr.mirror or lovr.mirror(window)) then window = nil end
-      lovr.graphics.submit(headset, window)
-      lovr.graphics.present()
-    end
-    if lovr.headset then lovr.headset.submit() end
-    if lovr.math then lovr.math.drain() end
-  end
-end
+-- function lovr.run()
+--   local updates_per_draw = 1
+--   local update_count = 0
+--   if lovr.timer then lovr.timer.step() end
+--   if lovr.load then lovr.load(arg) end
+--   return function()
+--     if lovr.system then lovr.system.pollEvents() end
+--     if lovr.event then
+--       for name, a, b, c, d in lovr.event.poll() do
+--         if name == 'restart' then return 'restart', lovr.restart and lovr.restart()
+--         elseif name == 'quit' and (not lovr.quit or not lovr.quit(a)) then return a or 0
+--         elseif name ~= 'quit' and lovr.handlers[name] then lovr.handlers[name](a, b, c, d) end
+--       end
+--     end
+--     local dt = 0
+--     if lovr.timer then dt = lovr.timer.step() end
+--     if lovr.headset and lovr.headset.isActive() then dt = lovr.headset.update() end
+--     if lovr.update then 
+--       lovr.update(dt) 
+--       update_count = update_count + 1
+--     end
+--     if lovr.graphics  and update_count >= updates_per_draw then
+--       update_count = 0
+--       local headset = lovr.headset and lovr.headset.getPass()
+--       if headset and (not lovr.draw or lovr.draw(headset)) then headset = nil end
+--       local window = lovr.graphics.getWindowPass()
+--       if window and (not lovr.mirror or lovr.mirror(window)) then window = nil end
+--       lovr.graphics.submit(headset, window)
+--       lovr.graphics.present()
+--     end
+--     if lovr.headset then lovr.headset.submit() end
+--     if lovr.math then lovr.math.drain() end
+--   end
+-- end

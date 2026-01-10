@@ -151,6 +151,7 @@ return {
         position:add(translate_val)
       end
       entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
+      lovr.audio.setPose(position, lovr.math.newQuat(3.14 ,0,1,0)) -- update audio listener position
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0)
       local collider_pos_offset = lovr.math.vec3(0, 0, 0)
