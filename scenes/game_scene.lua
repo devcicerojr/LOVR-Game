@@ -4,12 +4,14 @@ local lovr_world = require'../core/pr_world'
 local game_scene = {}
 game_scene.entities = {}
 
-local scene_resolution = {width = 1280 , height = 720}
+local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
+local sTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height, {format = 'd24s8'})
 gTexture:setSampler(sampler)
 
 local gpass = lovr.graphics.newPass(gTexture) --global pass
+-- local gpass = lovr.graphics.newPass({gTexture, depth = {format = 'd24s8', texture = sTexture}}) --global pass
 
 
 
@@ -147,7 +149,7 @@ end
 function game_scene.draw(dpass)
 	-- Shader configurations
 	gpass:reset()
-	gpass:setSampler('linear')
+	gpass:setSampler('nearest')
 	gpass:setShader(environment_shader.shader)
 	environment_shader.setDefaultVals(gpass)
 
