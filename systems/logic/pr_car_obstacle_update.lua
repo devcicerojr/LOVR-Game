@@ -5,6 +5,9 @@ local car_speed = lovr.math.newVec3(0, 0, -100)
 local AUDIO_SCALE_FACTOR = 0.90  -- this makes the audio distance feel closer than the visual distance
 -- 1.0 brings the listener to the audio source. 0.0 disables scale factor
 
+
+
+
 return {
   phase = "logic",
   requires = { "is_car_obstacle", "model" , "transform", "audio_source"},
@@ -33,6 +36,7 @@ return {
     if (math.abs(distance_to_player.z) > 200) then
       new_source_pos = lovr.math.newVec3(entity_transform:getPosition())
       source:stop()
+      pr_event_bus:emit('car_went_out_of_range', pr_ecs, id)
     else
       new_source_pos = lovr.math.newVec3(vec3(entity_transform:getPosition()):add(translate_value))
     end

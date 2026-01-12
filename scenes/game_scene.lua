@@ -70,7 +70,7 @@ local render_systems = {
 
 local logic_systems = {
 	"model_collider_track",
-	"player_classic_tank_controls",
+	-- "player_classic_tank_controls",
 	-- "game_cam_handle",
 	"game_cam_fixed_orientation",
 	"animated_update",
@@ -116,6 +116,8 @@ for _, file in ipairs(async_systems) do
 	ecs:addSystem(system)
 end
 
+
+-- TODO: move it to some async system event
 function game_scene.player_respawn()
 	local default_scale = {1, 1, 1}
 	local default_rotation = lovr.math.quat(1, 0, 0, 0) -- no rotation
@@ -153,7 +155,7 @@ function game_scene.draw(dpass)
 	gpass:setProjection(1, dpass:getProjection(1, mat4()))
 
 	ecs:draw(gpass)
-	-- print("FPS: " .. lovr.timer.getFPS() / 2)
+	-- print("FPS: " .. lovr.timer.getFPS())
 	local pass = dpass
 	pass:setSampler('nearest')
 	pass:fill(gTexture)

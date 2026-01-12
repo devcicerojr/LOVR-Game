@@ -8,6 +8,7 @@ local collectable_events_system = {
 }
 
 local source = lovr.audio.newSource('assets/sound_fx/collecting.wav', {spatial = false})
+source:setVolume(0.5)
 source:setLooping(false)
 
 pr_event_bus:on('coin_collected', function(ecs, id)
@@ -29,6 +30,16 @@ pr_event_bus:on('coin_expired', function(ecs, id)
   if not collider:isDestroyed() then
     collider:destroy()
   end
+  table.insert(ecs.ids_for_deletion, id)
+end)
+
+pr_event_bus:on('car_went_out_of_range', function(ecs, id)
+  -- handle car going out of range if needed
+  local collider = ecs.entities[id].collider.collider
+  if not collider:isDestroyed() then
+    collider:destroy()
+  end
+  lovr.log("Marking car for deletion", "debug")
   table.insert(ecs.ids_for_deletion, id)
 end)
 
