@@ -45,11 +45,12 @@ return {
       desired_dir:add(-1, 0, 0)
       player_controlling = true
     end
-    if lovr.system.isKeyDown("l") and lovr.system.isKeyDown("j") or moving_forward and moving_backward then
+    local rotation_angle = 0
+    if lovr.system.isKeyDown("k") then
       desired_dir:set(0, 0, 0) -- stop movement if both forward and backward keys are pressed
       player_controlling = false
+      rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
     end
-    local rotation_angle = 0
     if desired_dir:length() == 0 then
       desired_dir:set(0, 0, 1) -- default forward direction
     else

@@ -15,6 +15,8 @@ return {
     local orientation = quat(entity_transform:getOrientation())
 
     pass:setColor(1, 1, 1, 1)
+    pass:setDepthOffset(10000)
     pass:draw(model, position, vec3(2, 1, 1),  0, 0, 1, 0)
+    pass:setDepthOffset()
   end
 }

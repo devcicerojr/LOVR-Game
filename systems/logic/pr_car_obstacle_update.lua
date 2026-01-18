@@ -20,13 +20,12 @@ return {
 
     local applied_speed = vec3(0, 0, car_speed.z * dt)
     local speed_transform = lovr.math.newMat4():translate(applied_speed)
-
+    
     entity_transform:mul(speed_transform)
 
     if source:isPlaying() == false then
       source:play()
     end
-
     local player = pr_ecs:getEntityByTag('is_player')
     local player_transform = pr_ecs.entities[player].transform.transform
     local player_position = vec3(player_transform:getPosition())

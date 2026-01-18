@@ -14,7 +14,11 @@ return function(ecs)
       spawn_pos.x = ( x_distance/(3 - x) - (x_distance/(x) ) )
       spawn_pos.y = 10
       spawn_pos.z = (z - 1) * z_length + (z_length / 2) - height/2 * (z_length)
-      local sie_wall_id = (require'../entities/brushes/pr_wall')(ecs , spawn_pos, 1, 20, 20)
+      local side_wall_id = (require'../entities/brushes/pr_wall')(ecs , spawn_pos, 1, 20, 20)
+      spawn_pos.y = 0
+      local scenario_y_rotation =  -((2 * math.pi) - x * (math.pi) - (math.pi / 2))
+      local scenario_transform = lovr.math.newMat4():rotate(scenario_y_rotation, 0, 1, 0):translate(spawn_pos)
+      local side_scenario_right_id = (require'../entities/dont_stop_delivery/pr_side_scenario_prop')(ecs, scenario_transform)
     end
   end
 

@@ -48,11 +48,11 @@ function environment_shader.setDefaultVals(pass)
   local lightPos = vec3(10, 40.0, -20.0)
   pass:setAlphaToCoverage(false)
   pass:send('fogColor', fog_color)
-  pass:send('ambience', {0.3, 0.3, 0.3, 1.0})
+  pass:send('ambience', {0.4, 0.4, 0.4, 1.0})
   pass:send('lightColor', {1.0, 1.0, 1.0, 1.0})
   pass:send('lightPos', lightPos)
   pass:send('specularStrength', 0.5) -- the higher the brighter
-  pass:send('metallic', 256.0) -- 4.0 is brighter, 256 is less bright
+  pass:send('metallic', 4.0) -- 4.0 is brighter, 256 is less bright
 end
 
 function environment_shader.send(pass , fog_color)
