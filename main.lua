@@ -14,11 +14,11 @@ local lovr_world = require'core/pr_world'
 is_dev_build = false
 draw_wireframes = false
 
-function lovr.errorhandler(err)
-  local trace = debug.traceback(err, 2)
-  print(trace)
-  return trace
-end
+-- function lovr.errorhandler(err)
+--   local trace = debug.traceback(err, 2)
+--   print(trace)
+--   return trace
+-- end
 
 function lovr.keypressed(key, scancode, rpt)
   pr_control.keypressed(key, scancode, rpt)

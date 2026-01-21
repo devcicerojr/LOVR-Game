@@ -73,7 +73,7 @@ end
 
 function ECS:updateEach(required_components, updatefn, dt)
   local count = 0
-  for id, c in pairs(self.entities) do
+  for id, c in ipairs(self.entities) do
     local match = true
     count = count + 1
     for _, name in ipairs(required_components) do

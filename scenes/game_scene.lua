@@ -76,6 +76,7 @@ local logic_systems = {
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
 	"dynamic_wall_spawner",
+	"dynamic_scenario_spawner",
 	"game_cam_obstruction_logic",
 	"collectable_update",
 	"collectable_blink_update",
@@ -135,7 +136,7 @@ end
 function game_scene.draw(dpass)
 	-- Shader configurations
 	gpass:reset()
-	gpass:setSampler('linear')
+	gpass:setSampler('nearest')
 	gpass:setShader(environment_shader.shader)
 	environment_shader.setDefaultVals(gpass)
 

@@ -80,18 +80,6 @@ pr_components.IsCameraBlocker = function ()
   return {type = "is_camera_blocker", data = {is_blocking = false}}
 end
 
-pr_components.IsCollectedCoinEffect = function ()
-  return {type = "is_collected_coin_effect", data = {}}
-end
-
-pr_components.IsKinematic = function ()
-  return {type = "is_kinematic", data = {}}
-end
-
-pr_components.IsTerrain = function ()
-  return {type = "is_terrain", data = {}}
-end
-
 pr_components.IsCarObstacle = function ()
   return {type = "is_car_obstacle", data = {}}
 end
@@ -100,12 +88,28 @@ pr_components.IsCollectable = function ()
   return {type = "is_collectable", data = {}}
 end
 
+pr_components.IsCollectedCoinEffect = function ()
+  return {type = "is_collected_coin_effect", data = {}}
+end
+
+pr_components.IsKinematic = function ()
+  return {type = "is_kinematic", data = {}}
+end
+
 pr_components.IsObstacle = function ()
   return {type = "is_obstacle", data = {}}
 end
 
 pr_components.IsPlayer = function ()
   return {type = "is_player", data = {}}
+end
+
+pr_components.IsPRSideScenario = function ()
+  return {type = "is_pr_side_scenario", data = {}}
+end
+
+pr_components.IsTerrain = function ()
+  return {type = "is_terrain", data = {}}
 end
 
 pr_components.Model = function ( model )

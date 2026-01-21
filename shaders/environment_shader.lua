@@ -35,8 +35,9 @@ environment_shader.shader = lovr.graphics.newShader(
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
       vec4 specular = specularStrength * spec * lightColor;
-
-      float fogAmount = atan(length(fragmentClip) * 0.08) * 2 / PI;
+      float fogAmount1 = atan(length(fragmentClip) * 0.00006) * 32 / PI;
+      float fogAmount2 = atan(length(fragmentClip) * 0.18) * 2 / PI;
+      float fogAmount = fogAmount1 + fogAmount2;
       vec4 fragColor = vec4(mix(Color.rgb, fogColor, fogAmount ), Color.a) * getPixel(ColorTexture, UV);
       return fragColor * (ambience + diffuse + specular);
     }
