@@ -16,8 +16,8 @@ return {
     local acc_dec = entity.acc_dec_movement
     local moving_forward = lovr.system.isKeyDown("i")
     local moving_backward = lovr.system.isKeyDown("k")
-    local desired_dir = vec3(0, 0, 0)
-    local desired_rot = quat(0, 0 , 0, 1)
+    local desired_dir = lovr.math.newVec3(0, 0, 0)
+    local desired_rot = lovr.math.newQuat(0, 0 , 0, 1)
     local desired_speed = 0
     local forward_vec = vec3(0, 0, 1)
 
@@ -104,7 +104,7 @@ return {
 
     if collider:isKinematic() then
 
-      local position = vec3(entity.transform.transform:getPosition())
+      local position = lovr.math.newVec3(entity.transform.transform:getPosition())
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
@@ -152,18 +152,18 @@ return {
         position:add(translate_val)
       end
       entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
-      lovr.audio.setPose(position, lovr.math.newQuat(3.14 ,0,1,0)) -- update audio listener position
+      lovr.audio.setPose(position, lovr.math.newQuat(math.pi ,0,1,0)) -- update audio listener position
     else
-      local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0)
-      local collider_pos_offset = lovr.math.vec3(0, 0, 0)
-      if acc_dec.current_speed:length() > 0 then
-        direction = lovr.math.newVec3(acc_dec.current_speed)
-        collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
-        collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
-        direction:rotate(lovr.math.quat(collider:getOrientation()) * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate())
-        translate_val = direction * dt
-        collider:setPosition(lovr.math.vec3(collider:getPosition()):add(translate_val))
-      end
+      -- local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0)
+      -- local collider_pos_offset = lovr.math.vec3(0, 0, 0)
+      -- if acc_dec.current_speed:length() > 0 then
+      --   direction = lovr.math.newVec3(acc_dec.current_speed)
+      --   collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
+      --   collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
+      --   direction:rotate(lovr.math.quat(collider:getOrientation()) * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate())
+      --   translate_val = direction * dt
+      --   collider:setPosition(lovr.math.vec3(collider:getPosition()):add(translate_val))
+      -- end
     end
   end
 }

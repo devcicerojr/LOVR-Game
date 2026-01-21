@@ -15,7 +15,7 @@ return {
       local width, height, depth = collider:getShape():getDimensions()
       local angle, ax, ay, az = collider_quat:unpack()
       pass:setMaterial(ecs:getMaterial("wall_material"))
-      -- pass:box(collider_pos.x, collider_pos.y, collider_pos.z, width, height, depth, angle, ax, ay, az, 'line')
+      -- pass:box(collider_pos.x, collider_pos.y, collider_pos.z, width, height, depth, angle, ax, ay, az, 'fill')
       pass:setMaterial()
     end
   end

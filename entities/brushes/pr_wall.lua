@@ -1,6 +1,7 @@
 local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 local texture = nil
+local material = nil
 
 return function(ecs, spawn_pos, width, height, depth, texture_path)
   local id = ecs:newEntity()
@@ -13,8 +14,9 @@ return function(ecs, spawn_pos, width, height, depth, texture_path)
     if texture == nil then
       texture = lovr.graphics.newTexture(texture_path)
     end
-    local material = lovr.graphics.newMaterial({texture = texture,
-      uvScale = {1, width / height},})
+    if material == nil then
+      material = lovr.graphics.newMaterial({texture = texture, uvScale = {1, width / height},})
+    end
     ecs:addMaterial("wall_material", material)  
   end
   collider:setKinematic(true)

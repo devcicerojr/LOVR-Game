@@ -33,16 +33,6 @@ pr_event_bus:on('coin_expired', function(ecs, id)
   table.insert(ecs.ids_for_deletion, id)
 end)
 
-pr_event_bus:on('car_went_out_of_range', function(ecs, id)
-  -- handle car going out of range if needed
-  local collider = ecs.entities[id].collider.collider
-  if not collider:isDestroyed() then
-    collider:destroy()
-  end
-  lovr.log("Marking car for deletion", "debug")
-  table.insert(ecs.ids_for_deletion, id)
-end)
-
 
 
 return collectable_events_system

@@ -1,6 +1,15 @@
 local pr_ecs = require'../core/pr_ecs'
 local player_id = nil
 
+pr_event_bus:on('dynamic_wall_despawned', function(ecs, id)
+  local entity_collider = ecs.entities[id].collider.collider
+  if not entity_collider:isDestroyed() then
+    entity_collider:destroy()
+    entity_collider = nil
+  end
+  table.insert(ecs.ids_for_deletion, id)
+end)
+
 return {
   phase = "logic",
   requires = {"raw_brush", "collider", "brush", "dynamic_spawner"},
@@ -16,8 +25,7 @@ return {
 
     local pos_x, pos_y, pos_z = collider:getPosition()
     if player_pos_z - pos_z >= 200 then
-      collider:destroy()
-      pr_ecs.entities[id] = nil
+      pr_event_bus:emit('dynamic_wall_despawned', pr_ecs, id)
       local spawn_pos = lovr.math.newVec3(pos_x, pos_y, pos_z + 400)
       local spanwned_tile = (require'../entities/brushes/pr_wall')(pr_ecs, spawn_pos, 1, 20, 20)
     end

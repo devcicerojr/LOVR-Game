@@ -22,9 +22,6 @@ return {
   update_fn = function(id, c, dt) -- update function
     local entity = ecs.entities[id]
     local model = entity.model.model
-    local transform = entity.transform.transform
-    local position = transform:getPosition()
-    local orientation = transform:getOrientation()
     local desired_orientation = lovr.math.quat(getOscillatingValue(dt, 0.5), 0, 1, 0):mul(lovr.math.quat(0.1, 1, 0 , 0))
     model:setNodeOrientation('head', desired_orientation , 1)
   end

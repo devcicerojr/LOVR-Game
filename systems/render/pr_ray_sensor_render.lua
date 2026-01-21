@@ -8,7 +8,7 @@ return {
     if not is_dev_build then
       return
     end
-    local entity_transform = pr_ecs.entities[id].transform.transform
+    local entity_transform = mat4(pr_ecs.entities[id].transform.transform)
     local entity_orientation = entity_transform:getOrientation()
     local ground_sensor = pr_ecs.entities[id].sensors_array.sensors["ground_sensor"]
     

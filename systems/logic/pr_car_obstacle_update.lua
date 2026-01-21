@@ -6,6 +6,21 @@ local AUDIO_SCALE_FACTOR = 0.90  -- this makes the audio distance feel closer th
 -- 1.0 brings the listener to the audio source. 0.0 disables scale factor
 
 
+pr_event_bus:on('car_went_out_of_range', function(ecs, id)
+  -- handle car going out of range if needed
+  local collider = ecs.entities[id].collider.collider
+  local source = ecs.entities[id].audio_source.source
+  if source:isPlaying() then
+    source:stop()
+  end
+  source = nil
+  if not collider:isDestroyed() then
+    collider:destroy()
+  end
+  lovr.log("Marking car for deletion. Id: " .. id, "debug")
+  table.insert(ecs.ids_for_deletion, id)
+end)
+
 
 
 return {

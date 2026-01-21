@@ -10,7 +10,7 @@ local createCallbackCtx = function(id)
           entity.sensors_array.sensors["ground_sensor"].no_detection_period = 0
           entity.gravity.grounded = true
           entity.velocity.velocity.y = 0
-          entity.transform.transform:set(vec3(x, y, z), quat(entity.transform.transform:getOrientation()))
+          entity.transform.transform:set(lovr.math.newVec3(x, y, z), lovr.math.newQuat(entity.transform.transform:getOrientation()))
         end
       end
       return 1.0
@@ -30,7 +30,7 @@ return {
     end
     local collider = entity.collider.collider
     local shape = collider:getShape() local shape_type = shape:getType()
-    local entity_transform = entity.transform.transform
+    local entity_transform = mat4(entity.transform.transform)
     local ray_origin = vec3(entity_transform:getPosition()):add(ground_sensor.origin_offset)
     local ray_endpoint = vec3(ray_origin):add(ground_sensor.endpoint_offset)
 

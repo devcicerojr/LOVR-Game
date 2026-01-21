@@ -28,6 +28,7 @@ return function(ecs, spawn_pos, tile_size, texture_path, mesh_color)
 
   if textures[texture_path] == nil then
     textures[texture_path] = lovr.graphics.newTexture(texture_path)
+    print("created texture" ..  texture_path)
   end
 
   mesh:setIndices(indices)

@@ -3,10 +3,11 @@ local player_id = nil
 
 local latest_z_val = -99999999999
 
-pr_event_bus:on('terrain_tile_despawned', function(ecs, id)
+pr_event_bus:on('dynamic_tile_despawned', function(ecs, id)
   local entity_collider = ecs.entities[id].terrain_collider.terrain_collider
   if not entity_collider:isDestroyed() then
     entity_collider:destroy()
+    entity_collider = nil
   end
   table.insert(ecs.ids_for_deletion, id)
 end)
@@ -27,7 +28,7 @@ return {
 
     local pos_x, pos_y, pos_z = entity_transform:getPosition()
     if player_pos_z - pos_z >= 200 then
-      pr_event_bus:emit('terrain_tile_despawned', pr_ecs, id)
+      pr_event_bus:emit('dynamic_tile_despawned', pr_ecs, id)
       
       local spawn_pos = lovr.math.newVec3(pos_x, pos_y, pos_z + 400)
       local spawned_tile = nil

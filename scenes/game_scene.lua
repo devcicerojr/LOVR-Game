@@ -29,25 +29,14 @@ local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 40) -- mesh wall position
 -- entities
 
 local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
--- local pole = (require'../entities/props/pr_pole')(ecs)
--- local ground = (require'../entities/pr_ground')(ecs)
--- local ground = (require'../entities/pr_heightmap_ground')(ecs, lovr.math.newVec3(1.0, 20.0, 1.0))
--- local asphalt_ground = (require'../entities/tiles/pr_asphalt_ground')(ecs)
--- local tile_grid = (require'../entities/pr_level_grid')(ecs, 8, 10)
--- local wall = (require'../entities/brushes/pr_wall')(ecs)
--- local wall2 = (require'../entities/brushes/pr_wall')(ecs, lovr.math.vec3(10, 0, 0))
+
 
 function build_level()
 	local skybox = (require'../entities/pr_skybox')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
 	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)
-	-- local sphere_collect = (require'../entities/dont_stop_delivery/pr_sphere_collectable')(ecs, vec3(0, 1, 15))
-	-- local wall = (require'../entities/brushes/pr_wall')(ecs, WALL_1_POS)
-	-- local wall2 = (require'../entities/brushes/pr_wall')(ecs, WALL_2_POS)
-	-- local ch_wall = (require'../entities/brushes/pr_convex_hull_wall')(ecs, WALL_3_POS)
-	-- local mesh_wall = (require'../entities/brushes/pr_mesh_wall')(ecs, WALL_3_POS)
-
 	local side_walls_grid = (require'../entities/dont_stop_delivery/pr_side_walls_grid')(ecs)
+	local side_scenario_grid = (require'../entities/dont_stop_delivery/pr_side_scenario_grid')(ecs)
 end
 	
 
@@ -55,7 +44,7 @@ end
 local render_systems = {
 	"skybox_render",
 	"simple_render",
-	"model_with_collider_render",
+	-- "model_with_collider_render",
 	"model_animated_with_collider_render",
 	"collider_render",
 	"terrain_render",
@@ -107,9 +96,6 @@ end
 
 for _, file in ipairs(logic_systems) do
 	local system = require("../systems/logic/pr_" .. file)
-	-- if file == "dynamic_tile_spawner" or file == "dynamic_wall_spawner" then
-	-- 	system.set_player_id(player)
-	-- end
 	ecs:addSystem(system)
 end
 

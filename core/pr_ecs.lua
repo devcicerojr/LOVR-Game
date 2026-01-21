@@ -105,8 +105,22 @@ end
 
 
 function ECS:update(dt)
+  -- remove 'nil' entries before calling update
+  local packed = {}
+
+  for _, entity in pairs(self.entities) do
+      packed[#packed + 1] = entity
+  end
+
+  self.entities = packed
+
+
   for _, system in ipairs(self.logic_systems) do
-    ECS:updateEach(system.required , system.updatefn, dt)
+    self.updateEach(self, system.required , system.updatefn, dt)
+    -- local ok, err = pcall(self.updateEach, self, system.required , system.updatefn, dt)
+    -- if not ok then
+    --   lovr.log("Error in ECS logic system update: " .. tostring(err), "error")
+    -- end
   end
 end
 

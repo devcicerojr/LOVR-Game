@@ -7,15 +7,15 @@ return {
     local entity = ecs.entities[id]
     
     if entity.collider.collider:isKinematic() == false then
-      local cx, cy, cz = entity.collider.collider:getPosition()
-      local collider_quat =  lovr.math.quat(entity.transform.transform:getOrientation()) * lovr.math.quat(entity.collider.collider:getOrientation())
+      -- local cx, cy, cz = entity.collider.collider:getPosition()
+      -- local collider_quat =  lovr.math.quat(entity.transform.transform:getOrientation()) * lovr.math.quat(entity.collider.collider:getOrientation())
       
-      local collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
-      local collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
+      -- local collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
+      -- local collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
       
-      local model_quat = collider_quat * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate()
-      local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):mul(-1,-1,-1):rotate(model_quat):add(cx, cy, cz)
-      entity.transform.transform:set(model_pos, model_quat)
+      -- local model_quat = collider_quat * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate()
+      -- local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):mul(-1,-1,-1):rotate(model_quat):add(cx, cy, cz)
+      -- entity.transform.transform:set(model_pos, model_quat)
     end
     
     local cur_animation = nil
@@ -42,8 +42,10 @@ return {
 
     local collider_pos = vec3(entity.collider.collider:getPosition())
     local collider_quat = quat(entity.collider.collider:getOrientation())
-    collider_quat = collider_quat * quat(entity.collider.transform_offset:getOrientation()):conjugate()
-    collider_pos:add(vec3(entity.collider.transform_offset:getPosition()) * -1)
+    -- local entity_pos = vec3(entity.transform.transform:getPosition())
+    -- local entity_quat = quat(entity.transform.transform:getOrientation())
+    local entity_quat = collider_quat * quat(entity.collider.transform_offset:getOrientation()):conjugate()
+    local entity_pos =  collider_pos + (vec3(entity.collider.transform_offset:getPosition()) * -1)
     
 
     -- pass:setDepthOffset(-1, 1)
@@ -53,17 +55,17 @@ return {
     -- pass:setStencilWrite('replace', 1)
     -- pass:setStencilTest('lequal', 1, 255)
     pass:setBlendMode('none')
-    pass:draw(entity.model.model, mat4(collider_pos, collider_quat))
+    pass:draw(entity.model.model, mat4(entity_pos, entity_quat))
     pass:setWireframe(false)
 
-    pass:setSampler('nearest')
+    pass:setSampler('linear')
     pass:setShader(environment_shader.shader)
     environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
     pass:setColor(0.7, 0.7, 0.7)
     pass:setBlendMode('alpha', 'alphamultiply')
     pass:setCullMode('back')
     pass:setDepthTest('gequal')
-    pass:draw(entity.model.model, mat4(collider_pos, collider_quat))
+    pass:draw(entity.model.model, mat4(entity_pos, entity_quat))
 
     pass:setShader(environment_shader.shader)
     environment_shader.setDefaultVals(pass)

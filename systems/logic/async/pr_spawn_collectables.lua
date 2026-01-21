@@ -10,6 +10,7 @@ local spawn_collectables_system = {
 local TILE_SPAWN_FACTOR = 3
 local EVENT_COUNTER = 0
 
+-- Whenever a terrain tile is spawned, we have a chance to spawn a collectable
 pr_event_bus:on('terrain_tile_spawned', function(ecs, spawn_pos)
   EVENT_COUNTER = EVENT_COUNTER + 1
   if EVENT_COUNTER % TILE_SPAWN_FACTOR ~= 0 then
