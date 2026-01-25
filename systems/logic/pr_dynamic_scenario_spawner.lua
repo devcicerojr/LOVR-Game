@@ -22,17 +22,13 @@ return {
     end
     local player = pr_ecs.entities[player_id]
     local player_pos_z = select(3 , player.transform.transform:getPosition())
-    local spawn_transform = lovr.math.newMat4()
-    spawn_transform:set(transform:getPosition(), 1, 1, 1, transform:getOrientation())
+    -- local spawn_transform = lovr.math.newMat4()
+    -- spawn_transform:set(transform:getPosition(), 1, 1, 1, transform:getOrientation())
     
     
-    local pos_x, pos_y, pos_z, ang, ax, ay, az = transform:getPose()
-    -- print("Scenario position: " .. tostring(pos_x) .. ", " .. tostring(pos_y) .. ", " .. tostring(pos_z))
-    -- print("Entity orientation: " .. tostring(ang) .. ", " .. tostring(ax) .. ", " .. tostring(ay) .. ", " .. tostring(az))
+    local pos_z = select(3, entity.transform.transform:getPose())
     if player_pos_z - pos_z >= 200 then
-      transform:set(pos_x, pos_y, pos_z + 400, ang, ax, ay, az)
-      -- table.insert(pr_ecs.ids_for_deletion, id)
-      -- pr_event_bus:emit('dynamic_scenario_despawned', pr_ecs, id, transform)
+      entity.transform.transform =  lovr.math.newMat4(lovr.math.newMat4():translate(0, 0, 400):mul(transform))
     end
 
   end
