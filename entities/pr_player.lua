@@ -2,23 +2,28 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 require '../core/pr_math'
 
+local k_velocity = lovr.math.newVec3(10, 0, 30)
+
 return function(ecs, spawn_pos)
   
   local id = ecs:newEntity()
   local spawn_pos = spawn_pos or lovr.math.newVec3(0, 20, 0)
-  local collider_rotation_offset = lovr.math.newQuat(math.pi/2, 1, 0, 0)
   local entity_transform = lovr.math.newMat4(spawn_pos, lovr.math.quat(1, 0, 0 , 0))
+  
+  local collider_rotation_offset = lovr.math.newQuat(math.pi/2, 1, 0, 0)
   local collider_radius, collider_length = 0.5, 1.5
   local collider = lovr_world:newCapsuleCollider(0, 0, 0, collider_radius, collider_length)
+
+  -- The offset transform that positions the collider correctly relative to the entity's transform 
   local transform_offset = lovr.math.newMat4()
-  local gravity_acc = -9.81 --m/s
-  local current_speed = lovr.math.newVec3(0, 0, 0)
-  local VELOCITY = lovr.math.newVec3(10 , 0 , 30)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
   transform_offset:rotate(math.pi/2, 1, 0, 0)
-  -- collider:setPose(transform_offset:getPose())
+
+  local gravity_acc = -9.81 --m/s
+  local current_speed = lovr.math.newVec3(0, 0, 0)
+  local velocity = lovr.math.newVec3(k_velocity)
   
-  local game_cam_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(math.pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
+  local cam_transform_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(math.pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   
@@ -34,10 +39,10 @@ return function(ecs, spawn_pos)
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())
-  ecs:addComponent(id, pr_component.Velocity(VELOCITY))
+  ecs:addComponent(id, pr_component.Velocity(velocity))
   ecs:addComponent(id, pr_component.Collider(collider, "capsule", transform_offset))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
-  ecs:addComponent(id, pr_component.Gamecam(game_cam_offset))
+  ecs:addComponent(id, pr_component.Camera(cam_transform_offset))
   ecs:addComponent(id, pr_component.Gravity(gravity_acc, false))
   ecs:addComponent(id, pr_component.SensorsArray())
 
@@ -46,7 +51,6 @@ return function(ecs, spawn_pos)
   -- sensor related components
   ecs:addComponent(id, pr_component.HasGroundSensor())
   ecs:addComponent(id, pr_component.RayColliderSensor(origin_offset , endpoint_offset, "ground_sensor")) -- requires sensors_array component to be present
-  
   
   -- ecs:addComponent(id, pr_component.ClassicTankMovement())
   ecs:addComponent(id, pr_component.AccDecMovement(current_speed))

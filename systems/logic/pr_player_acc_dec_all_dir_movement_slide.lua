@@ -69,7 +69,7 @@ return {
       desired_speed = 0
     end
     local current_speed_len = acc_dec.current_speed:length()
-    local current_dir = current_speed_len > 0 and lovr.math.vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
+    local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
     if desired_speed > 0 then
       -- Accelerate towards desired direction and speed
       local dot = acc_dec.current_speed:dot(desired_dir)
@@ -77,7 +77,7 @@ return {
       acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
       if acc_dec.current_speed:length() > desired_speed then
-        acc_dec.current_speed:set(lovr.math.vec3(acc_dec.current_speed):normalize() * desired_speed)
+        acc_dec.current_speed:set(vec3(acc_dec.current_speed):normalize() * desired_speed)
       end
     else
       -- No input: decelerate to zero
@@ -104,11 +104,11 @@ return {
 
     if collider:isKinematic() then
 
-      local position = lovr.math.newVec3(entity.transform.transform:getPosition())
+      local position = vec3(entity.transform.transform:getPosition())
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
-      local collided_c = lovr_world:queryBox(aabb_sensor_pos , lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
+      local collided_c = lovr_world:queryBox(aabb_sensor_pos , vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
       if collided_c ~= nil then
         aabb_sensor.is_active = true
         -- find out the normal of the collision

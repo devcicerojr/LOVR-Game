@@ -22,9 +22,6 @@ return {
     end
     local player = pr_ecs.entities[player_id]
     local player_pos_z = select(3 , player.transform.transform:getPosition())
-    -- local spawn_transform = lovr.math.newMat4()
-    -- spawn_transform:set(transform:getPosition(), 1, 1, 1, transform:getOrientation())
-    
     
     local pos_z = select(3, entity.transform.transform:getPose())
     if player_pos_z - pos_z >= 200 then

@@ -3,15 +3,15 @@ local lovr_world = require'../core/pr_world'
 
 return {
   phase = "logic",
-  requires = {"is_player", "transform", "game_cam"},
+  requires = {"is_player", "transform", "camera"},
   update_fn = function(id, c, dt) --update function
     local entity = pr_ecs.entities[id]
     local player_pos = vec3(entity.transform.transform:getPosition())
     local player_orientation = quat(entity.transform.transform:getOrientation())
-    local game_cam = entity.game_cam
-    local game_cam_pos_offset = vec3(game_cam.game_cam_offset:getPosition())
-    game_cam_pos_offset:rotate(player_orientation)
-    local game_cam_pos_world = vec3(player_pos):add(game_cam_pos_offset)
+    local camera = entity.camera
+    local camera_pos_offset = vec3(camera.cam_transform_offset:getPosition())
+    camera_pos_offset:rotate(player_orientation)
+    local game_cam_pos_world = vec3(player_pos):add(camera_pos_offset)
     local direction = vec3(player_pos - game_cam_pos_world)
     direction:normalize()
 

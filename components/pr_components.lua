@@ -56,8 +56,8 @@ pr_components.FreeControls = function()
   return {type  = "free_controls" , data = {}}
 end
 
-pr_components.Gamecam = function (game_cam_offset, cam_vel, ang_vel, is_active)
-  return {type = "game_cam" , data = {game_cam_offset = game_cam_offset or lovr.math.newMat4(),
+pr_components.Camera = function (cam_transform_offset, cam_vel, ang_vel, is_active)
+  return {type = "camera" , data = {cam_transform_offset = cam_transform_offset or lovr.math.newMat4(),
   cam_vel = cam_vel or lovr.math.newVec3(), ang_vel = ang_vel or lovr.math.newVec3(), is_active = is_active or true}}
 end
 
