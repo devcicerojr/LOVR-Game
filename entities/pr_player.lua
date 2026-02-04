@@ -35,7 +35,7 @@ return function(ecs, spawn_pos)
   
   ecs:addComponent(id, pr_component.IsKinematic())
   ecs:addComponent(id, pr_component.IsPlayer())
-  ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/xaublas.glb')))
+  ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/entregador.glb')))
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())

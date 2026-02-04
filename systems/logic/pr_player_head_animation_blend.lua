@@ -23,6 +23,6 @@ return {
     local entity = ecs.entities[id]
     local model = entity.model.model
     local desired_orientation = lovr.math.quat(getOscillatingValue(dt, 0.5), 0, 1, 0):mul(lovr.math.quat(0.1, 1, 0 , 0))
-    model:setNodeOrientation('head', desired_orientation , 1)
+    -- model:setNodeOrientation('head', desired_orientation , 1)
   end
 }

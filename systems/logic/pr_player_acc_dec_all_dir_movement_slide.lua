@@ -151,6 +151,8 @@ return {
         aabb_sensor.is_active = false
         position:add(translate_val)
       end
+      -- entity.transform.transform:translate(translate_val)
+
       entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
       lovr.audio.setPose(position, lovr.math.newQuat(math.pi ,0,1,0)) -- update audio listener position
     else
