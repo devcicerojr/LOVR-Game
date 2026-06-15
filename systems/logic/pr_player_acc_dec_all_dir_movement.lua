@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)

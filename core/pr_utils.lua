@@ -1,5 +1,5 @@
 
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 -- Custom Types
 
 -- Save original print

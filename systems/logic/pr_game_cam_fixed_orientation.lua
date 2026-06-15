@@ -1,4 +1,4 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local pr_camera = require'pr_camera'
 
 -- Camera follows entity from a distance with fixed orientation (forward)
@@ -7,7 +7,7 @@ return {
   phase = "logic",
   requires = {"camera", "transform"},
   update_fn = function(id, c, dt) --update function
-    local entity = pr_ecs.entities[id]
+    local entity = ecs.entities[id]
     local entity_transform = mat4(entity.transform.transform)
     local game_cam_pos_offset = vec3(entity.camera.cam_transform_offset:getPosition())
     

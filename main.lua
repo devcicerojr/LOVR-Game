@@ -4,9 +4,13 @@ outline_shader = require'shaders/outline_shader'
 environment_shader = require'shaders/environment_shader'
 test_shader = require'shaders/test_shader'
 cel_shader =  require'shaders/cel_shader'
-local pr_control = require'pr_control'
+
+ecs = require'./core/pr_ecs'
+
+local pr_control = require'./input/controller/pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'
+-- local game_scene = require'scenes/test_scene'
 local map_parser = require'tools/map_parser'
 local lovr_world = require'core/pr_world'
 
@@ -25,7 +29,7 @@ function lovr.keypressed(key, scancode, rpt)
 end
 
 function lovr.wheelmoved(dx, dy)
-  pr_control.wheelmoved(dx, dy)
+  -- pr_control.wheelmoved(dx, dy)
 end
 
 function lovr.keyreleased(key, scancode)
@@ -36,6 +40,7 @@ function lovr.load(arg)
   local window_pass = lovr.graphics.getWindowPass()
   window_pass:setViewCull(true)
   window_pass:setDepthTest('less')
+  pr_control.load()
   
   for _, value in ipairs(arg) do
     if value == 'DEVBUILD' then
@@ -66,16 +71,15 @@ end
 
 function lovr.update(dt)
   if dt > 0.05 then dt = 0.05 end
-  lovr_world:update(dt)
-  game_scene.update(dt)
   pr_control.update(dt)
   if pr_control.nine_pressed then
     game_scene:player_respawn()
   end
+  lovr_world:update(dt)
+  game_scene.update(dt)
 end
 
 function lovr.draw(pass)
-  -- pass:setSampler('nearest')
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam:getPose())
   else

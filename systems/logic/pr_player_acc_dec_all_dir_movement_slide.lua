@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
@@ -14,8 +14,8 @@ return {
     local velocity = ecs.entities[id].velocity.velocity
     local aabb_sensor = ecs.entities[id].aabb_sensor
     local acc_dec = entity.acc_dec_movement
-    local moving_forward = lovr.system.isKeyDown("i")
-    local moving_backward = lovr.system.isKeyDown("k")
+    local moving_forward = pr_control.up_pressed or pr_control.gc_dpad_up
+    local moving_backward = pr_control.down_pressed or pr_control.gc_dpad_down
     local desired_dir = lovr.math.newVec3(0, 0, 0)
     local desired_rot = lovr.math.newQuat(0, 0 , 0, 1)
     local desired_speed = 0
@@ -37,16 +37,16 @@ return {
       desired_dir:add(0, 0, -1)
       player_controlling = true
     end
-    if lovr.system.isKeyDown("j") then
+    if pr_control.a_pressed or pr_control.gc_dpad_left then
       desired_dir:add(1, 0, 0)
       player_controlling = true
     end
-    if  lovr.system.isKeyDown("l") then
+    if  pr_control.d_pressed or pr_control.gc_dpad_right then
       desired_dir:add(-1, 0, 0)
       player_controlling = true
     end
     local rotation_angle = 0
-    if lovr.system.isKeyDown("k") then
+    if pr_control.s_pressed or pr_control.gc_dpad_down then
       desired_dir:set(0, 0, 0) -- stop movement if both forward and backward keys are pressed
       player_controlling = false
       rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))

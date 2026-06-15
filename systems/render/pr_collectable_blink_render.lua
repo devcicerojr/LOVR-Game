@@ -1,21 +1,21 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
   requires = { "model", "tracks_entity", "state_machine" },
   update_fn = function(id, c, pass) -- render
-    local entity = pr_ecs.entities[id]
+    local entity = ecs.entities[id]
     local tracking_entity = entity.tracks_entity.entity_id
-    -- local tracked_entity_transform = pr_ecs.entities[tracking_entity].transform.transform
-    -- local tracked_entity_transform = pr_ecs.entities[tracking_entity].collider.collider:getPosition()
-    local model = pr_ecs.entities[id].model.model
+    -- local tracked_entity_transform = ecs.entities[tracking_entity].transform.transform
+    -- local tracked_entity_transform = ecs.entities[tracking_entity].collider.collider:getPosition()
+    local model = ecs.entities[id].model.model
     local state_machine = entity.state_machine.state_machine
 
     if not model then
       return
     end
 
-    local position = vec3(pr_ecs.entities[tracking_entity].collider.collider:getPosition()):add(entity.tracks_entity.transform_offset:getPosition())
+    local position = vec3(ecs.entities[tracking_entity].collider.collider:getPosition()):add(entity.tracks_entity.transform_offset:getPosition())
     local orientation = entity.rotation.rotation
 
     if state_machine.current_state == "invisible" then

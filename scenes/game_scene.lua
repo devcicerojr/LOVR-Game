@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils'
 local lovr_world = require'../core/pr_world'
 local game_scene = {}
@@ -14,9 +14,6 @@ local gpass = lovr.graphics.newPass(gTexture) --global pass
 -- local gpass = lovr.graphics.newPass({gTexture, depth = {format = 'd24s8', texture = sTexture}}) --global pass
 
 
-
-
-
 -- constants
 local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 2, 0)
 local GROUND_TILE_WIDTH = 4
@@ -28,10 +25,10 @@ local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 40) -- mesh wall position
 
 -- entities
 
-local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 
 
 function build_level()
+	local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 	local skybox = (require'../entities/pr_skybox')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
 	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)

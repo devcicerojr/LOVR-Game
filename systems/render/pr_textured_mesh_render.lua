@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 local skyColor = { 0.60, 0.6, 0.6 }
 

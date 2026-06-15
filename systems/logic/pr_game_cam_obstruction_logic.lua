@@ -1,11 +1,11 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
 return {
   phase = "logic",
   requires = {"is_player", "transform", "camera"},
   update_fn = function(id, c, dt) --update function
-    local entity = pr_ecs.entities[id]
+    local entity = ecs.entities[id]
     local player_pos = vec3(entity.transform.transform:getPosition())
     local player_orientation = quat(entity.transform.transform:getOrientation())
     local camera = entity.camera
@@ -15,7 +15,7 @@ return {
     local direction = vec3(player_pos - game_cam_pos_world)
     direction:normalize()
 
-    pr_ecs:clearObstructingVals()
+    ecs:clearObstructingVals()
     local obstruct_collider, shape, cx, cy, cz , nx, ny, nz= lovr_world:raycast(game_cam_pos_world , player_pos , 'wall')
     if obstruct_collider then
       local collider_data = obstruct_collider:getUserData()
@@ -24,7 +24,7 @@ return {
         local normalized_norm = direction:dot(norm)
         if normalized_norm < 0 then
           local wall_id = collider_data.id
-          pr_ecs.entities[wall_id].is_camera_blocker.is_blocking = true
+          ecs.entities[wall_id].is_camera_blocker.is_blocking = true
         end
       end
     end

@@ -1,4 +1,4 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local pr_camera = require'pr_camera'
 local SPRING_STIFFNESS = 40
 local SPRING_DAMPING = 10 -- You can tweak this value for more/less smoothing
@@ -10,8 +10,8 @@ return {
   phase = "logic",
   requires = {"game_cam", "transform", "collider" , "is_kinematic"},
   update_fn = function(id, c, dt) --update function
-    local entity = pr_ecs.entities[id]
-    local collider = pr_ecs.entities[id].collider.collider
+    local entity = ecs.entities[id]
+    local collider = ecs.entities[id].collider.collider
     local entity_transform = entity.transform.transform
     local entity_pos = lovr.math.vec3(entity_transform:getPosition())
     local entity_rot = lovr.math.quat(entity_transform:getOrientation())

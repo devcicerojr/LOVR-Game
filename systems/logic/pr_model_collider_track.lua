@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils'
 
 

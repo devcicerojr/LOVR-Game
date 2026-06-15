@@ -1,11 +1,11 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
   requires = { "is_car_obstacle", "model" , "transform"},
   update_fn = function(id, c, pass) -- render
-    local entity_transform = pr_ecs.entities[id].transform.transform
-    local model = pr_ecs.entities[id].model.model
+    local entity_transform = ecs.entities[id].transform.transform
+    local model = ecs.entities[id].model.model
 
     if not model then
       return

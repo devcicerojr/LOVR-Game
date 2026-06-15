@@ -1,10 +1,10 @@
-local pr_ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
 local createCallbackCtx = function(id)
   return {
     sensor_callback = function(collider, shape, x, y, z, nx, ny, nz, tri, fraction)
-      local entity = pr_ecs.entities[id]
+      local entity = ecs.entities[id]
       if collider ~= nil then
         if collider:getShape():getType() == "terrain" then
           entity.sensors_array.sensors["ground_sensor"].no_detection_period = 0
@@ -23,7 +23,7 @@ return {
   phase = "logic",
   requires = {"gravity", "collider", "transform", "is_kinematic", "velocity", "sensors_array", "has_ground_sensor"},
   update_fn = function(id, c, dt) -- update function
-    local entity = pr_ecs.entities[id]
+    local entity = ecs.entities[id]
     local ground_sensor = entity.sensors_array.sensors["ground_sensor"]
     if ground_sensor.callback_ctx_data.cb_function == nil then
       ground_sensor.callback_ctx_data.cb_function = sensor_callback

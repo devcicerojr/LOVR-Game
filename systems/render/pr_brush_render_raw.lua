@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 -- raw brush is a brush that doesn't have any mesh. it's simply a collider
 

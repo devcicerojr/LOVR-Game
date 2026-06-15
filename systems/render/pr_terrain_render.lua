@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 local skyColor = { 0.208, 0.208, 0.275 }
 local shaderCode = {[[

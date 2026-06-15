@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 return {
   phase = "render",
@@ -36,7 +36,7 @@ return {
     pass:setDepthTest('greater')
     pass:setColor(0, 0, 0, 1)
     pass:send('outlineColor', {0.0, 0.0, 0.0, 1.0})
-    pass:send('outlineThickness', 0.01)
+    pass:send('outlineThickness', 0.02)
     
     
 

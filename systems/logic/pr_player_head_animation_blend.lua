@@ -1,4 +1,4 @@
-local ecs = require'../core/pr_ecs'
+-- local ecs = require'../core/pr_ecs'
 
 -- Somewhere at the top of your file:
 local elapsedTime = 0

@@ -1,4 +1,3 @@
--- local ecs = require'../core/pr_ecs'
 local pr_utils = require'../core/pr_utils' 
 local test_scene = {}
 

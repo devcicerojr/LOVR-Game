@@ -1,4 +1,4 @@
-local ecs =   require'../core/pr_ecs'
+-- local ecs =   require'../core/pr_ecs'
 
 local VISIBLE_TIME = 40
 local VISIBLE_COUNTER = 0
