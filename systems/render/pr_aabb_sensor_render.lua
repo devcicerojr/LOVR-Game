@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "aabb_sensor", "collider" },
-  update_fn = function(id, c, pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     if not is_dev_build or not draw_wireframes then
       return
     end

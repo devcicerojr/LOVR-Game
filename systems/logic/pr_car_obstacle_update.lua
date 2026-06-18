@@ -26,7 +26,7 @@ end)
 return {
   phase = "logic",
   requires = { "is_car_obstacle", "model" , "transform", "audio_source"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local entity_transform = ecs.entities[id].transform.transform
 
     local position = vec3(entity_transform:getPosition())

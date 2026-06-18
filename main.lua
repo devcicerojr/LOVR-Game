@@ -5,8 +5,6 @@ environment_shader = require'shaders/environment_shader'
 test_shader = require'shaders/test_shader'
 cel_shader =  require'shaders/cel_shader'
 
-ecs = require'./core/pr_ecs'
-
 local pr_control = require'./input/controller/pr_control'
 local pr_camera = require'pr_camera'
 local game_scene = require'scenes/game_scene'

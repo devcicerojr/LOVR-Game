@@ -1,43 +1,38 @@
--- local ecs = require'../core/pr_ecs'
-local pr_utils = require'../core/pr_utils' 
+local scene_ecs = require('../core/pr_scene_ecs')
 local test_scene = {}
+
+local ecs = nil
 
 test_scene.entities = {}
 
-
-function build_level()
-end
-
 local render_systems = {}
-
 
 local logic_systems = {}
 
-
-for _, file in ipairs(render_systems) do
-	local system = require("../systems/render/pr_" .. file)
-	ecs:addSystem(system)
+local function build_level()
 end
 
-for _, file in ipairs(logic_systems) do
-	local system = require("../systems/logic/pr_" .. file)
-	ecs:addSystem(system)
+function test_scene.unload()
+	ecs = nil
 end
 
 function test_scene.player_respawn()
 end
 
-
 function test_scene.load()
-  build_level()
+	ecs = scene_ecs.new()
+	scene_ecs.registerSystems(ecs, render_systems, logic_systems)
+	build_level()
 end
 
 function test_scene.update(dt)
-  ecs:update(dt)
+	if not ecs then return end
+	ecs:update(dt)
 end
 
 function test_scene.draw(pass)
-  ecs:draw(pass)
+	if not ecs then return end
+	ecs:draw(pass)
 end
 
 return test_scene

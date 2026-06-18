@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "is_car_obstacle", "model" , "transform"},
-  update_fn = function(id, c, pass) -- render
+  update_fn = function(ecs, id, c, pass) -- render
     local entity_transform = ecs.entities[id].transform.transform
     local model = ecs.entities[id].model.model
 

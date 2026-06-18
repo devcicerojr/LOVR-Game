@@ -6,7 +6,7 @@ local skyColor = { 0.60, 0.6, 0.6 }
 return {
   phase = "render",
   requires =  { "textured_mesh" , "is_terrain"},
-  update_fn = function(id, c, pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     local color = ecs.entities[id].textured_mesh.base_color
     local mesh = ecs.entities[id].textured_mesh.mesh
     local texture = ecs.entities[id].textured_mesh.texture

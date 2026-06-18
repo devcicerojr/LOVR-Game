@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "textured_mesh", "collider" },
-  update_fn = function(id, c, pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     -- local entity = ecs.entities[id]
     -- local shape = entity.collider.shape
     -- local textured_mesh = entity.textured_mesh.mesh

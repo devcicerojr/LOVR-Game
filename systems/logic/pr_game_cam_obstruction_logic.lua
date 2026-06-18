@@ -4,7 +4,7 @@ local lovr_world = require'../core/pr_world'
 return {
   phase = "logic",
   requires = {"is_player", "transform", "camera"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     local player_pos = vec3(entity.transform.transform:getPosition())
     local player_orientation = quat(entity.transform.transform:getOrientation())

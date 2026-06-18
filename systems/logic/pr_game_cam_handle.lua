@@ -9,7 +9,7 @@ local ROT_SMOOTHING = 6 -- You can tweak this value for more/less smoothing
 return {
   phase = "logic",
   requires = {"game_cam", "transform", "collider" , "is_kinematic"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local entity_transform = entity.transform.transform

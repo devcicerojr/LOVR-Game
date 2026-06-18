@@ -19,7 +19,7 @@ end
 return {
   phase = "logic",
   requires = {"is_player", "model"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local entity = ecs.entities[id]
     local model = entity.model.model
     local desired_orientation = lovr.math.quat(getOscillatingValue(dt, 0.5), 0, 1, 0):mul(lovr.math.quat(0.1, 1, 0 , 0))

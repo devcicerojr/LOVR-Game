@@ -1,9 +1,10 @@
 local pr_component = require'../components/pr_components'
 local lovr_world = require'../core/pr_world'
 
-local WIDTH = 3
-local HEIGHT = 3
-local DEPTH = 3
+local MODEL_SCALE = lovr.math.newVec3(2, 1, 1)
+local WIDTH = 2 * MODEL_SCALE.x
+local HEIGHT = 2 * MODEL_SCALE.y
+local DEPTH = 2 * MODEL_SCALE.z
 
 local ENGINE_SOUND_FILE = 'assets/sound_fx/loud_engine.wav'
 local ENGINE_SOUND_RADIUS = 800
@@ -12,10 +13,12 @@ return function(ecs, spanw_pos)
   local id = ecs:newEntity()
   local spawn_pos = spanw_pos or lovr.math.newVec3(0 , 0 , 0)
   local entity_transform = lovr.math.newMat4(spawn_pos , quat(0 , 0 , 0 , 1))
-  local transform_offset = lovr.math.newMat4()
-  local collider = lovr_world:newBoxCollider(spanw_pos, WIDTH, HEIGHT, DEPTH)
+  local transform_offset = lovr.math.newMat4(0, HEIGHT / 2, 0)
+  local collider = lovr_world:newBoxCollider(spawn_pos, WIDTH, HEIGHT, DEPTH)
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setKinematic(true)
+  collider:setContinuous(true)
+  collider:setSleepingAllowed(false)
   collider:setUserData(id)
   collider:setTag('car')
 

@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "model", "tracks_entity", "state_machine" },
-  update_fn = function(id, c, pass) -- render
+  update_fn = function(ecs, id, c, pass) -- render
     local entity = ecs.entities[id]
     local tracking_entity = entity.tracks_entity.entity_id
     -- local tracked_entity_transform = ecs.entities[tracking_entity].transform.transform

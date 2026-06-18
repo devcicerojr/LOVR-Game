@@ -9,21 +9,18 @@ local ECS = {
   ids_for_deletion = {}
 }
 
--- TODO: Implement a proper class system if needed
+ECS.__index = ECS
 
--- ECS.__index = ECS
-
--- function ECS.new()
---   local instance = {
---     entities = {},
---     logic_systems = {},
---     render_systems = {},
---     materials = {},
---     next_id = 0
---   }
---   setmetatable(instance, ECS)
---   return instance
--- end
+function ECS.new()
+  return setmetatable({
+    entities = {},
+    logic_systems = {},
+    render_systems = {},
+    materials = {},
+    next_id = 0,
+    ids_for_deletion = {}
+  }, ECS)
+end
 
 function ECS:reset()
   self.entities = {}
@@ -52,24 +49,24 @@ function ECS:addComponent(id, component)
   end
 end
 
-function ECS:addSystem( kind , required_components, update_fn )
-  table.insert(self[kind .. "_systems"] , 
-  { required = required_components , updatefn = update_fn })
-end
-
-function ECS:addSystem(system)
-  if system.phase == "logic" then
-    table.insert(self.logic_systems , 
-      { required = system.requires , 
-      updatefn = system.update_fn })
-  elseif system.phase == "render" then
-    system.ecs = self
-    table.insert(self.render_systems ,
-      { required = system.requires ,
-      updatefn = system.update_fn })
+function ECS:addSystem(kind_or_system, required_components, update_fn)
+  if type(kind_or_system) == "table" then
+    local system = kind_or_system
+    if system.phase == "logic" or system.phase == "async" then
+      table.insert(self.logic_systems,
+        { required = system.requires,
+        updatefn = system.update_fn })
+    elseif system.phase == "render" then
+      table.insert(self.render_systems,
+        { required = system.requires,
+        updatefn = system.update_fn })
+    end
+    return
   end
-end
 
+  table.insert(self[kind_or_system .. "_systems"],
+    { required = required_components, updatefn = update_fn })
+end
 
 function ECS:updateEach(required_components, updatefn, dt)
   local count = 0
@@ -83,7 +80,7 @@ function ECS:updateEach(required_components, updatefn, dt)
       end
     end
     if match then
-      updatefn(id, c, dt)
+      updatefn(self, id, c, dt)
     end
   end
 end
@@ -98,11 +95,10 @@ function ECS:renderEach(required_components, drawfn, pass)
       end
     end
     if match then
-      drawfn(id, c, pass)
+      drawfn(self, id, c, pass)
     end
   end
 end
-
 
 function ECS:update(dt)
   -- remove 'nil' entries before calling update
@@ -114,19 +110,14 @@ function ECS:update(dt)
 
   self.entities = packed
 
-
   for _, system in ipairs(self.logic_systems) do
-    self.updateEach(self, system.required , system.updatefn, dt)
-    -- local ok, err = pcall(self.updateEach, self, system.required , system.updatefn, dt)
-    -- if not ok then
-    --   lovr.log("Error in ECS logic system update: " .. tostring(err), "error")
-    -- end
+    self:updateEach(system.required, system.updatefn, dt)
   end
 end
 
 function ECS:draw(pass)
   for _, system in ipairs(self.render_systems) do
-    ECS:renderEach(system.required , system.updatefn, pass)
+    self:renderEach(system.required, system.updatefn, pass)
   end
 end
 

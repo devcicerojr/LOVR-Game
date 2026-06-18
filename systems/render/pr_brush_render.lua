@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "brush" , "collider", "textured_mesh", "is_camera_blocker"},
-  update_fn = function(id, c, pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     local entity = ecs.entities[id]
     local collider = entity.collider.collider
     local shape = entity.collider.shape

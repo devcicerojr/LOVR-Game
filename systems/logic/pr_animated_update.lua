@@ -3,7 +3,7 @@
 return {
   phase = "logic",
   requires = {"animation_state", "all_dir_controls"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local animation = ecs.entities[id].animation_state
     -- if lovr.system.isKeyDown('i') or lovr.system.isKeyDown('k') 
     if true or lovr.system.isKeyDown('k')

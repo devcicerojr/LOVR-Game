@@ -7,7 +7,7 @@ local pr_utils = require'../core/pr_utils'
 return {
   phase = "logic",
   requires = {"model", "transform", "collider"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local entity = ecs.entities[id]
     
     

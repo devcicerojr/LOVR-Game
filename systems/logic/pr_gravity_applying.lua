@@ -3,7 +3,7 @@
 return {
   phase = "logic",
   requires = {"gravity", "transform", "is_kinematic" },
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
 
     local grounded = ecs.entities[id].gravity.grounded
 

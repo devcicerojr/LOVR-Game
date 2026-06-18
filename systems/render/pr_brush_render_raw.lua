@@ -5,7 +5,7 @@
 return {
   phase = "render",
   requires = { "brush" , "collider", "raw_brush"},
-  update_fn = function(id, c, pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     local entity = ecs.entities[id]
     local collider = entity.collider.collider
 

@@ -12,7 +12,7 @@ end)
 return {
   phase = "logic",
   requires = {"dynamic_spawner", "is_pr_side_scenario", "transform"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     if entity == nil then return end
     local transform = entity.transform.transform

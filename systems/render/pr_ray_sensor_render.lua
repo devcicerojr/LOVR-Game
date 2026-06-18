@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "sensors_array", "transform"},
-  update_fn = function(id, c, pass)
+  update_fn = function(ecs, id, c, pass)
 
     if not is_dev_build then
       return

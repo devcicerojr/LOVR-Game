@@ -6,7 +6,7 @@ local pr_camera = require'pr_camera'
 return {
   phase = "logic",
   requires = {"camera", "transform"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     local entity_transform = mat4(entity.transform.transform)
     local game_cam_pos_offset = vec3(entity.camera.cam_transform_offset:getPosition())

@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "model" , "animation_state", "transform", "tracks_collider"},
-  update_fn = function(id , c , pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     local entity = ecs.entities[id]
     
     if entity.collider.collider:isKinematic() == false then

@@ -2,7 +2,7 @@
 local spawn_collectables_system = {
   phase = "async",
   requires = {},
-  update_fn = function (id, c, dt) --async
+  update_fn = function(ecs, id, c, dt) --async
     
   end
 }

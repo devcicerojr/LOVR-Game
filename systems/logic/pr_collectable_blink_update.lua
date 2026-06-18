@@ -6,7 +6,7 @@ local VISIBLE_COUNTER = 0
 return {
   phase = "logic",
   requires = {"tracks_entity", "rotation", "state_machine", "is_collected_coin_effect"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local entity_rotation = ecs.entities[id].rotation.rotation
     entity_rotation:mul(quat(20 * dt, 0, 1, 0))
 

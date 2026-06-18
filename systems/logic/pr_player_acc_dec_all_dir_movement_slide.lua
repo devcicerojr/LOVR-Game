@@ -5,10 +5,12 @@ local lovr_world = require'../core/pr_world'
 local ACCELERATION = 50
 local DECELERATION = 90
 
+local OBSTACLE_FILTER = 'wall car'
+
 return {
   phase = "logic",
   requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "all_dir_controls"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local velocity = ecs.entities[id].velocity.velocity
@@ -109,12 +111,12 @@ return {
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset
-      local collided_c = lovr_world:queryBox(aabb_sensor_pos , vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
+      local collided_c = lovr_world:queryBox(aabb_sensor_pos , vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), OBSTACLE_FILTER)
       if collided_c ~= nil then
         aabb_sensor.is_active = true
         -- find out the normal of the collision
         local ray_endpoint = aabb_sensor_pos + direction
-        local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(aabb_sensor_pos , ray_endpoint, 'wall')
+        local collided_middle, shape_md, cx_md, cy_md, cz_md, nx_md, ny_md, nz_md, triangle_md = lovr_world:raycast(aabb_sensor_pos , ray_endpoint, OBSTACLE_FILTER)
 
         local left_ray_sensor_dir = vec3(direction):rotate(math.pi / 2.5 , 0 , 1 , 0)
         local right_ray_sensor_dir = vec3(direction):rotate(-math.pi / 2.5  , 0 , 1 , 0)
@@ -122,11 +124,11 @@ return {
         ray_endpoint = aabb_sensor_pos + left_ray_sensor_dir
         -- Check for collision on the left side
         local left_sensor_pos = vec3(aabb_sensor_pos):add(vec3(col_width/2, col_height / 2,  -col_depth/2 ))
-        local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , 'wall')
+        local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , OBSTACLE_FILTER)
 
         ray_endpoint = aabb_sensor_pos + right_ray_sensor_dir
         local right_sensor_pos = vec3(aabb_sensor_pos):add(vec3(-col_width/2, col_height/2, -col_depth/2 ))
-        local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, 'wall')
+        local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, OBSTACLE_FILTER)
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
           print("middle")
@@ -146,7 +148,7 @@ return {
         translate_val = direction * acc_dec.current_speed:length() * dt
         aabb_sensor_pos = position + translate_val + aabb_rotated_offset
         -- second check for collision after adjusting direction
-        local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), 'wall')
+        local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), OBSTACLE_FILTER)
         if not collided_c2 then position:add(translate_val) end
       else
         aabb_sensor.is_active = false

@@ -3,7 +3,7 @@
 return {
   phase = "render",
   requires = { "model" , "non_animated", "transform", "tracks_collider"},
-  update_fn = function(id , c , pass) -- draw function
+  update_fn = function(ecs, id, c, pass) -- draw function
     -- pass:setShader()
     local entity = ecs.entities[id]
     

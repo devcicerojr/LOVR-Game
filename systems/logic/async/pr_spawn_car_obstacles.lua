@@ -1,7 +1,7 @@
 local spawn_car_obstacles_system = {
   phase = "async",
   requires = {},
-  update_fn = function(ecs, dt)
+  update_fn = function(ecs, id, c, dt)
     -- Spawning logic can be added here if needed
   end
 }

@@ -9,7 +9,7 @@ local DECELERATION = 15
 return {
   phase = "logic", 
   requires = {"player_controls", "collider", "velocity", "transform", "acc_dec_movement", "aabb_sensor", "auto_move_forward"},
-  update_fn = function(id, c, dt) --update function
+  update_fn = function(ecs, id, c, dt) --update function
     local entity = ecs.entities[id]
     local collider = ecs.entities[id].collider.collider
     local velocity = ecs.entities[id].velocity.velocity

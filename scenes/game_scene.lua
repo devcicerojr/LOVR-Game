@@ -1,8 +1,9 @@
--- local ecs = require'../core/pr_ecs'
-local pr_utils = require'../core/pr_utils'
+local scene_ecs = require('../core/pr_scene_ecs')
 local lovr_world = require'../core/pr_world'
 local game_scene = {}
-game_scene.entities = {}
+
+local ecs = nil
+local player = nil
 
 local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
@@ -22,21 +23,6 @@ local WALL_HEIGHT = 5
 local WALL_1_POS = lovr.math.vec3(0, WALL_HEIGHT / 2 , 0) -- default wall position
 local WALL_2_POS = lovr.math.vec3(10, WALL_HEIGHT / 2, 0)
 local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 40) -- mesh wall position
-
--- entities
-
-
-
-function build_level()
-	player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
-	local skybox = (require'../entities/pr_skybox')(ecs)
-	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
-	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)
-	local side_walls_grid = (require'../entities/dont_stop_delivery/pr_side_walls_grid')(ecs)
-	local side_scenario_grid = (require'../entities/dont_stop_delivery/pr_side_scenario_grid')(ecs)
-end
-	
-
 
 local render_systems = {
 	"skybox_render",
@@ -87,24 +73,24 @@ local async_systems = {
 	"collectable_events"
 }
 
-for _, file in ipairs(render_systems) do
-	local system = require("../systems/render/pr_" .. file)
-	ecs:addSystem(system)
+local function build_level()
+	player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
+	local skybox = (require'../entities/pr_skybox')(ecs)
+	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
+	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)
+	local side_walls_grid = (require'../entities/dont_stop_delivery/pr_side_walls_grid')(ecs)
+	local side_scenario_grid = (require'../entities/dont_stop_delivery/pr_side_scenario_grid')(ecs)
 end
 
-for _, file in ipairs(logic_systems) do
-	local system = require("../systems/logic/pr_" .. file)
-	ecs:addSystem(system)
+function game_scene.unload()
+	ecs = nil
+	player = nil
 end
-
-for _, file in ipairs(async_systems) do
-	local system = require("../systems/logic/async/pr_" .. file)
-	ecs:addSystem(system)
-end
-
 
 -- TODO: move it to some async system event
 function game_scene.player_respawn()
+	if not ecs or not player then return end
+
 	local default_scale = {1, 1, 1}
 	local default_rotation = lovr.math.quat(1, 0, 0, 0) -- no rotation
 	-- ecs.entities[player].velocity.velocity:set(0, 0, 0) -- reset velocity
@@ -119,18 +105,20 @@ function game_scene.player_respawn()
 end
 
 function game_scene.load()
-	-- spawning player
-	-- ecs.entities[player].animation_state.current = 0 --idle animation
+	ecs = scene_ecs.new()
+	scene_ecs.registerSystems(ecs, render_systems, logic_systems, async_systems)
 	build_level()
-	
 end
 
 function game_scene.update(dt)
+	if not ecs then return end
 	ecs:update(dt)
 	ecs:deleteDeadEntities()
 end
 
 function game_scene.draw(dpass)
+	if not ecs then return end
+
 	-- Shader configurations
 	gpass:reset()
 	gpass:setSampler('nearest')

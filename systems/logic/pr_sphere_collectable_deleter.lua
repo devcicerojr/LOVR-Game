@@ -3,7 +3,7 @@ local player_id = nil
 return {
   phase = "logic",
   requires = {"transform", "is_collectable", "collider"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     if not player_id then
       player_id = ecs:getEntityByTag('is_player')
       if not player_id then return end

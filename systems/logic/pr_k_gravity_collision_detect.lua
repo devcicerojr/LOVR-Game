@@ -1,7 +1,7 @@
 -- local ecs = require'../core/pr_ecs'
 local lovr_world = require'../core/pr_world'
 
-local createCallbackCtx = function(id)
+local createCallbackCtx = function(ecs, id)
   return {
     sensor_callback = function(collider, shape, x, y, z, nx, ny, nz, tri, fraction)
       local entity = ecs.entities[id]
@@ -22,7 +22,7 @@ end
 return {
   phase = "logic",
   requires = {"gravity", "collider", "transform", "is_kinematic", "velocity", "sensors_array", "has_ground_sensor"},
-  update_fn = function(id, c, dt) -- update function
+  update_fn = function(ecs, id, c, dt) -- update function
     local entity = ecs.entities[id]
     local ground_sensor = entity.sensors_array.sensors["ground_sensor"]
     if ground_sensor.callback_ctx_data.cb_function == nil then
@@ -37,7 +37,7 @@ return {
     if shape_type == "capsule" then
       local radius = shape:getRadius()
       local length = shape:getLength()
-      local cb_obj = createCallbackCtx(id)
+      local cb_obj = createCallbackCtx(ecs, id)
       local c_collider = lovr_world:raycast(ray_origin, ray_endpoint, nil, cb_obj.sensor_callback)
       if c_collider == nil then
         -- count a timer, and set grounded to false if timer increased enough
