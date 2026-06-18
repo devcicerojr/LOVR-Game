@@ -64,6 +64,14 @@ function lovr.load(arg)
     end
   end
 
+  features = lovr.graphics.getFeatures()
+  
+  if features.depthClamp then
+    print("Depth clamping is supported and enabled.")
+  else
+    print("Depth clamping is not supported.")
+  end
+
   game_scene.load()
   
   pr_camera.init()
@@ -80,6 +88,8 @@ function lovr.update(dt)
 end
 
 function lovr.draw(pass)
+  pass:setDepthOffset(1.0, 1.0)
+  pass:setDepthClamp(false)
   if not pr_camera.spectate then
 	  pass:setViewPose(1, pr_camera.game_cam:getPose())
   else

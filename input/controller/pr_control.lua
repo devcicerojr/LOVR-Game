@@ -1,9 +1,4 @@
 local pr_camera = require'pr_camera'
-
-local f                                = io.open( "./external/libraries/game_controller/gamecontrollerdb.txt", "r" )
-if not f then
-    print("Could NOT open file:", err)
-end
 local gc = require "../../external/libraries/game_controller/game_controller"
 local num_devices = gc.getDeviceCount()
 local ffi = require( "ffi" )
@@ -27,7 +22,7 @@ pr_control.gc_dpad_left = false
 
 
 pr_control.spectate = false
-pr_control.spec_cam = { x = 0 , y = 0 , z = 0 , angle = 0 , ax = 0 , ay = 0 , az = 0 }
+pr_control.axes = {  0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
 
 
 function pr_control.isKeyDown(key)
@@ -164,11 +159,16 @@ function pr_control.update(dt)
 				-- print( "Button " .. i .. " is down" )
 			end
 		end
+    -- Axis 1: Left stick horizontal
+    -- Axis 2: Left stick vertical
+    -- Axis 3: Right stick horizontal
+    -- Axis 4: Right stick vertical
     local axis_count = gc.getAxesCount( 1 )
     -- print ("Axis count: " .. axis_count )
     local axis_value = 0.0
     for i = 1, axis_count do
       axis_value = gc.getAxisValue( 1, i )
+      pr_control.axes[i] = axis_value
       print( "Axis " .. i .. " value: " .. axis_value )
     end
 	end

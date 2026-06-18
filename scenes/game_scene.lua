@@ -28,7 +28,7 @@ local WALL_3_POS = lovr.math.vec3(0, WALL_HEIGHT / 2, 40) -- mesh wall position
 
 
 function build_level()
-	local player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
+	player = (require'../entities/pr_player')(ecs , PLAYER_SPAWN_POS)
 	local skybox = (require'../entities/pr_skybox')(ecs)
 	local tile_grid = (require'../entities/pr_level_grid')(ecs, GROUND_TILE_WIDTH, GROUND_TILE_HEIGHT)
 	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)

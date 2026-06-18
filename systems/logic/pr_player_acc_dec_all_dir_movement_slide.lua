@@ -51,6 +51,7 @@ return {
       player_controlling = false
       rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
     end
+    desired_dir:add(- (pr_control.axes[1]), 0, 0)
     if desired_dir:length() == 0 then
       desired_dir:set(0, 0, 1) -- default forward direction
     else
