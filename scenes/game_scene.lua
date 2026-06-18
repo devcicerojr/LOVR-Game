@@ -4,6 +4,7 @@ local game_scene = {}
 
 local ecs = nil
 local player = nil
+local coin_count = 0
 
 local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
@@ -39,14 +40,13 @@ local render_systems = {
 	"textured_mesh_wall_render",
 	"collectable_render",
 	"collectable_blink_render",
-	"car_obstacle_render"
+	"car_obstacle_render",
+	"blob_shadow_render"  -- must be last: blends over all opaque geometry
 }
 
 local logic_systems = {
-	"model_collider_track",
 	-- "player_classic_tank_controls",
 	-- "game_cam_handle",
-	"game_cam_fixed_orientation",
 	"animated_update",
 	"gravity_applying",
 	"k_gravity_collision_detect",
@@ -55,7 +55,15 @@ local logic_systems = {
 	-- "player_acc_dec_auto_movement",
 	-- "player_acc_dec_all_dir_movement",
 	"player_acc_dec_all_dir_movement_slide",
-	
+	"car_obstacle_update",
+
+	-- Runs after all movement so the collider reflects the current frame's transform.
+	"model_collider_track",
+
+	-- Camera runs after movement so it follows the frame-N position,
+	-- matching the render system which also reads frame-N transform.
+	"game_cam_fixed_orientation",
+
 	"player_head_animation_blend",
 	"dynamic_tile_spawner",
 	"dynamic_wall_spawner",
@@ -64,7 +72,6 @@ local logic_systems = {
 	"collectable_update",
 	"collectable_blink_update",
 	"sphere_collectable_deleter",
-	"car_obstacle_update"
 }
 
 local async_systems = {
@@ -91,6 +98,7 @@ end
 function game_scene.player_respawn()
 	if not ecs or not player then return end
 
+	coin_count = 0
 	local default_scale = {1, 1, 1}
 	local default_rotation = lovr.math.quat(1, 0, 0, 0) -- no rotation
 	-- ecs.entities[player].velocity.velocity:set(0, 0, 0) -- reset velocity
@@ -104,15 +112,32 @@ function game_scene.player_respawn()
 	-- pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(math.pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
 end
 
+local function drawHUD(pass)
+	local W, H = scene_resolution.width, scene_resolution.height
+	pass:setShader()
+	pass:setDepthTest()
+	pass:setViewPose(1, lovr.math.mat4())
+	pass:setProjection(1, lovr.math.mat4():orthographic(0, W, 0, H, -1, 1))
+	pass:setColor(1, 0.9, 0.1)
+	pass:text('Coins: ' .. tostring(coin_count), 60, H - 54, 0, 40)
+	pass:setColor(1, 1, 1)
+end
+
 function game_scene.load()
+	coin_count = 0
+	pr_event_bus:on('coin_collected', function()
+		coin_count = coin_count + 1
+	end)
 	ecs = scene_ecs.new()
 	scene_ecs.registerSystems(ecs, render_systems, logic_systems, async_systems)
 	build_level()
 end
 
+local MAX_DT = 1 / 30  -- cap at 30 fps equivalent to prevent position spikes from frame stalls
+
 function game_scene.update(dt)
 	if not ecs then return end
-	ecs:update(dt)
+	ecs:update(math.min(dt, MAX_DT))
 	ecs:deleteDeadEntities()
 end
 
@@ -130,9 +155,10 @@ function game_scene.draw(dpass)
 
 	ecs:draw(gpass)
 	-- print("FPS: " .. lovr.timer.getFPS())
-	local pass = dpass
-	pass:setSampler('nearest')
-	pass:fill(gTexture)
+	-- local pass = dpass
+	dpass:setSampler('nearest')
+	dpass:fill(gTexture)
+	drawHUD(dpass)
 	return lovr.graphics.submit(gpass, dpass)
 end
 

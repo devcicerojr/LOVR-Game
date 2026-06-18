@@ -11,6 +11,7 @@ return {
     local entity = ecs.entities[id]
     
     
+    if entity.collider.collider:isDestroyed() then return end
     if entity.collider.collider:isKinematic() then
       local entity_transform = lovr.math.mat4(entity.transform.transform)
       local collider = entity.collider.collider

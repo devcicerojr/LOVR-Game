@@ -5,19 +5,6 @@ return {
   requires = { "model" , "animation_state", "transform", "tracks_collider"},
   update_fn = function(ecs, id, c, pass) -- draw function
     local entity = ecs.entities[id]
-    
-    if entity.collider.collider:isKinematic() == false then
-      -- local cx, cy, cz = entity.collider.collider:getPosition()
-      -- local collider_quat =  lovr.math.quat(entity.transform.transform:getOrientation()) * lovr.math.quat(entity.collider.collider:getOrientation())
-      
-      -- local collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
-      -- local collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
-      
-      -- local model_quat = collider_quat * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate()
-      -- local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):mul(-1,-1,-1):rotate(model_quat):add(cx, cy, cz)
-      -- entity.transform.transform:set(model_pos, model_quat)
-    end
-    
     local cur_animation = nil
     if entity.animation_state.current > 0 then
       cur_animation = entity.model.model:getAnimationName(entity.animation_state.current)
@@ -40,12 +27,8 @@ return {
     
     
 
-    local collider_pos = vec3(entity.collider.collider:getPosition())
-    local collider_quat = quat(entity.collider.collider:getOrientation())
-    -- local entity_pos = vec3(entity.transform.transform:getPosition())
-    -- local entity_quat = quat(entity.transform.transform:getOrientation())
-    local entity_quat = collider_quat * quat(entity.collider.transform_offset:getOrientation()):conjugate()
-    local entity_pos =  collider_pos + (vec3(entity.collider.transform_offset:getPosition()) * -1)
+    local entity_pos = vec3(entity.transform.transform:getPosition())
+    local entity_quat = quat(entity.transform.transform:getOrientation())
     
 
     -- pass:setDepthOffset(-1, 1)

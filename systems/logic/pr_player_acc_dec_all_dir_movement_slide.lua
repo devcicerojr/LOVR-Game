@@ -4,8 +4,15 @@ local lovr_world = require'../core/pr_world'
 -- Constants for acceleration and deceleration (tweak as needed)
 local ACCELERATION = 50
 local DECELERATION = 90
+local STICK_DEAD_ZONE = 0.12
 
-local OBSTACLE_FILTER = 'wall car'
+local OBSTACLE_FILTER = 'wall'
+
+local function apply_dead_zone(val)
+  if math.abs(val) < STICK_DEAD_ZONE then return 0 end
+  local sign = val > 0 and 1 or -1
+  return sign * (math.abs(val) - STICK_DEAD_ZONE) / (1 - STICK_DEAD_ZONE)
+end
 
 return {
   phase = "logic",
@@ -53,10 +60,8 @@ return {
       player_controlling = false
       rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
     end
-    desired_dir:add(- (pr_control.axes[1]), 0, 0)
-    if desired_dir:length() == 0 then
-      desired_dir:set(0, 0, 1) -- default forward direction
-    else
+    desired_dir:add(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
+    if desired_dir:length() > 0.001 then
       rotation_angle = vec3(desired_dir):angle(forward_vec)
       if desired_dir:dot(vec3(1, 0, 0)) < 0 then
         rotation_angle = -rotation_angle
@@ -74,9 +79,11 @@ return {
     local current_speed_len = acc_dec.current_speed:length()
     local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
     if desired_speed > 0 then
-      -- Accelerate towards desired direction and speed
-      local dot = acc_dec.current_speed:dot(desired_dir)
-      local accel_vec = desired_dir * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
+      -- Accelerate towards desired direction and speed (normalize so diagonal and
+      -- cardinal inputs apply equal acceleration magnitude).
+      local desired_dir_norm = vec3(desired_dir):normalize()
+      local dot = acc_dec.current_speed:dot(desired_dir_norm)
+      local accel_vec = desired_dir_norm * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
       acc_dec.current_speed:add(accel_vec)
       -- Clamp to max speed
       if acc_dec.current_speed:length() > desired_speed then
@@ -98,12 +105,13 @@ return {
 
 
     local translate_val = vec3(acc_dec.current_speed) * dt
-    local movement_angle = translate_val:angle(forward_vec)
+    local translate_len = translate_val:length()
+    local direction = translate_len > 0.0001 and vec3(translate_val):normalize() or vec3(0, 0, 1)
+    local movement_angle = translate_len > 0.0001 and translate_val:angle(forward_vec) or 0
     if translate_val:dot(vec3(1, 0, 0)) < 0 then
       movement_angle = -movement_angle
     end
     local movement_rot = quat(movement_angle, 0, 1, 0)
-    local direction = vec3(translate_val):normalize()
 
     if collider:isKinematic() then
 
@@ -157,6 +165,10 @@ return {
       -- entity.transform.transform:translate(translate_val)
 
       entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
+      -- Sync collider immediately so physics queries and model render both see the
+      -- current position within the same frame (no model_collider_track lag).
+      local col_mat = mat4(entity.transform.transform):mul(mat4(entity.collider.transform_offset))
+      collider:setPose(vec3(col_mat:getPosition()), quat(col_mat:getOrientation()))
       lovr.audio.setPose(position, lovr.math.newQuat(math.pi ,0,1,0)) -- update audio listener position
     else
       -- local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0)
