@@ -41,6 +41,7 @@ local render_systems = {
 	"collectable_render",
 	"collectable_blink_render",
 	"car_obstacle_render",
+	"dust_particles_render",
 	"blob_shadow_render"  -- must be last: blends over all opaque geometry
 }
 
