@@ -85,13 +85,6 @@ local function getDeviceHats( jid )
 	return count[ 0 ], hats
 end
 
-local function joystickCallback( jid, ev )
-	device_connected_or_disconnected.id = jid
-	device_connected_or_disconnected.ev = ev
-	device_connected_or_disconnected.changed = true
-end
-
-glfw.glfwSetJoystickCallback( joystickCallback );
 
 -- API
 function m.isDevicePresent( jid )

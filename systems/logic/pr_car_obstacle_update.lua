@@ -47,7 +47,7 @@ return {
     local distance_to_player = vec3(player_position):sub(vec3(entity_transform:getPosition()))
     local translate_value = vec3(distance_to_player):mul(AUDIO_SCALE_FACTOR)
     local new_source_pos = nil
-    if (math.abs(distance_to_player.z) > 200) then
+    if (distance_to_player.z > 200) then
       new_source_pos = lovr.math.newVec3(entity_transform:getPosition())
       source:stop()
       pr_event_bus:emit('car_went_out_of_range', ecs, id)

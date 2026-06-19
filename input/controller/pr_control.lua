@@ -143,35 +143,38 @@ function pr_control.update(dt)
   end
 
 
-  local result, type, device = gc.configurationChanged()
-	if result then
-		print( "Device: " .. device .. " was " .. type )
-	end
-
-	if gc.isDevicePresent( 1 ) then
-		local btn_count = gc.getButtonCount( 1 )
-    pr_control.gc_dpad_up = gc.getButtonState( 1, 11 ) == 1
-    pr_control.gc_dpad_right = gc.getButtonState( 1, 12 ) == 1
-    pr_control.gc_dpad_down = gc.getButtonState( 1, 13 ) == 1
-    pr_control.gc_dpad_left = gc.getButtonState( 1, 14 ) == 1
-		for i = 1, btn_count do
-			if gc.getButtonState( 1, i ) == 1 then
-				-- print( "Button " .. i .. " is down" )
-			end
-		end
-    -- Axis 1: Left stick horizontal
-    -- Axis 2: Left stick vertical
-    -- Axis 3: Right stick horizontal
-    -- Axis 4: Right stick vertical
-    local axis_count = gc.getAxesCount( 1 )
-    -- print ("Axis count: " .. axis_count )
-    local axis_value = 0.0
-    for i = 1, axis_count do
-      axis_value = gc.getAxisValue( 1, i )
-      pr_control.axes[i] = axis_value
-      print( "Axis " .. i .. " value: " .. axis_value )
+  local ok, err = pcall(function()
+    local result, event_type, device = gc.configurationChanged()
+    if result then
+      print( "Device: " .. tostring(device) .. " was " .. tostring(event_type) )
     end
-	end
+
+    if gc.isDevicePresent( 1 ) then
+      local btn_count = gc.getButtonCount( 1 )
+      pr_control.gc_dpad_up    = gc.getButtonState( 1, 11 ) == 1
+      pr_control.gc_dpad_right = gc.getButtonState( 1, 12 ) == 1
+      pr_control.gc_dpad_down  = gc.getButtonState( 1, 13 ) == 1
+      pr_control.gc_dpad_left  = gc.getButtonState( 1, 14 ) == 1
+      for i = 1, btn_count do
+        if gc.getButtonState( 1, i ) == 1 then
+          -- print( "Button " .. i .. " is down" )
+        end
+      end
+      local axis_count = gc.getAxesCount( 1 )
+      for i = 1, axis_count do
+        pr_control.axes[i] = gc.getAxisValue( 1, i )
+      end
+    end
+  end)
+
+  if not ok then
+    print( "Controller error: " .. tostring(err) )
+    pr_control.gc_dpad_up    = false
+    pr_control.gc_dpad_right = false
+    pr_control.gc_dpad_down  = false
+    pr_control.gc_dpad_left  = false
+    pr_control.axes = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+  end
 end
 
 return pr_control

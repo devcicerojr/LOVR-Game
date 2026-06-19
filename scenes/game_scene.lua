@@ -76,8 +76,7 @@ local logic_systems = {
 }
 
 local async_systems = {
-	"spawn_collectables",
-	"spawn_car_obstacles",
+	"spawn_pattern",
 	"collectable_events"
 }
 
