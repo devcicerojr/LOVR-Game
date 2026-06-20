@@ -6,9 +6,12 @@ local createCallbackCtx = function(ecs, id)
     sensor_callback = function(collider, shape, x, y, z, nx, ny, nz, tri, fraction)
       local entity = ecs.entities[id]
       if collider ~= nil then
-        if collider:getShape():getType() == "terrain" then
+        if collider:getShape():getType() == "terrain" and entity.gravity.jump_cooldown <= 0 then
           entity.sensors_array.sensors["ground_sensor"].no_detection_period = 0
           entity.gravity.grounded = true
+          entity.gravity.vertical_velocity = 0
+          entity.gravity.is_jumping = false
+          entity.gravity.jump_hold_time = 0
           entity.velocity.velocity.y = 0
           entity.transform.transform:set(lovr.math.newVec3(x, y, z), lovr.math.newQuat(entity.transform.transform:getOrientation()))
         end

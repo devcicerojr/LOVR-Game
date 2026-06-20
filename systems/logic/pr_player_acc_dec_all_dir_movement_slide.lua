@@ -5,6 +5,9 @@ local lovr_world = require'../core/pr_world'
 local ACCELERATION = 50
 local DECELERATION = 90
 local STICK_DEAD_ZONE = 0.12
+local JUMP_FORCE      = 14
+local MAX_JUMP_HOLD   = 0.25   -- seconds the button can extend the jump
+local JUMP_HOLD_BOOST = 18     -- extra upward acceleration (units/s²) while held
 
 local OBSTACLE_FILTER = 'wall'
 
@@ -29,6 +32,26 @@ return {
     local desired_rot = lovr.math.newQuat(0, 0 , 0, 1)
     local desired_speed = 0
     local forward_vec = vec3(0, 0, 1)
+
+    -- Jump input
+    local jump_held = lovr.system.isKeyDown("space") or pr_control.gc_btn_1
+    if (pr_control.space_pressed or pr_control.gc_btn_1_just_pressed) and entity.gravity.grounded then
+      entity.gravity.vertical_velocity = JUMP_FORCE
+      entity.gravity.grounded = false
+      entity.gravity.jump_cooldown = 0.15
+      entity.gravity.is_jumping = true
+      entity.gravity.jump_hold_time = 0
+      pr_control.space_pressed = false
+      pr_control.gc_btn_1_just_pressed = false
+    end
+    -- Variable height: hold button to keep boosting upward, up to MAX_JUMP_HOLD
+    if entity.gravity.is_jumping and jump_held and entity.gravity.jump_hold_time < MAX_JUMP_HOLD then
+      entity.gravity.jump_hold_time = entity.gravity.jump_hold_time + dt
+      entity.gravity.vertical_velocity = entity.gravity.vertical_velocity + JUMP_HOLD_BOOST * dt
+    end
+    if not jump_held then
+      entity.gravity.is_jumping = false
+    end
 
     local minx, maxx, miny, maxy, minz, maxz = collider:getAABB()
 

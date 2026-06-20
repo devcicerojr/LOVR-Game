@@ -62,7 +62,7 @@ pr_components.Camera = function (cam_transform_offset, cam_vel, ang_vel, is_acti
 end
 
 pr_components.Gravity = function (gravity_acc, grounded)
-  return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81, grounded = grounded or false}}
+  return {type = "gravity" , data = {gravity_acc = gravity_acc or -9.81, grounded = grounded or false, vertical_velocity = 0, jump_cooldown = 0, is_jumping = false, jump_hold_time = 0}}
 end
 
 pr_components.Grid = function (grid)

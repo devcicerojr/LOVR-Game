@@ -5,7 +5,10 @@ local game_scene = {}
 local ecs        = nil
 local player     = nil
 local coin_count = 0
-local hidden_cursor = nil
+local hidden_cursor   = nil
+local flying_coins    = {}
+local scene_view_pose = lovr.math.newMat4()
+local scene_proj_mat  = lovr.math.newMat4()
 
 game_scene.is_paused               = false
 game_scene.return_to_title_requested = false
@@ -27,7 +30,9 @@ local gpass = lovr.graphics.newPass(gTexture) --global pass
 
 
 -- constants
-local PLAYER_SPAWN_POS = lovr.math.newVec3(0, 2, 0)
+local PLAYER_SPAWN_POS  = lovr.math.newVec3(0, 2, 0)
+local COIN_FLY_DURATION = 0.55
+local COIN_ICON_SIZE    = 14
 local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
@@ -104,6 +109,7 @@ function game_scene.unload()
 	ecs = nil
 	player = nil
 	game_scene.is_paused = false
+	flying_coins = {}
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
@@ -124,6 +130,19 @@ function game_scene.player_respawn()
 	-- ecs.entities[player].transform.transform:translate(PLAYER_SPAWN_POS.x, PLAYER_SPAWN_POS.y, PLAYER_SPAWN_POS.z)
 	-- ecs.entities[player].transform.transform:rotate(math.pi, 0, 1, 0)
 	-- pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(math.pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
+end
+
+local function worldToHUD(wx, wy, wz)
+	local W, H = scene_resolution.width, scene_resolution.height
+	local view = mat4(scene_view_pose):invert()
+	local vp   = mat4(scene_proj_mat) * view
+	local m    = { vp:unpack(true) }
+	local rx   = m[1]*wx + m[5]*wy + m[9]*wz  + m[13]
+	local ry   = m[2]*wx + m[6]*wy + m[10]*wz + m[14]
+	local rw   = m[4]*wx + m[8]*wy + m[12]*wz + m[16]
+	if rw <= 0 then return nil end
+	return ((rx/rw) + 1) * 0.5 * W,
+	       ((ry/rw) + 1) * 0.5 * H
 end
 
 local function drawPauseOverlay(pass)
@@ -156,7 +175,7 @@ local function drawHUD(pass)
 	pass:setViewPose(1, lovr.math.mat4())
 	pass:setProjection(1, lovr.math.mat4():orthographic(0, W, 0, H, -1, 1))
 	pass:setColor(1, 0.9, 0.1)
-	pass:text('Coins: ' .. tostring(coin_count), 60, H - 54, 0, 40)
+	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40)
 
 	local win_w, win_h = lovr.system.getWindowDimensions()
 	local mx, my = lovr.system.getMousePosition()
@@ -169,11 +188,40 @@ local function drawHUD(pass)
 	pass:line(cx, cy - size, 0,  cx, cy - gap, 0)
 	pass:line(cx, cy + gap,  0,  cx, cy + size, 0)
 
+	-- Flying coin animations (DKC-style collect effect)
+	local target_x = 60
+	local target_y = 54
+	local dt_hud = lovr.timer.getDelta()
+	pass:setBlendMode('alpha', 'alphamultiply')
+	local fi = 1
+	while fi <= #flying_coins do
+		local fc   = flying_coins[fi]
+		fc.t       = math.min(fc.t + dt_hud, COIN_FLY_DURATION)
+		local p    = fc.t / COIN_FLY_DURATION
+		local ease = 1 - (1 - p) ^ 3
+		local inv  = 1 - ease
+		local ctrl_x = (fc.sx + target_x) * 0.5
+		local ctrl_y = (fc.sy + target_y) * 0.5 + 90
+		local bx = inv*inv*fc.sx + 2*inv*ease*ctrl_x + ease*ease*target_x
+		local by = inv*inv*fc.sy + 2*inv*ease*ctrl_y + ease*ease*target_y
+		local icon  = COIN_ICON_SIZE * (1 - ease * 0.6)
+		local alpha = p > 0.8 and (1 - p) / 0.2 or 1
+		pass:setColor(1, 0.85, 0.1, alpha)
+		pass:plane(bx, by, 0, icon, icon)
+		if p >= 1 then
+			coin_count = coin_count + 1
+			table.remove(flying_coins, fi)
+		else
+			fi = fi + 1
+		end
+	end
+	pass:setBlendMode('none')
 	pass:setColor(1, 1, 1)
 end
 
 function game_scene.load()
-	coin_count = 0
+	coin_count   = 0
+	flying_coins = {}
 	local img = lovr.data.newImage(1, 1)
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
@@ -181,7 +229,16 @@ function game_scene.load()
 	game_scene.return_to_title_requested = false
 	pause_menu_index = 1
 	game_anim_time   = 0
-	pr_event_bus:on('coin_collected', function()
+	pr_event_bus:on('coin_collected', function(ecs, id)
+		local entity = ecs.entities[id]
+		if entity and entity.transform then
+			local wx, wy, wz = entity.transform.transform:getPosition()
+			local sx, sy = worldToHUD(wx, wy, wz)
+			if sx and sy then
+				table.insert(flying_coins, { sx=sx, sy=sy, t=0 })
+				return
+			end
+		end
 		coin_count = coin_count + 1
 	end)
 	ecs = scene_ecs.new()
@@ -218,11 +275,11 @@ function game_scene.update(dt)
 		print("pause_menu_index: " .. pause_menu_index)
 
 		local confirm = pr_control.enter_pressed or pr_control.space_pressed
-		                or pr_control.gc_btn_1 or pr_control.gc_btn_8_just_pressed
+		                or pr_control.gc_btn_1_just_pressed or pr_control.gc_btn_8_just_pressed
 		if confirm then
 			pr_control.enter_pressed = false
 			pr_control.space_pressed = false
-			pr_control.gc_btn_1 = false
+			pr_control.gc_btn_1_just_pressed = false
 			pr_control.gc_btn_8_just_pressed = false
 			if pause_menu_index == 1 then
 				game_scene.is_paused = false
@@ -249,8 +306,10 @@ function game_scene.draw(dpass)
 	gpass:setShader(environment_shader.shader)
 	environment_shader.setDefaultVals(gpass)
 
-	gpass:setViewPose(1 ,  dpass:getViewPose(1, mat4()))
-	gpass:setProjection(1, dpass:getProjection(1, mat4()))
+	dpass:getViewPose(1, scene_view_pose)
+	dpass:getProjection(1, scene_proj_mat)
+	gpass:setViewPose(1 ,  scene_view_pose)
+	gpass:setProjection(1, scene_proj_mat)
 
 	ecs:draw(gpass)
 	-- print("FPS: " .. lovr.timer.getFPS())

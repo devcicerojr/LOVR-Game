@@ -19,7 +19,7 @@ return function(ecs, spawn_pos)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
   transform_offset:rotate(math.pi/2, 1, 0, 0)
 
-  local gravity_acc = -9.81 --m/s
+  local gravity_acc = -40 --m/s
   local current_speed = lovr.math.newVec3(0, 0, 0)
   local velocity = lovr.math.newVec3(k_velocity)
   

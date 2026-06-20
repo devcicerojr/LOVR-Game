@@ -30,7 +30,7 @@ function pr_camera.toggleSpec()
 end
 
 function pr_camera.init()
-	pr_camera.game_cam:set(0, 4, 1, -0.436, 1, 0, 0)
+	pr_camera.game_cam:set(0, 4, 1, -0.2618, 1, 0, 0)
 end
 
 function pr_camera.getGameViewPose()
