@@ -31,8 +31,8 @@ return {
     local collider = entity.collider.collider
     local shape = collider:getShape() local shape_type = shape:getType()
     local entity_transform = mat4(entity.transform.transform)
-    local ray_origin = vec3(entity_transform:getPosition()):add(ground_sensor.origin_offset)
-    local ray_endpoint = vec3(ray_origin):add(ground_sensor.endpoint_offset)
+    local ray_origin = vec3(entity_transform:getPosition()) + ground_sensor.origin_offset
+    local ray_endpoint = vec3(ray_origin) + ground_sensor.endpoint_offset
 
     if shape_type == "capsule" then
       local radius = shape:getRadius()

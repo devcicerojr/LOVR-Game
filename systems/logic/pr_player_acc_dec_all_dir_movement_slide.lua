@@ -39,28 +39,28 @@ return {
 
     moving_forward = true
     if moving_forward then
-      desired_dir:add(0, 0, 1)
+      desired_dir = desired_dir + vec3(0, 0, 1)
       player_controlling = true
     end
     if moving_backward then
-      desired_dir:add(0, 0, -1)
+      desired_dir = desired_dir + vec3(0, 0, -1)
       player_controlling = true
     end
     if pr_control.a_pressed or pr_control.gc_dpad_left then
-      desired_dir:add(1, 0, 0)
+      desired_dir = desired_dir + vec3(1, 0, 0)
       player_controlling = true
     end
     if  pr_control.d_pressed or pr_control.gc_dpad_right then
-      desired_dir:add(-1, 0, 0)
+      desired_dir = desired_dir + vec3(-1, 0, 0)
       player_controlling = true
     end
     local rotation_angle = 0
     if pr_control.s_pressed or pr_control.gc_dpad_down then
-      desired_dir:set(0, 0, 0) -- stop movement if both forward and backward keys are pressed
+      desired_dir = vec3(0, 0, 0) -- stop movement if both forward and backward keys are pressed
       player_controlling = false
       rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
     end
-    desired_dir:add(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
+    desired_dir = desired_dir + vec3(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
     if desired_dir:length() > 0.001 then
       rotation_angle = vec3(desired_dir):angle(forward_vec)
       if desired_dir:dot(vec3(1, 0, 0)) < 0 then
@@ -84,19 +84,19 @@ return {
       local desired_dir_norm = vec3(desired_dir):normalize()
       local dot = acc_dec.current_speed:dot(desired_dir_norm)
       local accel_vec = desired_dir_norm * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
-      acc_dec.current_speed:add(accel_vec)
+      acc_dec.current_speed = acc_dec.current_speed + accel_vec
       -- Clamp to max speed
       if acc_dec.current_speed:length() > desired_speed then
-        acc_dec.current_speed:set(vec3(acc_dec.current_speed):normalize() * desired_speed)
+        acc_dec.current_speed = vec3(acc_dec.current_speed):normalize() * desired_speed
       end
     else
       -- No input: decelerate to zero
       if current_speed_len > 0 then
         local decel = DECELERATION * dt
         if current_speed_len <= decel then
-          acc_dec.current_speed:set(0,0,0)
+          acc_dec.current_speed = vec3(0, 0, 0)
         else
-          acc_dec.current_speed:add(current_dir * -decel)
+          acc_dec.current_speed = acc_dec.current_speed + current_dir * -decel
         end
       end
     end
@@ -131,11 +131,11 @@ return {
 
         ray_endpoint = aabb_sensor_pos + left_ray_sensor_dir
         -- Check for collision on the left side
-        local left_sensor_pos = vec3(aabb_sensor_pos):add(vec3(col_width/2, col_height / 2,  -col_depth/2 ))
+        local left_sensor_pos = vec3(aabb_sensor_pos) + vec3(col_width/2, col_height / 2,  -col_depth/2)
         local collided_left_side, shape_ls, cx_ls, cy_ls, cz_ls, nx_ls, ny_ls, nz_ls, triangle_ls = lovr_world:raycast(left_sensor_pos , ray_endpoint , OBSTACLE_FILTER)
 
         ray_endpoint = aabb_sensor_pos + right_ray_sensor_dir
-        local right_sensor_pos = vec3(aabb_sensor_pos):add(vec3(-col_width/2, col_height/2, -col_depth/2 ))
+        local right_sensor_pos = vec3(aabb_sensor_pos) + vec3(-col_width/2, col_height/2, -col_depth/2)
         local collided_right_side, shape_rs, cx_rs, cy_rs, cz_rs, nx_rs, ny_rs, nz_rs, triangle_rs = lovr_world:raycast(right_sensor_pos , ray_endpoint, OBSTACLE_FILTER)
         local norm_vec = lovr.math.vec3(0,0,0)
         if collided_middle then
@@ -157,17 +157,17 @@ return {
         aabb_sensor_pos = position + translate_val + aabb_rotated_offset
         -- second check for collision after adjusting direction
         local collided_c2 = lovr_world:queryBox(aabb_sensor_pos, lovr.math.vec3(aabb_sensor.width, aabb_sensor.height, aabb_sensor.depth), OBSTACLE_FILTER)
-        if not collided_c2 then position:add(translate_val) end
+        if not collided_c2 then position = position + translate_val end
       else
         aabb_sensor.is_active = false
-        position:add(translate_val)
+        position = position + translate_val
       end
       -- entity.transform.transform:translate(translate_val)
 
       entity.transform.transform:set(position, desired_rot) -- move the entity transform (kinematic)
       -- Sync collider immediately so physics queries and model render both see the
       -- current position within the same frame (no model_collider_track lag).
-      local col_mat = mat4(entity.transform.transform):mul(mat4(entity.collider.transform_offset))
+      local col_mat = mat4(entity.transform.transform) * mat4(entity.collider.transform_offset)
       collider:setPose(vec3(col_mat:getPosition()), quat(col_mat:getOrientation()))
       lovr.audio.setPose(position, lovr.math.newQuat(math.pi ,0,1,0)) -- update audio listener position
     else

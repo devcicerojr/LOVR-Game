@@ -52,7 +52,7 @@ local pr_utils = {
   end ,
   
   applyTransform = function(entity_transform , transform)
-    entity_transform:mul(transform)
+    entity_transform = entity_transform * transform
   end ,
 
   moved = function(id, translated, rotated)
@@ -63,8 +63,8 @@ local pr_utils = {
       -- collider:setKinematic(true)
       local collider_position = lovr.math.newVec3(collider:getPosition())
       local collider_orientation = lovr.math.newQuat(collider:getOrientation())
-      collider_position:add(translated:unpack())
-      collider_orientation:mul(rotated:unpack())
+      collider_position = collider_position + translated
+      collider_orientation = collider_orientation * rotated
       collider:setPose(lovr.math.vec3(collider_position:unpack()), lovr.math.quat(collider_orientation:unpack()))
       -- collider:setKinematic(false)
     end

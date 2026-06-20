@@ -25,7 +25,7 @@ return {
     
     local pos_z = select(3, entity.transform.transform:getPose())
     if player_pos_z - pos_z >= 200 then
-      entity.transform.transform =  lovr.math.newMat4(lovr.math.newMat4():translate(0, 0, 400):mul(transform))
+      entity.transform.transform =  lovr.math.newMat4(lovr.math.newMat4():translate(0, 0, 400) * transform)
     end
 
   end

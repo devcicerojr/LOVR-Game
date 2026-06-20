@@ -15,7 +15,7 @@ return {
       local collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
 
       local model_quat = collider_quat * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate()
-      local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):rotate(model_quat):add(cx, cy, cz)
+      local model_pos = lovr.math.vec3(collider_pos_offset:unpack()):rotate(model_quat) + lovr.math.vec3(cx, cy, cz)
       entity.transform.transform:set(model_pos, model_quat)
     end
     pass:draw(entity.model.model, entity.transform.transform)

@@ -16,7 +16,7 @@ return {
       local entity_transform = lovr.math.mat4(entity.transform.transform)
       local collider = entity.collider.collider
       local collider_transform_offset = entity.collider.transform_offset
-      local new_collider_transform = mat4(entity_transform):mul(mat4(collider_transform_offset))
+      local new_collider_transform = mat4(entity_transform) * mat4(collider_transform_offset)
       -- print(lovr.math.vec3(new_collider_transform:getPosition()).y)
       collider:setPose(vec3(new_collider_transform:getPosition()), quat(new_collider_transform:getOrientation()))
     end

@@ -4,6 +4,8 @@ outline_shader = require'shaders/outline_shader'
 environment_shader = require'shaders/environment_shader'
 test_shader = require'shaders/test_shader'
 cel_shader =  require'shaders/cel_shader'
+lovr.mouse = require'external/libraries/lovr_mouse/lovr-mouse'
+
 
 local pr_control  = require'./input/controller/pr_control'
 local pr_camera   = require'pr_camera'
@@ -47,6 +49,7 @@ end
 function lovr.keyreleased(key, scancode)
   pr_control.keyreleased(key, scancode)
 end
+
 
 function lovr.load(arg)
   local window_pass = lovr.graphics.getWindowPass()

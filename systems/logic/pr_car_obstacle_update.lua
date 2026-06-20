@@ -45,22 +45,23 @@ return {
     local applied_speed = vec3(0, 0, car_speed.z * dt)
     local speed_transform = lovr.math.newMat4():translate(applied_speed)
     
-    entity_transform:mul(speed_transform)
+    entity_transform = entity_transform * speed_transform
+    ecs.entities[id].transform.transform = entity_transform
     if source:isPlaying() == false then
       source:play()
     end
     local player = ecs:getEntityByTag('is_player')
     local player_transform = ecs.entities[player].transform.transform
     local player_position = vec3(player_transform:getPosition())
-    local distance_to_player = vec3(player_position):sub(vec3(entity_transform:getPosition()))
-    local translate_value = vec3(distance_to_player):mul(AUDIO_SCALE_FACTOR)
+    local distance_to_player = vec3(player_position) - vec3(entity_transform:getPosition())
+    local translate_value = vec3(distance_to_player) * AUDIO_SCALE_FACTOR
     local new_source_pos = nil
     if (distance_to_player.z > 200) then
       new_source_pos = lovr.math.newVec3(entity_transform:getPosition())
       source:stop()
       pr_event_bus:emit('car_went_out_of_range', ecs, id)
     else
-      new_source_pos = lovr.math.newVec3(vec3(entity_transform:getPosition()):add(translate_value))
+      new_source_pos = lovr.math.newVec3(vec3(entity_transform:getPosition()) + translate_value)
     end
 
     -- update sound source position

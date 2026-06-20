@@ -7,7 +7,7 @@ local HEIGHT = 2 * MODEL_SCALE.y
 local DEPTH = 2 * MODEL_SCALE.z
 
 local ENGINE_SOUND_FILE = 'assets/sound_fx/loud_engine.wav'
-local ENGINE_SOUND_RADIUS = 800
+local ENGINE_SOUND_RADIUS = 3
 
 return function(ecs, spanw_pos)
   local id = ecs:newEntity()
@@ -22,7 +22,9 @@ return function(ecs, spanw_pos)
   collider:setUserData(id)
   collider:setTag('car')
 
-  local source = lovr.audio.newSource(ENGINE_SOUND_FILE, { effects = {'spatialization', 'attenuation'} })
+  local source = lovr.audio.newSource(ENGINE_SOUND_FILE, { spatial = true , pitchable = false })
+  source:setSpatialization(1)
+  source:setFalloff(0, 0)
   source:setRadius(ENGINE_SOUND_RADIUS)
   source:setLooping(true)
   source:setPosition(spawn_pos)

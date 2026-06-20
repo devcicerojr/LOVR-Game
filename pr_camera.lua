@@ -49,7 +49,7 @@ function pr_camera.zoomIn(zval)
 	if pr_camera.spectate then
 		q = lovr.math.newQuat(pr_camera.spec_cam:getOrientation())
 		dir = q:direction()
-		dir:mul(-zval)
+		dir = dir * (-zval)
 
 		pr_camera.spec_cam:translate(dir)
   end
@@ -64,7 +64,7 @@ function pr_camera.zoomOut(zval)
 	if pr_camera.spectate then
 		q = lovr.math.newQuat(pr_camera.spec_cam:getOrientation())
 		dir = q:direction()
-		dir:mul(zval)
+		dir = dir * zval
 		pr_camera.spec_cam:translate(dir)
   end
 end

@@ -13,8 +13,8 @@ return {
     local ground_sensor = ecs.entities[id].sensors_array.sensors["ground_sensor"]
     
     for _, sensor in pairs(ecs.entities[id].sensors_array.sensors) do
-      local origin = lovr.math.vec3(entity_transform:getPosition()):add(ground_sensor.origin_offset:rotate(entity_orientation))
-      local endpoint = lovr.math.vec3(entity_transform:getPosition()):add(ground_sensor.endpoint_offset:rotate(entity_orientation))
+      local origin = lovr.math.vec3(entity_transform:getPosition()) + ground_sensor.origin_offset:rotate(entity_orientation)
+      local endpoint = lovr.math.vec3(entity_transform:getPosition()) + ground_sensor.endpoint_offset:rotate(entity_orientation)
 
       if is_dev_build and draw_wireframes then
         pass:push('state')

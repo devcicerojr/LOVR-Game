@@ -18,16 +18,16 @@ return {
     local game_cam_pos_offset = lovr.math.vec3(entity.game_cam.game_cam_offset:getPosition())
     game_cam_pos_offset:rotate(entity_rot)
     local cur_cam_pos = lovr.math.vec3(pr_camera.game_cam:getPosition())
-    local target_cam_pos = lovr.math.vec3(entity_transform:getPosition()):add(game_cam_pos_offset)
+    local target_cam_pos = lovr.math.vec3(entity_transform:getPosition()) + game_cam_pos_offset
     -- Spring-damper for position only
     entity.game_cam.cam_vel = entity.game_cam.cam_vel or lovr.math.vec3(0,0,0)
     local to_target = target_cam_pos - cur_cam_pos
     local accel = to_target * SPRING_STIFFNESS - entity.game_cam.cam_vel * SPRING_DAMPING
-    entity.game_cam.cam_vel:add(accel * dt)
+    entity.game_cam.cam_vel = entity.game_cam.cam_vel + accel * dt
     local new_pos = cur_cam_pos + entity.game_cam.cam_vel * dt
     -- Smooth orientation using slerp
     local game_cam_rot_offset = lovr.math.quat(entity.game_cam.game_cam_offset:getOrientation())
-    game_cam_rot_offset = entity_rot:mul(game_cam_rot_offset)
+    game_cam_rot_offset = entity_rot * game_cam_rot_offset
     local target_rot = lovr.math.quat(game_cam_rot_offset)
     local cur_rot = lovr.math.quat(pr_camera.game_cam:getOrientation())
     local t = 1 - math.exp(-ROT_SMOOTHING * dt)

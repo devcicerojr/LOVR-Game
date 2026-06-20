@@ -15,7 +15,7 @@ return {
       return
     end
 
-    local position = vec3(ecs.entities[tracking_entity].collider.collider:getPosition()):add(entity.tracks_entity.transform_offset:getPosition())
+    local position = vec3(ecs.entities[tracking_entity].collider.collider:getPosition()) + vec3(entity.tracks_entity.transform_offset:getPosition())
     local orientation = entity.rotation.rotation
 
     if state_machine.current_state == "invisible" then

@@ -25,14 +25,16 @@ return {
       local position = lovr.math.vec3(entity.transform.transform:getPosition())
       if lovr.system.isKeyDown("i") then
         direction = lovr.math.vec3(0, 0, 1) -- forward LOVR world
-        direction:rotate(orientation):mul(velocity.z * dt)
+        direction:rotate(orientation)
+        direction = direction * (velocity.z * dt)
         translate_val = direction
       elseif lovr.system.isKeyDown("k") then
         direction = lovr.math.vec3(0, 0, -1) -- backward LOVR world
-        direction:rotate(orientation):mul(velocity.z * dt)
+        direction:rotate(orientation)
+        direction = direction * (velocity.z * dt)
         translate_val = direction
       end
-      position:add(translate_val)
+      position = position + translate_val
       entity.transform.transform = lovr.math.newMat4(position, orientation) -- move the entity transform (kinematic)
     else
       local collider_rotation_offset = lovr.math.quat(1, 0, 0, 0) 
@@ -41,18 +43,18 @@ return {
         direction = lovr.math.vec3(0, 0, 1) -- forward LOVR world
         collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
         collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
-        direction:mul(velocity)
+        direction = direction * velocity
         direction:rotate(lovr.math.quat(collider:getOrientation()) * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate())
         translate_val = direction * velocity.z * dt
-        collider:setPosition(lovr.math.vec3(collider:getPosition()):add(translate_val))
+        collider:setPosition(lovr.math.vec3(collider:getPosition()) + translate_val)
       elseif lovr.system.isKeyDown("k") then
         direction = lovr.math.vec3(0, 0, -1) -- backward LOVR world
         collider_rotation_offset = lovr.math.quat(entity.collider.transform_offset:getOrientation())
         collider_pos_offset = lovr.math.vec3(entity.collider.transform_offset:getPosition())
-        direction:mul(velocity)
+        direction = direction * velocity
         direction:rotate(lovr.math.quat(collider:getOrientation()) * (lovr.math.quat(collider_rotation_offset:unpack())):conjugate())
         translate_val = direction * velocity.z * dt
-        collider:setPosition(lovr.math.vec3(collider:getPosition()):add(translate_val))   -- move the collider (non-kinematic)
+        collider:setPosition(lovr.math.vec3(collider:getPosition()) + translate_val)   -- move the collider (non-kinematic)
       end
     end
   end

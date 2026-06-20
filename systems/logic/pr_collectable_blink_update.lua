@@ -8,7 +8,7 @@ return {
   requires = {"tracks_entity", "rotation", "state_machine", "is_collected_coin_effect"},
   update_fn = function(ecs, id, c, dt) -- update function
     local entity_rotation = ecs.entities[id].rotation.rotation
-    entity_rotation:mul(quat(20 * dt, 0, 1, 0))
+    ecs.entities[id].rotation.rotation = entity_rotation * quat(20 * dt, 0, 1, 0)
 
     if ecs.entities[id].state_machine.state_machine.current_state == "visible" then
       VISIBLE_COUNTER = VISIBLE_COUNTER + 1

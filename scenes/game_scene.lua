@@ -5,6 +5,7 @@ local game_scene = {}
 local ecs        = nil
 local player     = nil
 local coin_count = 0
+local hidden_cursor = nil
 
 game_scene.is_paused               = false
 game_scene.return_to_title_requested = false
@@ -103,6 +104,8 @@ function game_scene.unload()
 	ecs = nil
 	player = nil
 	game_scene.is_paused = false
+	lovr.mouse.setCursor(nil)
+	hidden_cursor = nil
 end
 
 -- TODO: move it to some async system event
@@ -154,11 +157,26 @@ local function drawHUD(pass)
 	pass:setProjection(1, lovr.math.mat4():orthographic(0, W, 0, H, -1, 1))
 	pass:setColor(1, 0.9, 0.1)
 	pass:text('Coins: ' .. tostring(coin_count), 60, H - 54, 0, 40)
+
+	local win_w, win_h = lovr.system.getWindowDimensions()
+	local mx, my = lovr.system.getMousePosition()
+	local cx = mx * (W / win_w)
+	local cy = my * (H / win_h)
+	local size, gap = 14, 5
+	pass:setColor(1, 1, 1, 0.9)
+	pass:line(cx - size, cy, 0,  cx - gap, cy, 0)
+	pass:line(cx + gap,  cy, 0,  cx + size, cy, 0)
+	pass:line(cx, cy - size, 0,  cx, cy - gap, 0)
+	pass:line(cx, cy + gap,  0,  cx, cy + size, 0)
+
 	pass:setColor(1, 1, 1)
 end
 
 function game_scene.load()
 	coin_count = 0
+	local img = lovr.data.newImage(1, 1)
+	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
+	lovr.mouse.setCursor(hidden_cursor)
 	game_scene.is_paused               = false
 	game_scene.return_to_title_requested = false
 	pause_menu_index = 1

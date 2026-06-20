@@ -16,7 +16,7 @@ return {
   
     local applied_velocity = vec3(0, entity_gravity * dt, 0)
     local gravity_transform = mat4():translate(applied_velocity)
-    entity_transform:mul(gravity_transform)
+    ecs.entities[id].transform.transform = entity_transform * gravity_transform
 
   end
 }

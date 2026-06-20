@@ -23,7 +23,7 @@ return function(ecs, spawn_pos)
   local current_speed = lovr.math.newVec3(0, 0, 0)
   local velocity = lovr.math.newVec3(k_velocity)
   
-  local cam_transform_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(math.pi, 0, 1, 0):mul(lovr.math.quat(-0.436, 1, 0, 0)) )
+  local cam_transform_offset = lovr.math.newMat4(lovr.math.vec3(0,4,-4), lovr.math.vec3(1,1,1), lovr.math.quat(math.pi, 0, 1, 0) * lovr.math.quat(-0.436, 1, 0, 0) )
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.newQuat(collider:getOrientation()) * collider_rotation_offset)
   

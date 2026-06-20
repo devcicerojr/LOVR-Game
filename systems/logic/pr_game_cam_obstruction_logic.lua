@@ -11,7 +11,7 @@ return {
     local camera = entity.camera
     local camera_pos_offset = vec3(camera.cam_transform_offset:getPosition())
     camera_pos_offset:rotate(player_orientation)
-    local game_cam_pos_world = vec3(player_pos):add(camera_pos_offset)
+    local game_cam_pos_world = vec3(player_pos) + camera_pos_offset
     local direction = vec3(player_pos - game_cam_pos_world)
     direction:normalize()
 
