@@ -14,6 +14,12 @@ local lovr_world  = require'core/pr_world'
 
 local current_scene = title_scene
 
+local function switch_to_title()
+  current_scene.unload()
+  current_scene = title_scene
+  title_scene.load()
+end
+
 local function switch_to_game()
   current_scene.unload()
   current_scene = game_scene
@@ -103,6 +109,10 @@ function lovr.update(dt)
   end
 
   current_scene.update(dt)
+
+  if current_scene == game_scene and game_scene.return_to_title_requested then
+    switch_to_title()
+  end
 end
 
 function lovr.draw(pass)

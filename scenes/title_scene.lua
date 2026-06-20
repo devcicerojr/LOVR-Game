@@ -19,8 +19,8 @@ end
 function title_scene.update(dt)
   local confirm = pr_control.space_pressed
                   or pr_control.enter_pressed
-                  or pr_control.gc_btn_1
-                  or pr_control.gc_btn_8
+                  or pr_control.gc_btn_1_just_pressed
+                  or pr_control.gc_btn_8_just_pressed
   if confirm then
     title_scene.start_requested = true
     pr_control.space_pressed = false
@@ -53,11 +53,11 @@ function title_scene.draw(pass)
 
   -- Title
   pass:setColor(1, 0.75, 0.1, 1)
-  pass:text("Dont Stop Delivery", W / 2, H * 0.65, 0, 90)
+  pass:text("Dont Stop Delivery", W / 2, H * 0.34, 0, 90)
 
   -- Buttons
-  draw_button(pass, W / 2, H * 0.46, "Start Game", true)
-  draw_button(pass, W / 2, H * 0.34, "Options",    false)
+  draw_button(pass, W / 2, H * 0.55, "Start Game", true)
+  draw_button(pass, W / 2, H * 0.65, "Options",    false)
 
   pass:setColor(1, 1, 1, 1)
   pass:setDepthWrite(true)

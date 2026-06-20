@@ -6,7 +6,14 @@ local ecs        = nil
 local player     = nil
 local coin_count = 0
 
-game_scene.is_paused = false
+game_scene.is_paused               = false
+game_scene.return_to_title_requested = false
+
+local pause_menu_index = 1
+local prev_dpad_up     = false
+local prev_dpad_down   = false
+
+local PAUSE_MENU_ITEMS = { "Resume", "Return to Title" }
 
 local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
@@ -92,6 +99,7 @@ local function build_level()
 end
 
 function game_scene.unload()
+	pr_event_bus:emit('game_scene_unloaded')
 	ecs = nil
 	player = nil
 	game_scene.is_paused = false
@@ -120,9 +128,22 @@ local function drawPauseOverlay(pass)
 	pass:setBlendMode('alpha', 'alphamultiply')
 	pass:setColor(0, 0, 0, 0.65)
 	pass:plane(W / 2, H / 2, 0, W, H)
-	pass:setColor(1, 1, 1, 1)
-	pass:text("Game Paused", W / 2, H / 2, 0, 72)
 	pass:setBlendMode('none')
+
+	pass:setColor(1, 1, 1, 1)
+	pass:text("Game Paused", W / 2, H * 0.30, 0, 64)
+
+	local item_y = { H * 0.50, H * 0.58 }
+	for i, item in ipairs(PAUSE_MENU_ITEMS) do
+		if i == pause_menu_index then
+			pass:setColor(1, 0.85, 0.1, 1)
+		else
+			pass:setColor(0.55, 0.55, 0.55, 1)
+		end
+		pass:text(item, W / 2, item_y[i], 0, 44)
+	end
+
+	pass:setColor(1, 1, 1, 1)
 end
 
 local function drawHUD(pass)
@@ -138,8 +159,10 @@ end
 
 function game_scene.load()
 	coin_count = 0
-	game_scene.is_paused = false
-	game_anim_time = 0
+	game_scene.is_paused               = false
+	game_scene.return_to_title_requested = false
+	pause_menu_index = 1
+	game_anim_time   = 0
 	pr_event_bus:on('coin_collected', function()
 		coin_count = coin_count + 1
 	end)
@@ -153,10 +176,43 @@ local MAX_DT = 1 / 30  -- cap at 30 fps equivalent to prevent position spikes fr
 function game_scene.update(dt)
 	if not ecs then return end
 
-	if pr_control.enter_pressed or pr_control.gc_btn_8_just_pressed then
-		game_scene.is_paused = not game_scene.is_paused
-		pr_control.enter_pressed = false
-		pr_event_bus:emit('game_paused_changed', ecs, game_scene.is_paused)
+	if not game_scene.is_paused then
+		if pr_control.enter_pressed or pr_control.gc_btn_8_just_pressed then
+			game_scene.is_paused = true
+			pause_menu_index     = 1
+			prev_dpad_up         = false
+			prev_dpad_down       = false
+			pr_control.enter_pressed = false
+			pr_event_bus:emit('game_paused_changed', ecs, true)
+		end
+	else
+		local dpad_up_just   = pr_control.gc_dpad_up   and not prev_dpad_up
+		local dpad_down_just = pr_control.gc_dpad_down  and not prev_dpad_down
+		prev_dpad_up   = pr_control.gc_dpad_up
+		prev_dpad_down = pr_control.gc_dpad_down
+
+		if dpad_up_just then
+			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS
+		end
+		if dpad_down_just then
+			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS
+		end
+		print("pause_menu_index: " .. pause_menu_index)
+
+		local confirm = pr_control.enter_pressed or pr_control.space_pressed
+		                or pr_control.gc_btn_1 or pr_control.gc_btn_8_just_pressed
+		if confirm then
+			pr_control.enter_pressed = false
+			pr_control.space_pressed = false
+			pr_control.gc_btn_1 = false
+			pr_control.gc_btn_8_just_pressed = false
+			if pause_menu_index == 1 then
+				game_scene.is_paused = false
+				pr_event_bus:emit('game_paused_changed', ecs, false)
+			elseif pause_menu_index == 2 then
+				game_scene.return_to_title_requested = true
+			end
+		end
 	end
 
 	if game_scene.is_paused then return end

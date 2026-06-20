@@ -11,6 +11,11 @@ local MIN_SPEED      = 1.0
 local particles  = {}
 local last_spawn = 0.0
 
+pr_event_bus:on('game_scene_unloaded', function()
+  particles  = {}
+  last_spawn = 0.0
+end)
+
 return {
   phase    = "render",
   requires = {"transform", "acc_dec_movement", "player_controls"},

@@ -20,8 +20,9 @@ pr_control.gc_dpad_up    = false
 pr_control.gc_dpad_right = false
 pr_control.gc_dpad_down  = false
 pr_control.gc_dpad_left  = false
-pr_control.gc_btn_1            = false  -- A / Cross
-pr_control.gc_btn_8            = false  -- Start / Menu
+pr_control.gc_btn_1              = false  -- A / Cross
+pr_control.gc_btn_1_just_pressed = false
+pr_control.gc_btn_8              = false  -- Start / Menu
 pr_control.gc_btn_8_just_pressed = false
 
 
@@ -165,7 +166,9 @@ function pr_control.update(dt)
       pr_control.gc_dpad_right = gc.getButtonState( 1, 12 ) == 1
       pr_control.gc_dpad_down  = gc.getButtonState( 1, 13 ) == 1
       pr_control.gc_dpad_left  = gc.getButtonState( 1, 14 ) == 1
+      local prev_btn_1   = pr_control.gc_btn_1
       pr_control.gc_btn_1 = gc.getButtonState( 1, 1 ) == 1
+      pr_control.gc_btn_1_just_pressed = pr_control.gc_btn_1 and not prev_btn_1
       local prev_btn_8   = pr_control.gc_btn_8
       pr_control.gc_btn_8 = gc.getButtonState( 1, 8 ) == 1
       pr_control.gc_btn_8_just_pressed = pr_control.gc_btn_8 and not prev_btn_8
@@ -184,6 +187,7 @@ function pr_control.update(dt)
       pr_control.gc_dpad_down          = false
       pr_control.gc_dpad_left          = false
       pr_control.gc_btn_1              = false
+      pr_control.gc_btn_1_just_pressed = false
       pr_control.gc_btn_8              = false
       pr_control.gc_btn_8_just_pressed = false
       pr_control.axes = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }

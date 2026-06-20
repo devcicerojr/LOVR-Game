@@ -14,6 +14,11 @@ local Z_DISTANCE = 14 -- distance between coins in Z axis
 
 local player_id = nil
 
+pr_event_bus:on('game_scene_unloaded', function()
+  player_id     = nil
+  EVENT_COUNTER = 0
+end)
+
 local PATTERNS = {
   -- Single car, center — corridors on both flanks, coins right
   {
