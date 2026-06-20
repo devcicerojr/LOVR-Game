@@ -2,9 +2,11 @@ local scene_ecs = require('../core/pr_scene_ecs')
 local lovr_world = require'../core/pr_world'
 local game_scene = {}
 
-local ecs = nil
-local player = nil
+local ecs        = nil
+local player     = nil
 local coin_count = 0
+
+game_scene.is_paused = false
 
 local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
@@ -92,6 +94,7 @@ end
 function game_scene.unload()
 	ecs = nil
 	player = nil
+	game_scene.is_paused = false
 end
 
 -- TODO: move it to some async system event
@@ -112,6 +115,16 @@ function game_scene.player_respawn()
 	-- pr_utils.moved(player, lovr.math.vec3(0, 2, -3), lovr.math.quat(math.pi, 0, 1, 0)) -- this is needed because it handles kinematic/non-kinematic  positioning
 end
 
+local function drawPauseOverlay(pass)
+	local W, H = scene_resolution.width, scene_resolution.height
+	pass:setBlendMode('alpha', 'alphamultiply')
+	pass:setColor(0, 0, 0, 0.65)
+	pass:plane(W / 2, H / 2, 0, W, H)
+	pass:setColor(1, 1, 1, 1)
+	pass:text("Game Paused", W / 2, H / 2, 0, 72)
+	pass:setBlendMode('none')
+end
+
 local function drawHUD(pass)
 	local W, H = scene_resolution.width, scene_resolution.height
 	pass:setShader()
@@ -125,6 +138,8 @@ end
 
 function game_scene.load()
 	coin_count = 0
+	game_scene.is_paused = false
+	game_anim_time = 0
 	pr_event_bus:on('coin_collected', function()
 		coin_count = coin_count + 1
 	end)
@@ -137,6 +152,16 @@ local MAX_DT = 1 / 30  -- cap at 30 fps equivalent to prevent position spikes fr
 
 function game_scene.update(dt)
 	if not ecs then return end
+
+	if pr_control.enter_pressed or pr_control.gc_btn_8_just_pressed then
+		game_scene.is_paused = not game_scene.is_paused
+		pr_control.enter_pressed = false
+		pr_event_bus:emit('game_paused_changed', ecs, game_scene.is_paused)
+	end
+
+	if game_scene.is_paused then return end
+
+	game_anim_time = game_anim_time + math.min(dt, MAX_DT)
 	ecs:update(math.min(dt, MAX_DT))
 	ecs:deleteDeadEntities()
 end
@@ -156,9 +181,13 @@ function game_scene.draw(dpass)
 	ecs:draw(gpass)
 	-- print("FPS: " .. lovr.timer.getFPS())
 	-- local pass = dpass
+
 	dpass:setSampler('nearest')
 	dpass:fill(gTexture)
 	drawHUD(dpass)
+	if game_scene.is_paused then
+		drawPauseOverlay(dpass)
+	end
 	return lovr.graphics.submit(gpass, dpass)
 end
 

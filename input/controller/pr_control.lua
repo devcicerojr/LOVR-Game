@@ -13,12 +13,16 @@ pr_control.d_pressed = false
 pr_control.zero_pressed = false
 pr_control.nine_pressed = false
 pr_control.space_pressed = false
+pr_control.enter_pressed = false
 
 
-pr_control.gc_dpad_up = false
+pr_control.gc_dpad_up    = false
 pr_control.gc_dpad_right = false
-pr_control.gc_dpad_down = false
-pr_control.gc_dpad_left = false
+pr_control.gc_dpad_down  = false
+pr_control.gc_dpad_left  = false
+pr_control.gc_btn_1            = false  -- A / Cross
+pr_control.gc_btn_8            = false  -- Start / Menu
+pr_control.gc_btn_8_just_pressed = false
 
 
 pr_control.spectate = false
@@ -67,6 +71,9 @@ function pr_control.keypressed(key, scancode, rpt)
   elseif key == "space" then
     pr_control.space_pressed = true
     print("space pressed")
+  elseif key == "return" then
+    pr_control.enter_pressed = true
+    print("enter pressed")
   end
 end
 
@@ -105,8 +112,11 @@ function pr_control.keyreleased(key , scancode)
     pr_control.gc_dpad_left = false;
     print("dpad-LEFT released")
   elseif key == "space" then
-    pr_control.space_pressed = false;
+    pr_control.space_pressed = false
     print("space released")
+  elseif key == "return" then
+    pr_control.enter_pressed = false
+    print("enter released")
   end
 end
 
@@ -155,15 +165,28 @@ function pr_control.update(dt)
       pr_control.gc_dpad_right = gc.getButtonState( 1, 12 ) == 1
       pr_control.gc_dpad_down  = gc.getButtonState( 1, 13 ) == 1
       pr_control.gc_dpad_left  = gc.getButtonState( 1, 14 ) == 1
+      pr_control.gc_btn_1 = gc.getButtonState( 1, 1 ) == 1
+      local prev_btn_8   = pr_control.gc_btn_8
+      pr_control.gc_btn_8 = gc.getButtonState( 1, 8 ) == 1
+      pr_control.gc_btn_8_just_pressed = pr_control.gc_btn_8 and not prev_btn_8
       for i = 1, btn_count do
         if gc.getButtonState( 1, i ) == 1 then
-          -- print( "Button " .. i .. " is down" )
+          print( "Button " .. i .. " is down" )
         end
       end
       local axis_count = gc.getAxesCount( 1 )
       for i = 1, axis_count do
         pr_control.axes[i] = gc.getAxisValue( 1, i )
       end
+    else
+      pr_control.gc_dpad_up            = false
+      pr_control.gc_dpad_right         = false
+      pr_control.gc_dpad_down          = false
+      pr_control.gc_dpad_left          = false
+      pr_control.gc_btn_1              = false
+      pr_control.gc_btn_8              = false
+      pr_control.gc_btn_8_just_pressed = false
+      pr_control.axes = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
     end
   end)
 
@@ -173,6 +196,9 @@ function pr_control.update(dt)
     pr_control.gc_dpad_right = false
     pr_control.gc_dpad_down  = false
     pr_control.gc_dpad_left  = false
+    pr_control.gc_btn_1              = false
+    pr_control.gc_btn_8              = false
+    pr_control.gc_btn_8_just_pressed = false
     pr_control.axes = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
   end
 end

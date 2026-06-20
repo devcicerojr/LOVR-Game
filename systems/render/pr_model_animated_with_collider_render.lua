@@ -9,7 +9,7 @@ return {
     if entity.animation_state.current > 0 then
       cur_animation = entity.model.model:getAnimationName(entity.animation_state.current)
       if cur_animation then
-        entity.model.model:animate(cur_animation, lovr.timer.getTime() * 3 %
+        entity.model.model:animate(cur_animation, game_anim_time * 3 %
         entity.model.model:getAnimationDuration(cur_animation))
       end
     else

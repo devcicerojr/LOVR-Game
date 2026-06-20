@@ -5,12 +5,20 @@ environment_shader = require'shaders/environment_shader'
 test_shader = require'shaders/test_shader'
 cel_shader =  require'shaders/cel_shader'
 
-local pr_control = require'./input/controller/pr_control'
-local pr_camera = require'pr_camera'
-local game_scene = require'scenes/game_scene'
--- local game_scene = require'scenes/test_scene'
-local map_parser = require'tools/map_parser'
-local lovr_world = require'core/pr_world'
+local pr_control  = require'./input/controller/pr_control'
+local pr_camera   = require'pr_camera'
+local title_scene = require'scenes/title_scene'
+local game_scene  = require'scenes/game_scene'
+local map_parser  = require'tools/map_parser'
+local lovr_world  = require'core/pr_world'
+
+local current_scene = title_scene
+
+local function switch_to_game()
+  current_scene.unload()
+  current_scene = game_scene
+  game_scene.load()
+end
 
 
 is_dev_build = false
@@ -70,31 +78,46 @@ function lovr.load(arg)
     print("Depth clamping is not supported.")
   end
 
-  game_scene.load()
-  
+  title_scene.load()
+
   pr_camera.init()
 end
 
 function lovr.update(dt)
   if dt > 0.05 then dt = 0.05 end
   pr_control.update(dt)
-  if pr_control.nine_pressed then
-    game_scene:player_respawn()
+
+  if current_scene == title_scene then
+    if title_scene.start_requested then
+      switch_to_game()
+    end
   end
-  lovr_world:update(dt)
-  game_scene.update(dt)
+
+  if current_scene == game_scene then
+    if pr_control.nine_pressed then
+      game_scene:player_respawn()
+    end
+    if not game_scene.is_paused then
+      lovr_world:update(dt)
+    end
+  end
+
+  current_scene.update(dt)
 end
 
 function lovr.draw(pass)
   pass:setDepthOffset(1.0, 1.0)
   pass:setDepthClamp(false)
-  if not pr_camera.spectate then
-	  pass:setViewPose(1, pr_camera.game_cam:getPose())
-  else
-    pr_camera.updateSpecCamPose() -- this is only needed because we want to have a track of headset pose inside pr_camera
-  end
-  game_scene.draw(pass)
 
+  if current_scene == game_scene then
+    if not pr_camera.spectate then
+      pass:setViewPose(1, pr_camera.game_cam:getPose())
+    else
+      pr_camera.updateSpecCamPose()
+    end
+  end
+
+  return current_scene.draw(pass)
 end
 
 -- function lovr.run()

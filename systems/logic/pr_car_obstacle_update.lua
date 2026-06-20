@@ -6,6 +6,15 @@ local AUDIO_SCALE_FACTOR = 0.90  -- this makes the audio distance feel closer th
 -- 1.0 brings the listener to the audio source. 0.0 disables scale factor
 
 
+pr_event_bus:on('game_paused_changed', function(ecs, is_paused)
+  local volume = is_paused and 0.15 or 1.0
+  for id, entity in pairs(ecs.entities) do
+    if entity.is_car_obstacle and entity.audio_source then
+      entity.audio_source.source:setVolume(volume)
+    end
+  end
+end)
+
 pr_event_bus:on('car_went_out_of_range', function(ecs, id)
   -- handle car going out of range if needed
   local collider = ecs.entities[id].collider.collider
@@ -37,7 +46,6 @@ return {
     local speed_transform = lovr.math.newMat4():translate(applied_speed)
     
     entity_transform:mul(speed_transform)
-
     if source:isPlaying() == false then
       source:play()
     end

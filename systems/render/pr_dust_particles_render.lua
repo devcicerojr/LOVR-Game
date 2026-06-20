@@ -16,7 +16,7 @@ return {
   requires = {"transform", "acc_dec_movement", "player_controls"},
   update_fn = function(ecs, id, c, pass)
     local entity = ecs.entities[id]
-    local now    = lovr.timer.getTime()
+    local now    = game_anim_time
 
     for i = #particles, 1, -1 do
       if now - particles[i].born_at >= MAX_LIFE then
