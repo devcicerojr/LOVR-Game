@@ -8,6 +8,8 @@ local coin_count = 0
 local hidden_cursor   = nil
 local flying_coins    = {}
 local laser_beam      = nil
+local sparks          = {}
+local mouse_was_down  = false
 local scene_view_pose = lovr.math.newMat4()
 local scene_proj_mat  = lovr.math.newMat4()
 
@@ -36,6 +38,10 @@ local COIN_FLY_DURATION = 0.55
 local COIN_ICON_SIZE    = 14
 local LASER_DURATION    = 0.12
 local LASER_RANGE       = 200
+local SPARK_COUNT       = 18
+local SPARK_SPEED       = 9
+local SPARK_LIFETIME    = 0.45
+local SPARK_GRAVITY     = 14
 local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
@@ -114,6 +120,7 @@ function game_scene.unload()
 	game_scene.is_paused = false
 	flying_coins = {}
 	laser_beam   = nil
+	sparks       = {}
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
@@ -255,6 +262,7 @@ function game_scene.load()
 	coin_count   = 0
 	flying_coins = {}
 	laser_beam   = nil
+	sparks       = {}
 	local img = lovr.data.newImage(1, 1)
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
@@ -330,7 +338,11 @@ function game_scene.update(dt)
 	ecs:deleteDeadEntities()
 
 	-- Laser: fire while mouse button 1 held
-	if lovr.mouse.isDown(1) and ecs and player and ecs.entities[player] then
+	local mouse_is_down    = lovr.mouse.isDown(1)
+	local mouse_just_fired = mouse_is_down and not mouse_was_down
+	mouse_was_down = mouse_is_down
+
+	if mouse_is_down and ecs and player and ecs.entities[player] then
 		local ox, oy, oz, dx, dy, dz = cursorToWorldRay()
 		if ox then
 			local px, py, pz = ecs.entities[player].transform.transform:getPosition()
@@ -338,7 +350,7 @@ function game_scene.update(dt)
 			local ex = ox + dx * LASER_RANGE
 			local ey = oy + dy * LASER_RANGE
 			local ez = oz + dz * LASER_RANGE
-			local hit, shape, hx, hy, hz = lovr_world:raycast(vec3(ox,oy,oz), vec3(ex,ey,ez))
+			local hit, shape, hx, hy, hz, hnx, hny, hnz = lovr_world:raycast(vec3(ox,oy,oz), vec3(ex,ey,ez))
 			laser_beam = {
 				sx = gun_x, sy = gun_y, sz = gun_z,
 				ex = hit and hx or ex,
@@ -346,11 +358,47 @@ function game_scene.update(dt)
 				ez = hit and hz or ez,
 				t  = LASER_DURATION,
 			}
+			-- Spawn impact sparks on the first frame of each press
+			if mouse_just_fired and hit then
+				local nx = hnx or 0
+				local ny = hny or 1
+				local nz = hnz or 0
+				for _ = 1, SPARK_COUNT do
+					local rx = math.random() * 2 - 1
+					local ry = math.random() * 2 - 1
+					local rz = math.random() * 2 - 1
+					local vx = nx * 0.6 + rx * 0.4
+					local vy = ny * 0.6 + ry * 0.4
+					local vz = nz * 0.6 + rz * 0.4
+					local len = math.sqrt(vx*vx + vy*vy + vz*vz)
+					if len > 1e-4 then
+						local spd = SPARK_SPEED * (0.6 + math.random() * 0.4)
+						vx, vy, vz = vx/len * spd, vy/len * spd, vz/len * spd
+					end
+					table.insert(sparks, { x=hx, y=hy, z=hz, vx=vx, vy=vy, vz=vz, t=SPARK_LIFETIME })
+				end
+			end
 		end
 	end
 	if laser_beam then
 		laser_beam.t = laser_beam.t - dt
 		if laser_beam.t <= 0 then laser_beam = nil end
+	end
+
+	-- Advance spark physics (gravity + lifetime)
+	local si = 1
+	while si <= #sparks do
+		local sp = sparks[si]
+		sp.vy = sp.vy - SPARK_GRAVITY * dt
+		sp.x  = sp.x  + sp.vx * dt
+		sp.y  = sp.y  + sp.vy * dt
+		sp.z  = sp.z  + sp.vz * dt
+		sp.t  = sp.t  - dt
+		if sp.t <= 0 then
+			table.remove(sparks, si)
+		else
+			si = si + 1
+		end
 	end
 end
 
@@ -377,6 +425,23 @@ function game_scene.draw(dpass)
 		gpass:setColor(1, 0.1, 0.1, alpha)
 		gpass:line(laser_beam.sx, laser_beam.sy, laser_beam.sz,
 		           laser_beam.ex, laser_beam.ey, laser_beam.ez)
+		gpass:setColor(1, 1, 1)
+	end
+
+	-- Hit sparks
+	if #sparks > 0 then
+		gpass:setShader()
+		local TRAIL = 0.14
+		for _, sp in ipairs(sparks) do
+			local p    = sp.t / SPARK_LIFETIME
+			local spd  = math.sqrt(sp.vx*sp.vx + sp.vy*sp.vy + sp.vz*sp.vz)
+			if spd > 1e-4 then
+				local inv = TRAIL / spd
+				gpass:setColor(1, 0.9 * p + 0.1, 0.0, math.min(p * 2, 1))
+				gpass:line(sp.x, sp.y, sp.z,
+				           sp.x - sp.vx*inv, sp.y - sp.vy*inv, sp.z - sp.vz*inv)
+			end
+		end
 		gpass:setColor(1, 1, 1)
 	end
 	-- print("FPS: " .. lovr.timer.getFPS())
