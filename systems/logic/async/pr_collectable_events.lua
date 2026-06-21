@@ -12,7 +12,7 @@ local sfx_pool  = {}
 local sfx_index = 1
 for i = 1, SFX_POOL_SIZE do
   local s = lovr.audio.newSource('assets/sound_fx/collecting.wav', {spatial = false})
-  s:setVolume(0.5)
+  s:setVolume(0.05)
   s:setLooping(false)
   sfx_pool[i] = s
 end
@@ -21,7 +21,7 @@ pr_event_bus:on('coin_collected', function(ecs, id)
   local effect_id = ecs:getEntityByTag('is_collected_coin_effect')
   ecs.entities[effect_id].state_machine.state_machine.current_state = "visible"
   sfx_pool[sfx_index]:stop()
-  sfx_pool[sfx_index]:play()
+  -- sfx_pool[sfx_index]:play()
   sfx_index = (sfx_index % SFX_POOL_SIZE) + 1
   
   local collider = ecs.entities[id].collider.collider

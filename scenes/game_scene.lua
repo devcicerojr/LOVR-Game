@@ -7,6 +7,7 @@ local player     = nil
 local coin_count = 0
 local hidden_cursor   = nil
 local flying_coins    = {}
+local laser_beam      = nil
 local scene_view_pose = lovr.math.newMat4()
 local scene_proj_mat  = lovr.math.newMat4()
 
@@ -33,6 +34,8 @@ local gpass = lovr.graphics.newPass(gTexture) --global pass
 local PLAYER_SPAWN_POS  = lovr.math.newVec3(0, 2, 0)
 local COIN_FLY_DURATION = 0.55
 local COIN_ICON_SIZE    = 14
+local LASER_DURATION    = 0.12
+local LASER_RANGE       = 200
 local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
@@ -110,6 +113,7 @@ function game_scene.unload()
 	player = nil
 	game_scene.is_paused = false
 	flying_coins = {}
+	laser_beam   = nil
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
@@ -143,6 +147,34 @@ local function worldToHUD(wx, wy, wz)
 	if rw <= 0 then return nil end
 	return ((rx/rw) + 1) * 0.5 * W,
 	       ((ry/rw) + 1) * 0.5 * H
+end
+
+-- Converts the current cursor position to a world-space ray (origin + direction).
+-- Uses the same VP matrix as worldToHUD, so NDC mapping is consistent.
+local function cursorToWorldRay()
+	local win_w, win_h = lovr.system.getWindowDimensions()
+	local mx, my       = lovr.system.getMousePosition()
+	local ndcX = (mx / win_w) * 2 - 1
+	local ndcY = (my / win_h) * 2 - 1
+	local view   = mat4(scene_view_pose):invert()
+	local vp     = mat4(scene_proj_mat) * view
+	local inv_vp = mat4(vp):invert()
+	local m      = { inv_vp:unpack(true) }
+	local function unproject(zndc)
+		local rx = m[1]*ndcX + m[5]*ndcY + m[9]*zndc  + m[13]
+		local ry = m[2]*ndcX + m[6]*ndcY + m[10]*zndc + m[14]
+		local rz = m[3]*ndcX + m[7]*ndcY + m[11]*zndc + m[15]
+		local rw = m[4]*ndcX + m[8]*ndcY + m[12]*zndc + m[16]
+		if math.abs(rw) < 1e-6 then return nil end
+		return rx/rw, ry/rw, rz/rw
+	end
+	local nx, ny, nz = unproject(-1)
+	local fx, fy, fz = unproject(1)
+	if not nx or not fx then return nil end
+	local dx, dy, dz = fx-nx, fy-ny, fz-nz
+	local len = math.sqrt(dx*dx + dy*dy + dz*dz)
+	if len < 1e-6 then return nil end
+	return nx, ny, nz, dx/len, dy/len, dz/len
 end
 
 local function drawPauseOverlay(pass)
@@ -222,6 +254,7 @@ end
 function game_scene.load()
 	coin_count   = 0
 	flying_coins = {}
+	laser_beam   = nil
 	local img = lovr.data.newImage(1, 1)
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
@@ -295,6 +328,30 @@ function game_scene.update(dt)
 	game_anim_time = game_anim_time + math.min(dt, MAX_DT)
 	ecs:update(math.min(dt, MAX_DT))
 	ecs:deleteDeadEntities()
+
+	-- Laser: fire while mouse button 1 held
+	if lovr.mouse.isDown(1) and ecs and player and ecs.entities[player] then
+		local ox, oy, oz, dx, dy, dz = cursorToWorldRay()
+		if ox then
+			local px, py, pz = ecs.entities[player].transform.transform:getPosition()
+			local gun_x, gun_y, gun_z = px, py + 1.5, pz
+			local ex = ox + dx * LASER_RANGE
+			local ey = oy + dy * LASER_RANGE
+			local ez = oz + dz * LASER_RANGE
+			local hit, shape, hx, hy, hz = lovr_world:raycast(vec3(ox,oy,oz), vec3(ex,ey,ez))
+			laser_beam = {
+				sx = gun_x, sy = gun_y, sz = gun_z,
+				ex = hit and hx or ex,
+				ey = hit and hy or ey,
+				ez = hit and hz or ez,
+				t  = LASER_DURATION,
+			}
+		end
+	end
+	if laser_beam then
+		laser_beam.t = laser_beam.t - dt
+		if laser_beam.t <= 0 then laser_beam = nil end
+	end
 end
 
 function game_scene.draw(dpass)
@@ -312,6 +369,16 @@ function game_scene.draw(dpass)
 	gpass:setProjection(1, scene_proj_mat)
 
 	ecs:draw(gpass)
+
+	-- Laser beam
+	if laser_beam then
+		gpass:setShader()
+		local alpha = laser_beam.t / LASER_DURATION
+		gpass:setColor(1, 0.1, 0.1, alpha)
+		gpass:line(laser_beam.sx, laser_beam.sy, laser_beam.sz,
+		           laser_beam.ex, laser_beam.ey, laser_beam.ez)
+		gpass:setColor(1, 1, 1)
+	end
 	-- print("FPS: " .. lovr.timer.getFPS())
 	-- local pass = dpass
 
