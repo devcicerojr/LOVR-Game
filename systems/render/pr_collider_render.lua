@@ -9,7 +9,7 @@ return {
     end
     local entity = ecs.entities[id]
     local the_collider = entity.collider.collider
-    local collider_pos = lovr.math.vec3(the_collider:getPosition())
+    local collider_pos = vector.pack(the_collider:getPosition())
     local collider_quat = lovr.math.quat(the_collider:getOrientation())
     
     if entity.collider.shape == "capsule" then
@@ -17,7 +17,7 @@ return {
       local length = the_collider:getShape():getLength()     
       if is_dev_build and draw_wireframes then
         pass:setWireframe(true)
-        pass:capsule(collider_pos.x, collider_pos.y, collider_pos.z , radius, length , collider_quat:unpack())
+        pass:capsule(collider_pos.x, collider_pos.y, collider_pos.z , radius, length , the_collider:getOrientation())
         pass:setWireframe(false)
       end   
     end

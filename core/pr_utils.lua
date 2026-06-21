@@ -24,9 +24,6 @@ function print(...)
   original_print(string.format("[%s:%d]", source, line), table.concat(args, "\t"))
 end
 
-
-
-
 local pr_Colora_mt = {
   __index = {
     toString = function(self)

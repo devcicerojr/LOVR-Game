@@ -11,7 +11,7 @@ return {
   update_fn = function(ecs, id, c, pass)
     local entity     = ecs.entities[id]
     if entity.collider.collider:isDestroyed() then return end
-    local entity_pos = vec3(entity.transform.transform:getPosition())
+    local entity_pos = vector.pack(entity.transform.transform:getPosition())
 
     -- Distance cull: skip entities too far from the camera
     local cam_pos = vec3(pr_camera.game_cam:getPosition())

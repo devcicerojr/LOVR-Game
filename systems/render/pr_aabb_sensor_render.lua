@@ -11,9 +11,11 @@ return {
     local aabb_sensor = entity.aabb_sensor
     local collider = entity.collider.collider
   
-    local collider_pos = lovr.math.vec3(collider:getPosition())
+    local collider_pos = vector.pack(collider:getPosition())
+    local endpoint = collider_pos + lovr.math.quat(collider:getOrientation()) * vector.pack(0, 2, 0)
+
     local line_points = {
-      lovr.math.vec3(collider_pos) , lovr.math.vec3(collider_pos + lovr.math.vec3(0, 2, 0):rotate(collider:getOrientation()))
+     collider_pos , endpoint
     }
 
     pass:setColor(0, 1, 0)

@@ -10,7 +10,6 @@ return {
   update_fn = function(ecs, id, c, dt) -- update function
     local entity = ecs.entities[id]
     
-    
     if entity.collider.collider:isDestroyed() then return end
     if entity.collider.collider:isKinematic() then
       local entity_transform = lovr.math.mat4(entity.transform.transform)
@@ -18,7 +17,7 @@ return {
       local collider_transform_offset = entity.collider.transform_offset
       local new_collider_transform = mat4(entity_transform) * mat4(collider_transform_offset)
       -- print(lovr.math.vec3(new_collider_transform:getPosition()).y)
-      collider:setPose(vec3(new_collider_transform:getPosition()), quat(new_collider_transform:getOrientation()))
+      collider:setPose(vector.pack(new_collider_transform:getPosition()), lovr.math.quat(new_collider_transform:getOrientation()))
     end
 
   end
