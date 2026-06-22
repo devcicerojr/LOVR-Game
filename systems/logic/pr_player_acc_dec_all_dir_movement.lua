@@ -27,6 +27,7 @@ return {
     local col_height = maxy - miny
     local col_depth = maxz - minz
     local player_controlling = false
+
     if moving_forward then
       desired_dir = desired_dir + vec3(0, 0, 1)
       player_controlling = true

@@ -22,15 +22,18 @@ return function(ecs, spawn_pos)
   local gravity_acc = -40 --m/s
   local current_speed = vector.zero
   
-  local cam_transform_offset = lovr.math.newMat4(vector.pack(0,4,-4), vector.one , quaternion.angleaxis(math.pi, 0, 1, 0) * quaternion.angleaxis(-0.436, 1, 0, 0) )
+  local cam_transform_offset = lovr.math.newMat4()
+
+  cam_transform_offset:setPose(vector.pack(0,4,-5), quaternion.angleaxis(math.pi, 0, 1, 0) * quaternion.angleaxis(0.9659, 0, 1, 0) )
+
   collider:setDegreesOfFreedom("xyz", "y")
   collider:setOrientation(lovr.math.quat(transform_offset:getOrientation()))
   collider:setKinematic(true)
   
   collider:setSleepingAllowed(false)
   collider:setContinuous(true)
-  origin_offset = vector.pack(0, 0.1, 0)
-  endpoint_offset = vector.pack(0, -0.6, 0)
+  origin_offset = vector.pack(0, 1.0, 0)
+  endpoint_offset = vector.pack(0, -1.5, 0)
   
   ecs:addComponent(id, pr_component.IsKinematic())
   ecs:addComponent(id, pr_component.IsPlayer())

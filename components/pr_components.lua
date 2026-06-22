@@ -84,6 +84,10 @@ pr_components.IsCarObstacle = function ()
   return {type = "is_car_obstacle", data = {}}
 end
 
+pr_components.IsRamp = function (width, depth, thick)
+  return {type = "is_ramp", data = {width = width or 4, depth = depth or 12, thick = thick or 0.4}}
+end
+
 pr_components.IsCollectable = function ()
   return {type = "is_collectable", data = {}}
 end
@@ -119,7 +123,6 @@ end
 pr_components.Mesh = function (mesh , base_color)
   return {type = "mesh" , data = {mesh = mesh or nil, base_color = base_color or lovr.math.newVec4(1,1,1,1)}}
 end
-
 
 pr_components.PlayerControls = function ()
   return {type = "player_controls" , data = {}}

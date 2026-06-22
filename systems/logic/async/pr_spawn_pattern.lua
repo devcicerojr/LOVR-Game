@@ -10,7 +10,6 @@
 
 local CAR_SPEED        = 100  -- must match pr_car_obstacle_update.lua
 local MIN_PLAYER_SPEED = 2.0  -- prevents huge spawns when player is nearly still
-local Z_DISTANCE = 14 -- distance between coins in Z axis
 
 local player_id = nil
 
@@ -19,63 +18,7 @@ pr_event_bus:on('game_scene_unloaded', function()
   EVENT_COUNTER = 0
 end)
 
-local PATTERNS = {
-  -- Single car, center — corridors on both flanks, coins right
-  {
-    obstacles = { {x = 0} },
-    coins = { {x = 7, z = -Z_DISTANCE}, {x = 7, z = 0}, {x = 7, z = Z_DISTANCE} },
-  },
-  -- Single car, left-center — wide right corridor, coins right
-  {
-    obstacles = { {x = -4} },
-    coins = { {x = 6, z = -Z_DISTANCE}, {x = 6, z = 0}, {x = 6, z = Z_DISTANCE} },
-  },
-  -- Single car, right-center — wide left corridor, coins left
-  {
-    obstacles = { {x = 4} },
-    coins = { {x = -6, z = -Z_DISTANCE}, {x = -6, z = 0}, {x = -6, z = Z_DISTANCE} },
-  },
-  -- Single car, far left — very wide right corridor, coins center-right
-  {
-    obstacles = { {x = -7} },
-    coins = { {x = 3, z = -Z_DISTANCE}, {x = 3, z = 0}, {x = 3, z = Z_DISTANCE} },
-  },
-  -- Single car, far right — very wide left corridor, coins center-left
-  {
-    obstacles = { {x = 7} },
-    coins = { {x = -3, z = -Z_DISTANCE}, {x = -3, z = 0}, {x = -3, z = Z_DISTANCE} },
-  },
-  -- Two cars flanking both sides — open center corridor, coins center
-  {
-    obstacles = { {x = -7}, {x = 7} },
-    coins = { {x = 0, z = -Z_DISTANCE}, {x = 0, z = 0}, {x = 0, z = Z_DISTANCE} },
-  },
-  -- Two cars bunched left — open right corridor, coins right
-  {
-    obstacles = { {x = -7}, {x = -2} },
-    coins = { {x = 6, z = -Z_DISTANCE}, {x = 6, z = 0}, {x = 6, z = Z_DISTANCE} },
-  },
-  -- Two cars bunched right — open left corridor, coins left
-  {
-    obstacles = { {x = 2}, {x = 7} },
-    coins = { {x = -6, z = -Z_DISTANCE}, {x = -6, z = 0}, {x = -6, z = Z_DISTANCE} },
-  },
-  -- No obstacles — sweeping coin arc across the track
-  {
-    obstacles = {},
-    coins = { {x = -6, z = -Z_DISTANCE}, {x = 0, z = 0}, {x = 6, z = Z_DISTANCE} },
-  },
-  -- No obstacles — straight coin trail down the center
-  {
-    obstacles = {},
-    coins = { {x = 0, z = -Z_DISTANCE}, {x = 0, z = 0}, {x = 0, z = Z_DISTANCE} },
-  },
-  -- Single car center, coins offered on both sides (player picks a corridor)
-  {
-    obstacles = { {x = 0} },
-    coins = { {x = -7, z = -Z_DISTANCE}, {x = 7, z = 0}, {x = -7, z = Z_DISTANCE} },
-  },
-}
+local PATTERNS = require'../systems/data/pr_spawn_patterns_data'
 
 local PATTERN_INTERVAL = 5
 local EVENT_COUNTER    = 0
@@ -109,6 +52,11 @@ pr_event_bus:on('terrain_tile_spawned', function(ecs, spawn_pos)
     pos.y = 1
     pos.z = coin_z + coin.z
     ;(require'../entities/dont_stop_delivery/pr_sphere_collectable')(ecs, pos)
+  end
+
+  for _, ramp in ipairs(pattern.ramps or {}) do
+    local pos = lovr.math.newVec3(ramp.x, 0, coin_z)
+    ;(require'../entities/dont_stop_delivery/pr_ramp')(ecs, pos)
   end
 end)
 

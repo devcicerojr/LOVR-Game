@@ -4,7 +4,7 @@ local pr_camera = require'pr_camera'
 local DEAD_ZONE   = 0.12
 local MAX_YAW     = math.pi / 4   -- ±45° horizontal
 local MAX_PITCH   = math.pi / 7.2 -- ±25° vertical
-local BASE_PITCH  = -math.pi / 10  -- fixed 18° downward tilt
+local BASE_PITCH  = -math.pi / 14  -- fixed 12.85° downward tilt
 
 local function dead_zone(val)
   if math.abs(val) < DEAD_ZONE then return 0 end
