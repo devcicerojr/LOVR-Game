@@ -170,13 +170,29 @@ local function worldToHUD(wx, wy, wz)
 	       ((ry/rw) + 1) * 0.5 * H
 end
 
--- Converts the current cursor position to a world-space ray (origin + direction).
+-- Returns the crosshair position in HUD coordinates.
+-- X offsets based on player world-X so that positive X (move left) shifts right on screen.
+-- Offset is capped at the screen position that corresponds to a 45-degree horizontal ray,
+-- derived from proj[0][0] = 1/(aspect*tan(fov/2)); at 45° tan=1, so ndcX_max = proj[0][0].
+local function get_crosshair_pos()
+	local W, H = scene_resolution.width, scene_resolution.height
+	if not ecs or not player or not ecs.entities[player] then
+		return W * 0.5, H * 0.39
+	end
+	local px      = select(1, ecs.entities[player].transform.transform:getPosition())
+	local proj_m  = { scene_proj_mat:unpack(true) }
+	local proj00  = proj_m[1]                        -- horizontal projection scale
+	local ndcX    = (px / 80) * proj00               -- proj00 == ndc at 45°
+	return W * 0.5 + W * 0.5 * ndcX, H * 0.39
+end
+
+-- Converts the crosshair position to a world-space ray (origin + direction).
 -- Uses the same VP matrix as worldToHUD, so NDC mapping is consistent.
 local function cursorToWorldRay()
-	local win_w, win_h = lovr.system.getWindowDimensions()
-	local mx, my       = lovr.system.getMousePosition()
-	local ndcX = (mx / win_w) * 2 - 1
-	local ndcY = (my / win_h) * 2 - 1
+	local W, H    = scene_resolution.width, scene_resolution.height
+	local cx, cy  = get_crosshair_pos()
+	local ndcX    = (cx / W) * 2 - 1
+	local ndcY    = (cy / H) * 2 - 1
 	local view   = mat4(scene_view_pose):invert()
 	local vp     = mat4(scene_proj_mat) * view
 	local inv_vp = mat4(vp):invert()
@@ -252,11 +268,8 @@ local function drawHUD(pass)
 	pass:setColor(1, 0.9, 0.1)
 	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40, 0, 1, 0, 0, 0, 'left', 'middle')
 
-	local win_w, win_h = lovr.system.getWindowDimensions()
-	local mx, my = lovr.system.getMousePosition()
-	local cx = mx * (W / win_w)
-	local cy = my * (H / win_h)
-	local size, gap = 14, 5
+	local cx, cy = get_crosshair_pos()
+	local size, gap = 6, 3
 	pass:setColor(1, 1, 1, 0.9)
 	pass:line(cx - size, cy, 0,  cx - gap, cy, 0)
 	pass:line(cx + gap,  cy, 0,  cx + size, cy, 0)
@@ -495,8 +508,8 @@ function game_scene.draw(dpass)
 		gpass:setShader()
 		local alpha = laser_beam.t / LASER_DURATION
 		gpass:setColor(1, 0.1, 0.1, alpha)
-		gpass:line(laser_beam.sx, laser_beam.sy, laser_beam.sz,
-		           laser_beam.ex, laser_beam.ey, laser_beam.ez)
+		--gpass:line(laser_beam.sx, laser_beam.sy, laser_beam.sz,
+		--           laser_beam.ex, laser_beam.ey, laser_beam.ez)
 		gpass:setColor(1, 1, 1)
 	end
 
