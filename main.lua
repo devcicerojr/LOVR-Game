@@ -38,7 +38,51 @@ draw_wireframes = false
 --   return trace
 -- end
 
+-- GLFW FFI setup — each declaration in its own pcall so that symbols already
+-- registered by lovr-mouse don't cause the whole block to fail.
+local ffi  = require 'ffi'
+local glfw = ffi.os == 'Windows' and ffi.load('glfw3') or ffi.C
+pcall(ffi.cdef, 'typedef struct GLFWwindow GLFWwindow;')
+pcall(ffi.cdef, 'typedef struct GLFWmonitor GLFWmonitor;')
+pcall(ffi.cdef, 'GLFWwindow* os_get_glfw_window(void);')
+pcall(ffi.cdef, 'void glfwSetWindowAttrib(GLFWwindow* window, int attrib, int value);')
+pcall(ffi.cdef, 'void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);')
+pcall(ffi.cdef, 'void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);')
+pcall(ffi.cdef, 'GLFWmonitor* glfwGetPrimaryMonitor(void);')
+pcall(ffi.cdef, 'typedef struct { int width; int height; int redBits; int greenBits; int blueBits; int refreshRate; } GLFWvidmode;')
+pcall(ffi.cdef, 'const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);')
+pcall(ffi.cdef, 'void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);')
+local glfw_window = ffi.C.os_get_glfw_window()
+
+local function remove_window_decoration()
+  glfw.glfwSetWindowAttrib(glfw_window, 0x00020005, 0)  -- GLFW_DECORATED = false
+end
+
+local is_fullscreen = false
+local saved_x, saved_y, saved_w, saved_h
+
+function toggle_fullscreen()
+  if not is_fullscreen then
+    local x, y = ffi.new('int[1]'), ffi.new('int[1]')
+    local w, h = ffi.new('int[1]'), ffi.new('int[1]')
+    glfw.glfwGetWindowPos(glfw_window, x, y)
+    glfw.glfwGetWindowSize(glfw_window, w, h)
+    saved_x, saved_y = x[0], y[0]
+    saved_w, saved_h = w[0], h[0]
+    local monitor = glfw.glfwGetPrimaryMonitor()
+    local mode    = glfw.glfwGetVideoMode(monitor)
+    glfw.glfwSetWindowMonitor(glfw_window, monitor, 0, 0, mode.width, mode.height, mode.refreshRate)
+    is_fullscreen = true
+  else
+    glfw.glfwSetWindowMonitor(glfw_window, nil, saved_x, saved_y, saved_w, saved_h, 0)
+    is_fullscreen = false
+  end
+end
+
 function lovr.keypressed(key, scancode, rpt)
+  if key == 'return' and (lovr.system.isKeyDown('lalt') or lovr.system.isKeyDown('ralt')) then
+    toggle_fullscreen()
+  end
   pr_control.keypressed(key, scancode, rpt)
 end
 
@@ -50,8 +94,8 @@ function lovr.keyreleased(key, scancode)
   pr_control.keyreleased(key, scancode)
 end
 
-
 function lovr.load(arg)
+  remove_window_decoration()
   local window_pass = lovr.graphics.getWindowPass()
   window_pass:setViewCull(true)
   window_pass:setDepthTest('less')

@@ -12,6 +12,9 @@ return {
     local collider_pos = vector.pack(the_collider:getPosition())
     local collider_quat = lovr.math.quat(the_collider:getOrientation())
     
+    pass:push('state')
+    pass:setColor(0.9, 0.9, 0.9, 0.9)
+    pass:setDepthTest('none')
     if entity.collider.shape == "capsule" then
       local radius = the_collider:getShape():getRadius()
       local length = the_collider:getShape():getLength()     
@@ -31,6 +34,13 @@ return {
       local angle, ax, ay, az = collider_quat:unpack()
       pass:sphere(collider_pos.x, collider_pos.y, collider_pos.z, radius,  angle, ax, ay, az)
     end
-    
+    if entity.collider.shape == "mesh" and entity.textured_mesh then
+      local px, py, pz = entity.transform.transform:getPosition()
+      pass:setWireframe(true)
+      pass:draw(entity.textured_mesh.mesh, px, py, pz)
+      pass:setWireframe(false)
+    end
+    pass:pop('state')
+
   end
 }

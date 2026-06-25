@@ -12,8 +12,9 @@ pr_control.s_pressed = false
 pr_control.d_pressed = false
 pr_control.zero_pressed = false
 pr_control.nine_pressed = false
-pr_control.space_pressed = false
-pr_control.enter_pressed = false
+pr_control.space_pressed  = false
+pr_control.enter_pressed  = false
+pr_control.escape_pressed = false
 
 
 pr_control.gc_dpad_up    = false
@@ -22,6 +23,8 @@ pr_control.gc_dpad_down  = false
 pr_control.gc_dpad_left  = false
 pr_control.gc_btn_1              = false  -- A / Cross
 pr_control.gc_btn_1_just_pressed = false
+pr_control.gc_btn_6              = false  -- Right bumper / R1
+pr_control.gc_btn_6_just_pressed = false
 pr_control.gc_btn_8              = false  -- Start / Menu
 pr_control.gc_btn_8_just_pressed = false
 
@@ -75,6 +78,8 @@ function pr_control.keypressed(key, scancode, rpt)
   elseif key == "return" then
     pr_control.enter_pressed = true
     print("enter pressed")
+  elseif key == "escape" then
+    pr_control.escape_pressed = true
   end
 end
 
@@ -118,6 +123,8 @@ function pr_control.keyreleased(key , scancode)
   elseif key == "return" then
     pr_control.enter_pressed = false
     print("enter released")
+  elseif key == "escape" then
+    pr_control.escape_pressed = false
   end
 end
 
@@ -169,6 +176,9 @@ function pr_control.update(dt)
       local prev_btn_1   = pr_control.gc_btn_1
       pr_control.gc_btn_1 = gc.getButtonState( 1, 1 ) == 1
       pr_control.gc_btn_1_just_pressed = pr_control.gc_btn_1 and not prev_btn_1
+      local prev_btn_6   = pr_control.gc_btn_6
+      pr_control.gc_btn_6 = gc.getButtonState( 1, 6 ) == 1
+      pr_control.gc_btn_6_just_pressed = pr_control.gc_btn_6 and not prev_btn_6
       local prev_btn_8   = pr_control.gc_btn_8
       pr_control.gc_btn_8 = gc.getButtonState( 1, 8 ) == 1
       pr_control.gc_btn_8_just_pressed = pr_control.gc_btn_8 and not prev_btn_8

@@ -2,7 +2,7 @@ local lovr_world = require'../core/pr_world'
 local pr_component = require'../components/pr_components'
 require '../core/pr_math'
 
-local k_velocity = vector.pack(10, 0, 80)
+local k_velocity = vector.pack(10, 0, 40)
 
 return function(ecs, spawn_pos)
   

@@ -3,6 +3,11 @@ local player_id = nil
 
 local latest_z_val = -99999999999
 
+pr_event_bus:on('game_scene_unloaded', function()
+  player_id     = nil
+  latest_z_val  = -99999999999
+end)
+
 pr_event_bus:on('dynamic_tile_despawned', function(ecs, id)
   local entity_collider = ecs.entities[id].terrain_collider.terrain_collider
   if not entity_collider:isDestroyed() then

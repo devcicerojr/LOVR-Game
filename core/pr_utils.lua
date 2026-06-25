@@ -66,6 +66,48 @@ local pr_utils = {
       -- collider:setKinematic(false)
     end
 
+  end,
+
+  -- Parses an .obj file and returns a Mesh usable with world:newMeshCollider().
+  -- Only position data is extracted; UVs and normals are ignored (colliders don't need them).
+  -- The returned Mesh uses the same coordinate space as the .obj file — no transform is applied.
+  -- USAGE:
+  --
+  -- local model        = lovr.graphics.newModel('assets/mymodel.obj')
+  -- local collider_mesh = obj_to_collider_mesh('assets/mymodel.obj')
+  
+  -- local collider = lovr_world:newMeshCollider(collider_mesh)
+  -- collider:setPosition(spawn_pos)
+  -- collider:setKinematic(true)
+  -- collider:setTag('obstacle')
+
+  obj_to_collider_mesh = function(path)
+    local src = lovr.filesystem.read(path)
+    assert(src, 'pr_utils.obj_to_collider_mesh: could not read ' .. path)
+    local pos  = {}
+    local tris = {}
+
+    for line in (src .. '\n'):gmatch('([^\n]*)\n') do
+      local t = line:match('^%s*(%S+)')
+      if t == 'v' then
+        local x, y, z = line:match('v%s+(%S+)%s+(%S+)%s+(%S+)')
+        pos[#pos + 1] = { tonumber(x), tonumber(y), tonumber(z) }
+      elseif t == 'f' then
+        local vi = {}
+        for tok in line:sub(2):gmatch('%S+') do
+          vi[#vi + 1] = tonumber(tok:match('^(%d+)'))  -- position index only (strips /uv/normal)
+        end
+        for i = 2, #vi - 1 do  -- fan-triangulate quads/ngons
+          tris[#tris + 1] = vi[1]
+          tris[#tris + 1] = vi[i]
+          tris[#tris + 1] = vi[i + 1]
+        end
+      end
+    end
+
+    local mesh = lovr.graphics.newMesh({ { 'VertexPosition', 'vec3' } }, pos)
+    mesh:setIndices(tris)
+    return mesh
   end
 
 }

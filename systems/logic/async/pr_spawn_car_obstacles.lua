@@ -9,6 +9,10 @@ local spawn_car_obstacles_system = {
 local TILE_SPAWN_FACTOR = 8
 local EVENT_COUNTER = 0
 
+pr_event_bus:on('game_scene_unloaded', function()
+  EVENT_COUNTER = 0
+end)
+
 -- Whenever a terrain tile is spawned, we have a chance to spawn a car obstacle
 pr_event_bus:on('terrain_tile_spawned', function(ecs, spawn_pos)
   EVENT_COUNTER = EVENT_COUNTER + 1

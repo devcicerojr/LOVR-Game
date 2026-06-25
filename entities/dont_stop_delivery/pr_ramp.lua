@@ -92,16 +92,10 @@ return function(ecs, spawn_pos, width, height, depth, slope)
 
   local entity_transform = lovr.math.newMat4(center, vector.one, lovr.math.quat(0, 1, 0, 0))
 
-  -- local collider = lovr_world:newBoxCollider(center, width, total_height, depth)
-  -- collider:setKinematic(true)
-  -- collider:setSleepingAllowed(true)
-  -- collider:setTag('ramp')
-  -- collider:setPose(center, slope_quat)
-
   local mesh_color = lovr.math.newVec4(0.5, 0.5, 0.5, 1)
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, texture, mesh_color))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
-  -- ecs:addComponent(id, pr_component.Collider(collider, "box", lovr.math.newMat4()))
+  ecs:addComponent(id, pr_component.Collider(collider, "mesh", lovr.math.newMat4()))
   ecs:addComponent(id, pr_component.IsRamp(width, height, depth))
   return id
 end

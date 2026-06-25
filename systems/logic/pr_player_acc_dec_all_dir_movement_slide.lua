@@ -5,9 +5,9 @@ local lovr_world = require'../core/pr_world'
 local ACCELERATION = 50
 local DECELERATION = 90
 local STICK_DEAD_ZONE = 0.12
-local JUMP_FORCE      = 14
-local MAX_JUMP_HOLD   = 0.25   -- seconds the button can extend the jump
-local JUMP_HOLD_BOOST = 18     -- extra upward acceleration (units/s²) while held
+local JUMP_FORCE      = 10
+local MAX_JUMP_HOLD   = 0.30   -- seconds the button can extend the jump
+local JUMP_HOLD_BOOST = 38     -- extra upward acceleration (units/s²) while held
 
 local OBSTACLE_FILTER = 'wall'
 
@@ -37,7 +37,21 @@ return {
     -- Jump input
     local jump_held = lovr.system.isKeyDown("space") or pr_control.gc_btn_1
     if (pr_control.space_pressed or pr_control.gc_btn_1_just_pressed) and entity.gravity.grounded then
-      entity.gravity.vertical_velocity = JUMP_FORCE
+      local jump_vel = JUMP_FORCE
+      -- On a ramp the slope pushes the player upward; add that momentum to the jump
+      if entity.gravity.last_ground_was_ramp then
+        local gn      = entity.gravity.last_ground_normal
+        local acc_dec = entity.acc_dec_movement
+        if gn and acc_dec and gn.ny > 0.01 then
+          local vx       = acc_dec.current_speed.x
+          local vz       = acc_dec.current_speed.z
+          local launch_vy = -(gn.nx * vx + gn.nz * vz) / gn.ny
+          if launch_vy > 0 then
+            jump_vel = jump_vel + launch_vy * 0.5 -- using only half of launch_vy
+          end
+        end
+      end
+      entity.gravity.vertical_velocity = jump_vel
       entity.gravity.grounded = false
       entity.gravity.jump_cooldown = 0.15
       entity.gravity.is_jumping = true

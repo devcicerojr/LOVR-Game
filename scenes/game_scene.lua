@@ -16,11 +16,15 @@ local scene_proj_mat  = lovr.math.newMat4()
 game_scene.is_paused               = false
 game_scene.return_to_title_requested = false
 
-local pause_menu_index = 1
-local prev_dpad_up     = false
-local prev_dpad_down   = false
+local pause_menu_index    = 1
+local prev_dpad_up        = false
+local prev_dpad_down      = false
+local confirm_dialog_open  = false
+local confirm_dialog_index = 1   -- 1 = No (default), 2 = Yes
+local prev_dpad_left      = false
+local prev_dpad_right     = false
 
-local PAUSE_MENU_ITEMS = { "Resume", "Return to Title" }
+local PAUSE_MENU_ITEMS = { "Resume", "Toggle Full Screen", "Return to Title" }
 
 local scene_resolution = {width = 1080 , height = 720}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
@@ -82,6 +86,7 @@ local logic_systems = {
 	-- "player_acc_dec_all_dir_movement",
 	"player_acc_dec_all_dir_movement_slide",
 	"car_obstacle_update",
+	"ramp_update",
 
 	-- Runs after all movement so the collider reflects the current frame's transform.
 	"model_collider_track",
@@ -195,7 +200,7 @@ local function drawPauseOverlay(pass)
 	pass:setColor(1, 1, 1, 1)
 	pass:text("Game Paused", W / 2, H * 0.30, 0, 64)
 
-	local item_y = { H * 0.50, H * 0.58 }
+	local item_y = { H * 0.46, H * 0.54, H * 0.62 }
 	for i, item in ipairs(PAUSE_MENU_ITEMS) do
 		if i == pause_menu_index then
 			pass:setColor(1, 0.85, 0.1, 1)
@@ -208,6 +213,30 @@ local function drawPauseOverlay(pass)
 	pass:setColor(1, 1, 1, 1)
 end
 
+local function drawConfirmDialog(pass)
+	local W, H = scene_resolution.width, scene_resolution.height
+	pass:setBlendMode('alpha', 'alphamultiply')
+	pass:setColor(0, 0, 0, 0.75)
+	pass:plane(W / 2, H / 2, 0, W * 0.62, H * 0.30)
+	pass:setBlendMode('none')
+
+	pass:setColor(1, 1, 1, 1)
+	pass:text("Are you sure you want to return to title screen?", W / 2, H * 0.44, 0, 34)
+
+	local btn_labels = { "No", "Yes" }
+	local btn_x      = { W * 0.38, W * 0.62 }
+	for i, label in ipairs(btn_labels) do
+		if i == confirm_dialog_index then
+			pass:setColor(0.95, 0.75, 0.1, 1)
+		else
+			pass:setColor(0.55, 0.55, 0.55, 1)
+		end
+		pass:text(label, btn_x[i], H * 0.56, 0, 44)
+	end
+
+	pass:setColor(1, 1, 1, 1)
+end
+
 local function drawHUD(pass)
 	local W, H = scene_resolution.width, scene_resolution.height
 	pass:setShader()
@@ -215,7 +244,7 @@ local function drawHUD(pass)
 	pass:setViewPose(1, lovr.math.mat4())
 	pass:setProjection(1, lovr.math.mat4():orthographic(0, W, 0, H, -1, 1))
 	pass:setColor(1, 0.9, 0.1)
-	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40)
+	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40, 0, 1, 0, 0, 0, 'left', 'middle')
 
 	local win_w, win_h = lovr.system.getWindowDimensions()
 	local mx, my = lovr.system.getMousePosition()
@@ -269,7 +298,9 @@ function game_scene.load()
 	lovr.mouse.setCursor(hidden_cursor)
 	game_scene.is_paused               = false
 	game_scene.return_to_title_requested = false
-	pause_menu_index = 1
+	pause_menu_index    = 1
+	confirm_dialog_open  = false
+	confirm_dialog_index = 1
 	game_anim_time   = 0
 	pr_event_bus:on('coin_collected', function(ecs, id)
 		local entity = ecs.entities[id]
@@ -294,13 +325,42 @@ function game_scene.update(dt)
 	if not ecs then return end
 
 	if not game_scene.is_paused then
-		if pr_control.enter_pressed or pr_control.gc_btn_8_just_pressed then
+		if pr_control.enter_pressed or pr_control.escape_pressed or pr_control.gc_btn_8_just_pressed then
 			game_scene.is_paused = true
 			pause_menu_index     = 1
 			prev_dpad_up         = false
 			prev_dpad_down       = false
-			pr_control.enter_pressed = false
+			pr_control.enter_pressed  = false
+			pr_control.escape_pressed = false
 			pr_event_bus:emit('game_paused_changed', ecs, true)
+		end
+	elseif confirm_dialog_open then
+		local dpad_left_just  = pr_control.gc_dpad_left  and not prev_dpad_left
+		local dpad_right_just = pr_control.gc_dpad_right and not prev_dpad_right
+		prev_dpad_left  = pr_control.gc_dpad_left
+		prev_dpad_right = pr_control.gc_dpad_right
+
+		if dpad_left_just or dpad_right_just then
+			confirm_dialog_index = 3 - confirm_dialog_index  -- toggles between 1 and 2
+		end
+
+		local confirm = pr_control.enter_pressed or pr_control.space_pressed
+		                or pr_control.gc_btn_1_just_pressed or pr_control.gc_btn_8_just_pressed
+		if confirm then
+			pr_control.enter_pressed         = false
+			pr_control.space_pressed         = false
+			pr_control.gc_btn_1_just_pressed = false
+			pr_control.gc_btn_8_just_pressed = false
+			if confirm_dialog_index == 2 then
+				game_scene.return_to_title_requested = true
+			else
+				confirm_dialog_open  = false
+				confirm_dialog_index = 1
+			end
+		elseif pr_control.escape_pressed then
+			pr_control.escape_pressed = false
+			confirm_dialog_open  = false
+			confirm_dialog_index = 1
 		end
 	else
 		local dpad_up_just   = pr_control.gc_dpad_up   and not prev_dpad_up
@@ -314,20 +374,25 @@ function game_scene.update(dt)
 		if dpad_down_just then
 			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS
 		end
-		print("pause_menu_index: " .. pause_menu_index)
 
-		local confirm = pr_control.enter_pressed or pr_control.space_pressed
+		local confirm = pr_control.enter_pressed or pr_control.escape_pressed or pr_control.space_pressed
 		                or pr_control.gc_btn_1_just_pressed or pr_control.gc_btn_8_just_pressed
 		if confirm then
-			pr_control.enter_pressed = false
-			pr_control.space_pressed = false
+			pr_control.enter_pressed  = false
+			pr_control.escape_pressed = false
+			pr_control.space_pressed  = false
 			pr_control.gc_btn_1_just_pressed = false
 			pr_control.gc_btn_8_just_pressed = false
 			if pause_menu_index == 1 then
 				game_scene.is_paused = false
 				pr_event_bus:emit('game_paused_changed', ecs, false)
 			elseif pause_menu_index == 2 then
-				game_scene.return_to_title_requested = true
+				toggle_fullscreen()
+			elseif pause_menu_index == 3 then
+				confirm_dialog_open  = true
+				confirm_dialog_index = 1
+				prev_dpad_left  = pr_control.gc_dpad_left
+				prev_dpad_right = pr_control.gc_dpad_right
 			end
 		end
 	end
@@ -338,8 +403,8 @@ function game_scene.update(dt)
 	ecs:update(math.min(dt, MAX_DT))
 	ecs:deleteDeadEntities()
 
-	-- Laser: fire while mouse button 1 held
-	local mouse_is_down    = lovr.mouse.isDown(1)
+	-- Laser: fire while mouse button 1 or controller button 6 held
+	local mouse_is_down    = lovr.mouse.isDown(1) or pr_control.gc_btn_6
 	local mouse_just_fired = mouse_is_down and not mouse_was_down
 	mouse_was_down = mouse_is_down
 
@@ -453,6 +518,9 @@ function game_scene.draw(dpass)
 	drawHUD(dpass)
 	if game_scene.is_paused then
 		drawPauseOverlay(dpass)
+		if confirm_dialog_open then
+			drawConfirmDialog(dpass)
+		end
 	end
 	return lovr.graphics.submit(gpass, dpass)
 end
