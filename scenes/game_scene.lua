@@ -121,6 +121,14 @@ end
 
 function game_scene.unload()
 	pr_event_bus:emit('game_scene_unloaded')
+	if ecs then
+		for _, entity in pairs(ecs.entities) do
+			if entity.collider and entity.collider.collider then
+				local col = entity.collider.collider
+				if not col:isDestroyed() then col:destroy() end
+			end
+		end
+	end
 	ecs = nil
 	player = nil
 	game_scene.is_paused = false
@@ -215,10 +223,8 @@ end
 
 local function drawConfirmDialog(pass)
 	local W, H = scene_resolution.width, scene_resolution.height
-	pass:setBlendMode('alpha', 'alphamultiply')
-	pass:setColor(0, 0, 0, 0.75)
+	pass:setColor(0, 0, 0, 1)
 	pass:plane(W / 2, H / 2, 0, W * 0.62, H * 0.30)
-	pass:setBlendMode('none')
 
 	pass:setColor(1, 1, 1, 1)
 	pass:text("Are you sure you want to return to title screen?", W / 2, H * 0.44, 0, 34)
@@ -369,7 +375,7 @@ function game_scene.update(dt)
 		prev_dpad_down = pr_control.gc_dpad_down
 
 		if dpad_up_just then
-			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS
+			pause_menu_index = 1 + (pause_menu_index - 2) % #PAUSE_MENU_ITEMS
 		end
 		if dpad_down_just then
 			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS

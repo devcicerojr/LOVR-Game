@@ -33,7 +33,7 @@ return {
     local desired_speed = 0
     local forward_vec = vec3(0, 0, 1)
 
-    -- print(entity.transform.transform:getPosition())
+    print(entity.transform.transform:getPosition())
     -- Jump input
     local jump_held = lovr.system.isKeyDown("space") or pr_control.gc_btn_1
     if (pr_control.space_pressed or pr_control.gc_btn_1_just_pressed) and entity.gravity.grounded then

@@ -76,8 +76,10 @@ function pr_control.keypressed(key, scancode, rpt)
     pr_control.space_pressed = true
     print("space pressed")
   elseif key == "return" then
-    pr_control.enter_pressed = true
-    print("enter pressed")
+    if not lovr.system.isKeyDown('lalt') and not lovr.system.isKeyDown('ralt') then
+      pr_control.enter_pressed = true
+      print("enter pressed")
+    end
   elseif key == "escape" then
     pr_control.escape_pressed = true
   end
