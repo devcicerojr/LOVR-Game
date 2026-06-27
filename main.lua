@@ -20,12 +20,14 @@ local function switch_to_title()
   current_scene.unload()
   current_scene = title_scene
   title_scene.load()
+  show_default_cursor()
 end
 
 local function switch_to_game()
   current_scene.unload()
   current_scene = game_scene
   game_scene.load()
+  hide_cursor()
 end
 
 
@@ -49,10 +51,55 @@ pcall(ffi.cdef, 'void glfwSetWindowAttrib(GLFWwindow* window, int attrib, int va
 pcall(ffi.cdef, 'void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);')
 pcall(ffi.cdef, 'void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);')
 pcall(ffi.cdef, 'GLFWmonitor* glfwGetPrimaryMonitor(void);')
+pcall(ffi.cdef, 'GLFWmonitor** glfwGetMonitors(int* count);')
+pcall(ffi.cdef, 'void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);')
 pcall(ffi.cdef, 'typedef struct { int width; int height; int redBits; int greenBits; int blueBits; int refreshRate; } GLFWvidmode;')
 pcall(ffi.cdef, 'const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);')
 pcall(ffi.cdef, 'void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);')
+pcall(ffi.cdef, 'void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);')
+pcall(ffi.cdef, 'void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);')
+pcall(ffi.cdef, 'typedef struct GLFWcursor GLFWcursor;')
+pcall(ffi.cdef, 'GLFWcursor* glfwCreateStandardCursor(int shape);')
+pcall(ffi.cdef, 'void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);')
+pcall(ffi.cdef, 'void glfwSetInputMode(GLFWwindow* window, int mode, int value);')
 local glfw_window = ffi.C.os_get_glfw_window()
+
+-- Pre-allocated buffers reused every frame to avoid GC pressure
+local _cx, _cy = ffi.new('double[1]'), ffi.new('double[1]')
+local _wx, _wy = ffi.new('int[1]'),    ffi.new('int[1]')
+
+local is_dragging     = false
+local drag_offset_x   = 0
+local drag_offset_y   = 0
+
+local GLFW_CURSOR             = 0x00033001
+local GLFW_CURSOR_NORMAL      = 0x00034001
+local GLFW_CURSOR_HIDDEN      = 0x00034002
+local GLFW_RESIZE_ALL_CURSOR  = 0x00036009  -- GLFW 3.4+ — 4-arrow move cursor
+local GLFW_CROSSHAIR_CURSOR   = 0x00036003  -- fallback for older GLFW
+
+local move_cursor = nil  -- created in lovr.load
+
+function show_move_cursor()
+  glfw.glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
+  if move_cursor ~= nil then
+    glfw.glfwSetCursor(glfw_window, move_cursor)
+  end
+end
+
+function hide_cursor()
+  glfw.glfwSetCursor(glfw_window, nil)
+  glfw.glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
+end
+
+function show_default_cursor()
+  glfw.glfwSetCursor(glfw_window, nil)
+  glfw.glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
+end
+
+pr_event_bus:on('game_paused_changed', function(_, is_paused)
+  if is_paused then show_move_cursor() else hide_cursor() end
+end)
 
 local function remove_window_decoration()
   glfw.glfwSetWindowAttrib(glfw_window, 0x00020005, 0)  -- GLFW_DECORATED = false
@@ -60,6 +107,29 @@ end
 
 local is_fullscreen = false
 local saved_x, saved_y, saved_w, saved_h
+
+local function get_current_monitor()
+  local x, y = ffi.new('int[1]'), ffi.new('int[1]')
+  local w, h = ffi.new('int[1]'), ffi.new('int[1]')
+  glfw.glfwGetWindowPos(glfw_window, x, y)
+  glfw.glfwGetWindowSize(glfw_window, w, h)
+  local center_x = x[0] + w[0] / 2
+  local center_y = y[0] + h[0] / 2
+
+  local count = ffi.new('int[1]')
+  local monitors = glfw.glfwGetMonitors(count)
+  local mx, my = ffi.new('int[1]'), ffi.new('int[1]')
+  for i = 0, count[0] - 1 do
+    local mon = monitors[i]
+    glfw.glfwGetMonitorPos(mon, mx, my)
+    local mode = glfw.glfwGetVideoMode(mon)
+    if center_x >= mx[0] and center_x < mx[0] + mode.width
+    and center_y >= my[0] and center_y < my[0] + mode.height then
+      return mon
+    end
+  end
+  return glfw.glfwGetPrimaryMonitor()  -- fallback
+end
 
 function toggle_fullscreen()
   if not is_fullscreen then
@@ -69,7 +139,7 @@ function toggle_fullscreen()
     glfw.glfwGetWindowSize(glfw_window, w, h)
     saved_x, saved_y = x[0], y[0]
     saved_w, saved_h = w[0], h[0]
-    local monitor = glfw.glfwGetPrimaryMonitor()
+    local monitor = get_current_monitor()
     local mode    = glfw.glfwGetVideoMode(monitor)
     glfw.glfwSetWindowMonitor(glfw_window, monitor, 0, 0, mode.width, mode.height, mode.refreshRate)
     is_fullscreen = true
@@ -95,7 +165,15 @@ function lovr.keyreleased(key, scancode)
 end
 
 function lovr.load(arg)
+  print("Lua require paths:")
+  print(package.path)
+  print("C module require paths:")
+  print(package.cpath)
   remove_window_decoration()
+  move_cursor = glfw.glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR)
+  if ffi.cast('void*', move_cursor) == nil then
+    move_cursor = glfw.glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR)
+  end
   local window_pass = lovr.graphics.getWindowPass()
   window_pass:setViewCull(true)
   window_pass:setDepthTest('less')
@@ -136,9 +214,35 @@ function lovr.load(arg)
   pr_camera.init()
 end
 
+local function can_drag_window()
+  return not is_fullscreen
+    and (current_scene == title_scene
+         or (current_scene == game_scene and game_scene.is_paused))
+end
+
 function lovr.update(dt)
   if dt > 0.05 then dt = 0.05 end
   pr_control.update(dt)
+
+  -- Borderless window drag (title screen and pause menu only)
+  do
+    local lmb = lovr.mouse.isDown(1)
+    if can_drag_window() then
+      glfw.glfwGetCursorPos(glfw_window, _cx, _cy)
+      glfw.glfwGetWindowPos(glfw_window, _wx, _wy)
+      if lmb and not is_dragging then
+        is_dragging   = true
+        drag_offset_x = _cx[0]
+        drag_offset_y = _cy[0]
+      end
+      if is_dragging then
+        glfw.glfwSetWindowPos(glfw_window,
+          math.floor(_wx[0] + _cx[0] - drag_offset_x),
+          math.floor(_wy[0] + _cy[0] - drag_offset_y))
+      end
+    end
+    if not lmb then is_dragging = false end
+  end
 
   if current_scene == title_scene then
     if title_scene.start_requested then

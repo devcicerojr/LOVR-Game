@@ -10,6 +10,7 @@ local flying_coins    = {}
 local laser_beam      = nil
 local sparks          = {}
 local mouse_was_down  = false
+local shoot_sfx       = nil
 local scene_view_pose = lovr.math.newMat4()
 local scene_proj_mat  = lovr.math.newMat4()
 
@@ -19,10 +20,15 @@ game_scene.return_to_title_requested = false
 local pause_menu_index    = 1
 local prev_dpad_up        = false
 local prev_dpad_down      = false
+local prev_w              = false
+local prev_s              = false
+local crosshair_y_frac     = 0.39   -- vertical position as fraction of H; driven by right stick
 local confirm_dialog_open  = false
 local confirm_dialog_index = 1   -- 1 = No (default), 2 = Yes
 local prev_dpad_left      = false
 local prev_dpad_right     = false
+local prev_a              = false
+local prev_d              = false
 
 local PAUSE_MENU_ITEMS = { "Resume", "Toggle Full Screen", "Return to Title" }
 
@@ -45,7 +51,11 @@ local LASER_RANGE       = 200
 local SPARK_COUNT       = 18
 local SPARK_SPEED       = 9
 local SPARK_LIFETIME    = 0.45
-local SPARK_GRAVITY     = 14
+local SPARK_GRAVITY          = 14
+local CROSSHAIR_Y_SPEED      = 0.25   -- fraction of H per second
+local CROSSHAIR_Y_MIN        = 0.05
+local CROSSHAIR_Y_MAX        = 0.55
+local CROSSHAIR_STICK_DEAD   = 0.12
 local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
 local WALL_HEIGHT = 5
@@ -135,6 +145,7 @@ function game_scene.unload()
 	flying_coins = {}
 	laser_beam   = nil
 	sparks       = {}
+	shoot_sfx    = nil
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
@@ -177,13 +188,13 @@ end
 local function get_crosshair_pos()
 	local W, H = scene_resolution.width, scene_resolution.height
 	if not ecs or not player or not ecs.entities[player] then
-		return W * 0.5, H * 0.39
+		return W * 0.5, H * crosshair_y_frac
 	end
 	local px      = select(1, ecs.entities[player].transform.transform:getPosition())
 	local proj_m  = { scene_proj_mat:unpack(true) }
 	local proj00  = proj_m[1]                        -- horizontal projection scale
 	local ndcX    = (px / 80) * proj00               -- proj00 == ndc at 45°
-	return W * 0.5 + W * 0.5 * ndcX, H * 0.39
+	return W * 0.5 + W * 0.5 * ndcX, H * crosshair_y_frac
 end
 
 -- Converts the crosshair position to a world-space ray (origin + direction).
@@ -315,8 +326,10 @@ function game_scene.load()
 	local img = lovr.data.newImage(1, 1)
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
+	shoot_sfx = lovr.audio.newSource('assets/sound_fx/shootok.wav', { decode = true })
 	game_scene.is_paused               = false
 	game_scene.return_to_title_requested = false
+	crosshair_y_frac    = 0.39
 	pause_menu_index    = 1
 	confirm_dialog_open  = false
 	confirm_dialog_index = 1
@@ -349,6 +362,8 @@ function game_scene.update(dt)
 			pause_menu_index     = 1
 			prev_dpad_up         = false
 			prev_dpad_down       = false
+			prev_w               = false
+			prev_s               = false
 			pr_control.enter_pressed  = false
 			pr_control.escape_pressed = false
 			pr_event_bus:emit('game_paused_changed', ecs, true)
@@ -359,7 +374,12 @@ function game_scene.update(dt)
 		prev_dpad_left  = pr_control.gc_dpad_left
 		prev_dpad_right = pr_control.gc_dpad_right
 
-		if dpad_left_just or dpad_right_just then
+		local a_just = pr_control.a_pressed and not prev_a
+		local d_just = pr_control.d_pressed and not prev_d
+		prev_a = pr_control.a_pressed
+		prev_d = pr_control.d_pressed
+
+		if dpad_left_just or dpad_right_just or a_just or d_just then
 			confirm_dialog_index = 3 - confirm_dialog_index  -- toggles between 1 and 2
 		end
 
@@ -387,10 +407,15 @@ function game_scene.update(dt)
 		prev_dpad_up   = pr_control.gc_dpad_up
 		prev_dpad_down = pr_control.gc_dpad_down
 
-		if dpad_up_just then
+		local w_just = pr_control.w_pressed and not prev_w
+		local s_just = pr_control.s_pressed and not prev_s
+		prev_w = pr_control.w_pressed
+		prev_s = pr_control.s_pressed
+
+		if dpad_up_just or w_just then
 			pause_menu_index = 1 + (pause_menu_index - 2) % #PAUSE_MENU_ITEMS
 		end
-		if dpad_down_just then
+		if dpad_down_just or s_just then
 			pause_menu_index = 1 + (pause_menu_index) % #PAUSE_MENU_ITEMS
 		end
 
@@ -412,11 +437,18 @@ function game_scene.update(dt)
 				confirm_dialog_index = 1
 				prev_dpad_left  = pr_control.gc_dpad_left
 				prev_dpad_right = pr_control.gc_dpad_right
+				prev_a = pr_control.a_pressed
+				prev_d = pr_control.d_pressed
 			end
 		end
 	end
 
 	if game_scene.is_paused then return end
+
+	local stick_y = pr_control.axes[4] or 0
+	if math.abs(stick_y) < CROSSHAIR_STICK_DEAD then stick_y = 0 end
+	crosshair_y_frac = math.max(CROSSHAIR_Y_MIN, math.min(CROSSHAIR_Y_MAX,
+		crosshair_y_frac + stick_y * CROSSHAIR_Y_SPEED * dt))
 
 	game_anim_time = game_anim_time + math.min(dt, MAX_DT)
 	ecs:update(math.min(dt, MAX_DT))
@@ -426,6 +458,10 @@ function game_scene.update(dt)
 	local mouse_is_down    = lovr.mouse.isDown(1) or pr_control.gc_btn_6
 	local mouse_just_fired = mouse_is_down and not mouse_was_down
 	mouse_was_down = mouse_is_down
+	if mouse_just_fired and shoot_sfx then
+		shoot_sfx:stop()
+		shoot_sfx:play()
+	end
 
 	if mouse_is_down and ecs and player and ecs.entities[player] then
 		local ox, oy, oz, dx, dy, dz = cursorToWorldRay()

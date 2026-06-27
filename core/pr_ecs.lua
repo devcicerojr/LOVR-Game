@@ -159,6 +159,17 @@ end
 
 function ECS:deleteDeadEntities()
   for _, id in ipairs(self.ids_for_deletion) do
+    local entity = self.entities[id]
+    if entity then
+      if entity.collider and entity.collider.collider then
+        local col = entity.collider.collider
+        if not col:isDestroyed() then col:destroy() end
+      end
+      if entity.terrain_collider and entity.terrain_collider.terrain_collider then
+        local col = entity.terrain_collider.terrain_collider
+        if not col:isDestroyed() then col:destroy() end
+      end
+    end
     self.entities[id] = nil
   end
   self.ids_for_deletion = {}
