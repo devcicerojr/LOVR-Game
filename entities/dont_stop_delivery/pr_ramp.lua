@@ -21,10 +21,10 @@ return function(ecs, spawn_pos, width, height, depth, slope)
   
   local vertices = {
   -- Front face
-  { -width/2, -total_height/2,  -depth/2, 1, 0 },
-  {  width/2, -total_height/2,  -depth/2, 0, 0 },
-  {  width/2,  -total_height/2 + height,  -depth/2, 0, 1 },
-  { -width/2,  -total_height/2 + height,  -depth/2, 1, 1 },
+  { width/2, -total_height/2,  -depth/2, 1, 0 },
+  { -width/2, -total_height/2,  -depth/2, 0, 0 },
+  { -width/2,  -total_height/2 + height,  -depth/2, 0, 1 },
+  { width/2,  -total_height/2 + height,  -depth/2, 1, 1 },
   
     -- Back face
   { -width/2, -total_height/2, depth/2, 0, 0 },

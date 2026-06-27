@@ -79,10 +79,10 @@ local function make_vertices()
 
   return {
     -- front (-Z)
-    { -w/2, -th/2,      -d/2, uv('front', 1, 0) },
-    {  w/2, -th/2,      -d/2, uv('front', 0, 0) },
-    {  w/2, -th/2 + h,  -d/2, uv('front', 0, 1) },
-    { -w/2, -th/2 + h,  -d/2, uv('front', 1, 1) },
+    {  w/2, -th/2,      -d/2, uv('front', 1, 0) },
+    {  -w/2, -th/2,      -d/2, uv('front', 0, 0) },
+    {  -w/2, -th/2 + h,  -d/2, uv('front', 0, 1) },
+    {  w/2, -th/2 + h,  -d/2, uv('front', 1, 1) },
     -- back (+Z)
     { -w/2, -th/2,       d/2, uv('back', 0, 0) },
     {  w/2, -th/2,       d/2, uv('back', 1, 0) },
