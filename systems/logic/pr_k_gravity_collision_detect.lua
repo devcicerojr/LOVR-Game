@@ -8,7 +8,7 @@ local createCallbackCtx = function(ecs, id)
       if collider ~= nil then
         local tag = collider:getTag()
         local is_ground = collider:getShape():getType() == "terrain" or tag == "ramp"
-        if is_ground and entity.gravity.jump_cooldown <= 0 then
+        if is_ground and entity.gravity.jump_cooldown <= 0 and (entity.gravity.vertical_velocity <= 0 or tag == "ramp") then
           entity.sensors_array.sensors["ground_sensor"].no_detection_period = 0
           entity.gravity.grounded = true
           entity.gravity.vertical_velocity = 0

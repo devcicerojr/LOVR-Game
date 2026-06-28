@@ -1,3 +1,8 @@
-"C:\Program Files\7-Zip\7z.exe" a -tzip -mx=9 project.lovr *
+From Powershell, execute: 
+ & "C:\Program Files\7-Zip\7z.exe" a -tzip -mx=9 project.lovr *
+ [IO.File]::WriteAllBytes('MyGame.exe', ([IO.File]::ReadAllBytes('lovr.exe') + [IO.File]::ReadAllBytes('project.lovr')))
 
+
+From CMD, execute:
+"C:\Program Files\7-Zip\7z.exe" a -tzip -mx=9 project.lovr *
 copy /b lovr.exe+project.lovr MyGame.exe

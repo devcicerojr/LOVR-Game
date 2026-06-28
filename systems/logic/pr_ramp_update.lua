@@ -5,6 +5,10 @@ pr_event_bus:on('ramp_went_out_of_range', function(ecs, id)
   if not collider:isDestroyed() then
     collider:destroy()
   end
+  local side_id = ecs.entities[id].is_ramp.side_entity_id
+  if side_id and ecs.entities[side_id] then
+    table.insert(ecs.ids_for_deletion, side_id)
+  end
   lovr.log("Marking ramp for deletion. Id: " .. id, "debug")
   table.insert(ecs.ids_for_deletion, id)
 end)

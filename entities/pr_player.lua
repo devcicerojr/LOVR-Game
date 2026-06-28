@@ -19,7 +19,7 @@ return function(ecs, spawn_pos)
   transform_offset:translate(0, collider_length/2 + collider_radius  , 0)
   transform_offset:rotate(collider_rotation_offset)
 
-  local gravity_acc = -40 --m/s
+  local gravity_acc = -50 --m/s
   local current_speed = vector.zero
   
   local cam_transform_offset = lovr.math.newMat4()
@@ -37,7 +37,7 @@ return function(ecs, spawn_pos)
   
   ecs:addComponent(id, pr_component.IsKinematic())
   ecs:addComponent(id, pr_component.IsPlayer())
-  ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/skater.glb')))
+  ecs:addComponent(id, pr_component.Model(lovr.graphics.newModel('assets/models/skater_sk.glb')))
   ecs:addComponent(id, pr_component.AnimationState())
   ecs:addComponent(id, pr_component.TracksCollider())
   ecs:addComponent(id, pr_component.PlayerControls())

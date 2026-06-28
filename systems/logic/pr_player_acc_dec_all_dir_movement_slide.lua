@@ -5,7 +5,7 @@ local lovr_world = require'../core/pr_world'
 local ACCELERATION = 50
 local DECELERATION = 90
 local STICK_DEAD_ZONE = 0.12
-local JUMP_FORCE      = 10
+local JUMP_FORCE      = 14
 local MAX_JUMP_HOLD   = 0.30   -- seconds the button can extend the jump
 local JUMP_HOLD_BOOST = 38     -- extra upward acceleration (units/s²) while held
 
@@ -143,6 +143,13 @@ return {
 
 
     local translate_val = vec3(acc_dec.current_speed) * dt
+    -- When grounded on a slope, add Y so the player follows the surface instead of sinking in
+    if entity.gravity.grounded and entity.gravity.last_ground_was_ramp then
+      local gn = entity.gravity.last_ground_normal
+      if gn and gn.ny > 0.001 then
+        translate_val.y = -(gn.nx * translate_val.x + gn.nz * translate_val.z) / gn.ny
+      end
+    end
     local translate_len = translate_val:length()
     local direction = translate_len > 0.0001 and vec3(translate_val):normalize() or vec3(0, 0, 1)
     local movement_angle = translate_len > 0.0001 and translate_val:angle(forward_vec) or 0

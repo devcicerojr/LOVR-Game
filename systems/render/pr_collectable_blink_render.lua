@@ -23,6 +23,7 @@ return {
     end
 
     pass:setColor(1, 1, 1, 1)
-    pass:draw(model, position, vec3(1.5, 1, 1), orientation)
+    pass:draw(model, position, vec3(0.5, 0.5, 0.5), orientation)
   end
 }
+

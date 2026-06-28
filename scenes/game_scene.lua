@@ -11,6 +11,12 @@ local laser_beam      = nil
 local sparks          = {}
 local mouse_was_down  = false
 local shoot_sfx       = nil
+local skate_sfx       = nil
+local skate_hit_sfx   = nil
+local prev_grounded   = false
+local prev_on_ramp    = false
+local prev_is_jumping = false
+local prev_player_x   = nil
 local scene_view_pose = lovr.math.newMat4()
 local scene_proj_mat  = lovr.math.newMat4()
 
@@ -147,6 +153,9 @@ function game_scene.unload()
 	laser_beam   = nil
 	sparks       = {}
 	shoot_sfx    = nil
+	if skate_sfx then skate_sfx:stop() end
+	skate_sfx     = nil
+	skate_hit_sfx = nil
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
@@ -328,6 +337,15 @@ function game_scene.load()
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
 	shoot_sfx = lovr.audio.newSource('assets/sound_fx/shootok.wav', { decode = true })
+	skate_sfx     = lovr.audio.newSource('assets/sound_fx/skatey.wav', { decode = true, loop = true })
+	skate_hit_sfx = lovr.audio.newSource('assets/sound_fx/skate_hit.wav', { decode = true })
+	skate_hit_sfx:setPitch(1.5)
+	prev_grounded   = false
+	prev_on_ramp    = false
+	prev_is_jumping = false
+	prev_player_x   = nil
+	skate_sfx:setPitch(1.4)
+	skate_sfx:setVolume(0.3)
 	game_scene.is_paused               = false
 	game_scene.return_to_title_requested = false
 	crosshair_y_frac    = 0.39
@@ -360,6 +378,7 @@ function game_scene.update(dt)
 	if not game_scene.is_paused then
 		if pr_control.enter_pressed or pr_control.escape_pressed or pr_control.gc_btn_8_just_pressed then
 			game_scene.is_paused = true
+			if skate_sfx then skate_sfx:stop() end
 			pause_menu_index     = 1
 			prev_dpad_up         = false
 			prev_dpad_down       = false
@@ -454,6 +473,57 @@ function game_scene.update(dt)
 	game_anim_time = game_anim_time + math.min(dt, MAX_DT)
 	ecs:update(math.min(dt, MAX_DT))
 	ecs:deleteDeadEntities()
+
+	if ecs and player and ecs.entities[player] then
+		local g        = ecs.entities[player].gravity
+		local grounded   = g and g.grounded   or false
+		local on_ramp    = grounded and (g and g.last_ground_was_ramp or false)
+		local is_jumping = g and g.is_jumping or false
+
+		if skate_sfx then
+			if grounded and not skate_sfx:isPlaying() then
+				skate_sfx:play()
+			elseif not grounded and skate_sfx:isPlaying() then
+				skate_sfx:stop()
+			end
+		end
+
+		if skate_hit_sfx then
+			local landed    = grounded   and not prev_grounded
+			local left_ramp = not on_ramp    and prev_on_ramp
+			local play_hit  = landed
+			               or left_ramp
+			               or (on_ramp    and not prev_on_ramp)
+			               or (is_jumping and not prev_is_jumping)
+			if play_hit then
+				skate_hit_sfx:setPitch((landed or left_ramp) and 1.7 or 1.5)
+				skate_hit_sfx:stop()
+				skate_hit_sfx:setVolume(0.8, 'linear')
+				skate_hit_sfx:play()
+			end
+		end
+
+		prev_grounded   = grounded
+		prev_on_ramp    = on_ramp
+		prev_is_jumping = is_jumping
+
+		local px = select(1, ecs.entities[player].transform.transform:getPosition())
+		if prev_player_x then
+			local crossed_inner_10  = prev_player_x > 10  and px <= 10   -- coming inward from right
+			local crossed_inner_neg = prev_player_x < -10 and px >= -10  -- coming inward from left
+			local crossed_outer_10  = prev_player_x < 10  and px >= 10   -- going outward to right
+			local crossed_outer_neg = prev_player_x > -10 and px <= -10  -- going outward to left
+			local crossed = crossed_inner_10 or crossed_inner_neg or crossed_outer_10 or crossed_outer_neg
+			if crossed and grounded and skate_hit_sfx then
+				local high_pitch = crossed_inner_10 or crossed_inner_neg
+				skate_hit_sfx:setVolume(0.5, 'linear')
+				skate_hit_sfx:setPitch(high_pitch and 1.7 or 1.5)
+				skate_hit_sfx:stop()
+				skate_hit_sfx:play()
+			end
+		end
+		prev_player_x = px
+	end
 
 	-- Laser: fire while mouse button 1 or controller button 6 held
 	local mouse_is_down    = lovr.mouse.isDown(1) or pr_control.gc_btn_6

@@ -27,15 +27,7 @@ return {
     -- matching the slope angle. Skip the override when on flat ground so the
     -- bind pose (which may include an inherent Y rotation) shows through.
     local grav = entity.gravity
-    if root_bind_quat then
-      if grav.last_ground_was_ramp and grav.last_ground_normal then
-        local gn         = grav.last_ground_normal
-        local ramp_angle = math.atan2(-gn.nz, gn.ny)
-        model:setNodeOrientation('root', root_bind_quat * lovr.math.quat(ramp_angle, 1, 0, 0), 1)
-      else
-        model:setNodeOrientation('root', root_bind_quat, 0.3)
-      end
-    end
+    
 
     if pr_control.s_pressed or pr_control.gc_dpad_down then return end
 
@@ -54,5 +46,15 @@ return {
     model:setNodeOrientation('left_arm', counter_left_arm * lovr.math.quat(math.pi/4, 0, 0, 1), 0.5)
     model:setNodeOrientation('torso', counter_torso, 0.7)
     model:setNodeOrientation('pelvis', counter_pelvis, 0.8)
+
+    if root_bind_quat then
+      if grav.last_ground_was_ramp and grav.last_ground_normal then
+        local gn         = grav.last_ground_normal
+        local ramp_angle = math.atan2(-gn.nz, gn.ny)
+        model:setNodeOrientation('root', root_bind_quat * lovr.math.quat(ramp_angle, 1, 0, 0), 1)
+      else
+        model:setNodeOrientation('root', root_bind_quat, 0.3)
+      end
+    end
   end
 }
