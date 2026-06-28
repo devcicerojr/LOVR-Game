@@ -94,9 +94,9 @@ return {
     end
     local rotation_angle = 0
     if pr_control.s_pressed or pr_control.gc_dpad_down then
-      desired_dir = vec3(0, 0, 0) -- stop movement if both forward and backward keys are pressed
+      desired_dir = vec3(0, 0, 0.1) -- stop movement if both forward and backward keys are pressed
       player_controlling = false
-      rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
+      -- rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
     end
     desired_dir = desired_dir + vec3(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
     if desired_dir:length() > 0.001 then

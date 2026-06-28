@@ -80,7 +80,7 @@ local render_systems = {
 	"collectable_blink_render",
 	"car_obstacle_render",
 	"ramp_render",
-	"dust_particles_render",
+	-- "dust_particles_render",
 	"blob_shadow_render"  -- must be last: blends over all opaque geometry
 }
 
@@ -106,6 +106,7 @@ local logic_systems = {
 	"game_cam_fixed_orientation",
 
 	"player_head_animation_blend",
+	"player_body_animation_blend",
 	"dynamic_tile_spawner",
 	"dynamic_wall_spawner",
 	"dynamic_scenario_spawner",
