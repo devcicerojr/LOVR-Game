@@ -2,14 +2,16 @@
 local lovr_world = require'../core/pr_world'
 
 -- Constants for acceleration and deceleration (tweak as needed)
-local ACCELERATION = 50
+local ACCELERATION = {x = 42, y = 0, z = 10}
 local DECELERATION = 90
 local STICK_DEAD_ZONE = 0.12
 local JUMP_FORCE      = 14
 local MAX_JUMP_HOLD   = 0.30   -- seconds the button can extend the jump
 local JUMP_HOLD_BOOST = 38     -- extra upward acceleration (units/s²) while held
 
-local OBSTACLE_FILTER = 'wall'
+local OBSTACLE_FILTER      = 'wall'
+local RAMP_SIDE_GRACE      = 0.3   -- seconds after leaving ramp before side check activates
+local ramp_side_cooldown   = 0
 
 local function apply_dead_zone(val)
   if math.abs(val) < STICK_DEAD_ZONE then return 0 end
@@ -121,7 +123,14 @@ return {
       -- cardinal inputs apply equal acceleration magnitude).
       local desired_dir_norm = vec3(desired_dir):normalize()
       local dot = acc_dec.current_speed:dot(desired_dir_norm)
-      local accel_vec = desired_dir_norm * ((dot < 0) and (ACCELERATION + DECELERATION) or ACCELERATION) * dt
+      local opposing   = dot < 0
+      local speed_ratio = math.min(current_speed_len / desired_speed, 1.0)
+      local accel_x     = ACCELERATION.x * speed_ratio
+      local accel_vec = vec3(
+        desired_dir_norm.x * (opposing and (accel_x + DECELERATION) or accel_x),
+        0,
+        desired_dir_norm.z * (opposing and (ACCELERATION.z + DECELERATION) or ACCELERATION.z)
+      ) * dt
       acc_dec.current_speed = acc_dec.current_speed + accel_vec
       -- Clamp to max speed
       if acc_dec.current_speed:length() > desired_speed then
@@ -161,6 +170,37 @@ return {
     if collider:isKinematic() then
 
       local position = vec3(entity.transform.transform:getPosition())
+
+      -- Keep cooldown alive while on ramp, count down after leaving
+      if entity.gravity.grounded and entity.gravity.last_ground_was_ramp then
+        ramp_side_cooldown = RAMP_SIDE_GRACE
+      elseif ramp_side_cooldown > 0 then
+        ramp_side_cooldown = ramp_side_cooldown - dt
+      end
+
+      -- Ramp side check: block X movement when player's capsule side touches the ramp mesh
+      if translate_val.x ~= 0 and ramp_side_cooldown <= 0 then
+        local x_dir = translate_val.x > 0 and 1 or -1
+        -- Downward raycast: if ramp surface is below the player, they are above it — skip the check
+        local tip_x = position.x + x_dir * col_width / 2
+        local tip_z = position.z + col_depth / 2
+        local ray_from = vec3(tip_x, position.y + 0.5, tip_z)
+        local ray_to   = vec3(tip_x, position.y - 10,  tip_z)
+        local ramp_below, _, _, hit_y = lovr_world:raycast(ray_from, ray_to, 'ramp')
+        local above_ramp = ramp_below ~= nil and position.y > hit_y + 0.1
+
+        if not above_ramp then
+          local check_pos = vec3(
+            position.x + x_dir * (col_width / 2 + 0.05),
+            position.y,
+            position.z
+          )
+          if lovr_world:queryBox(check_pos, vec3(0.15, col_height * 0.8, col_depth * 0.6), 'ramp') then
+            translate_val.x = 0
+            acc_dec.current_speed.x = 0
+          end
+        end
+      end
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
       local aabb_sensor_pos = position + translate_val + aabb_rotated_offset

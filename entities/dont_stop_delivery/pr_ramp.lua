@@ -59,15 +59,12 @@ return function(ecs, spawn_pos, width, height, depth, slope)
   }
   
   local main_indices = {
-   1,  2,  3,   1,  3,  4,  -- front (-Z, near/entry)
-   5,  6,  7,   5,  7,  8,  -- back  (+Z, far/exit)
-  17, 20, 19,  17, 19, 18,  -- top   (+Y slope, player walks here)
-  21, 22, 23,  21, 23, 24,  -- bottom (-Y)
-  }
-
-  local side_indices = {
-  10,  9, 12,  10, 12, 11,  -- left  (-X)
-  13, 14, 16,  13, 16, 15,  -- right (+X)
+   1,  2,  3,   1,  3,  4,
+   5,  6,  7,   5,  7,  8,
+  10,  9, 12,  10, 12, 11,
+  13, 14, 16,  13, 16, 15,
+  17, 20, 19,  17, 19, 18,
+  21, 22, 23,  21, 23, 24,
   }
 
   local all_indices = {
@@ -82,16 +79,13 @@ return function(ecs, spawn_pos, width, height, depth, slope)
   local mesh = lovr.graphics.newMesh(format, vertices)
   mesh:setIndices(main_indices)
 
-  local side_mesh = lovr.graphics.newMesh(format, vertices)
-  side_mesh:setIndices(side_indices)
-
   local collider_mesh = lovr.graphics.newMesh(format, vertices)
   collider_mesh:setIndices(all_indices)
 
   local texture_path = texture_path or "assets/neutral.png"
   if texture == nil then
     texture = lovr.graphics.newTexture(texture_path)
-    texture:setSampler(lovr.graphics.newSampler({ wrap = 'repeat' }))
+    texture:setSampler(lovr.graphics.newSampler({ filter = 'nearest', wrap = 'repeat' }))
   end
   local material = lovr.graphics.newMaterial({texture = texture,
   uvScale = {1, width / height},})
@@ -117,11 +111,6 @@ return function(ecs, spawn_pos, width, height, depth, slope)
   ecs:addComponent(id, pr_component.Collider(collider, "mesh", lovr.math.newMat4()))
   ecs:addComponent(id, pr_component.IsRamp(width, height, depth))
 
-  local side_id = ecs:newEntity()
-  ecs:addComponent(side_id, pr_component.Transform(lovr.math.newMat4(center, vector.one, lovr.math.quat(0, 1, 0, 0))))
-  ecs:addComponent(side_id, pr_component.TexturedMesh(side_mesh, nil, mesh_color))
-  ecs:addComponent(side_id, pr_component.IsRamp(width, height, depth))
-  ecs.entities[id].is_ramp.side_entity_id = side_id
 
   return id
 end

@@ -38,7 +38,7 @@ local prev_d              = false
 
 local PAUSE_MENU_ITEMS = { "Resume", "Toggle Full Screen", "Return to Title" }
 
-local scene_resolution = {width = 1080 , height = 720}
+local scene_resolution = {width = 1920 , height = 1080}
 local sampler = lovr.graphics.newSampler({filter = {'nearest', 'nearest', 'nearest'}})
 local gTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height)
 local sTexture = lovr.graphics.newTexture(scene_resolution.width, scene_resolution.height, {format = 'd24s8'})
@@ -290,12 +290,8 @@ local function drawHUD(pass)
 	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40, 0, 1, 0, 0, 0, 'left', 'middle')
 
 	local cx, cy = get_crosshair_pos()
-	local size, gap = 6, 3
 	pass:setColor(1, 1, 1, 0.9)
-	pass:line(cx - size, cy, 0,  cx - gap, cy, 0)
-	pass:line(cx + gap,  cy, 0,  cx + size, cy, 0)
-	pass:line(cx, cy - size, 0,  cx, cy - gap, 0)
-	pass:line(cx, cy + gap,  0,  cx, cy + size, 0)
+	pass:circle(cx, cy, 0, 8, 0, 0, 0, 1, 'line')
 
 	-- Flying coin animations (DKC-style collect effect)
 	local target_x = 60

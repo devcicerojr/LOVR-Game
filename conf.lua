@@ -32,8 +32,8 @@ function lovr.conf(t)
   t.modules.headset =  true
   -- Configure the desktop window
   t.window.fullscreen = false
-  t.window.width = 720
-  t.window.height = 480
+  t.window.width = 1080
+  t.window.height = 720
   t.window.resizable  = true
   t.window.title = 'JFJR-Game'
   t.window.icon = nil

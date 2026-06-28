@@ -32,7 +32,7 @@ return {
     
 
     -- pass:setDepthOffset(-1, 1)
-    pass:setSampler('linear')
+    pass:setSampler('nearest')
     pass:setAlphaToCoverage(true)
     pass:setCullMode('front')
     -- pass:setStencilWrite('replace', 1)
@@ -41,7 +41,7 @@ return {
     pass:draw(entity.model.model, mat4(entity_pos, entity_quat))
     pass:setWireframe(false)
 
-    pass:setSampler('linear')
+    pass:setSampler('nearest')
     pass:setShader(environment_shader.shader)
     environment_shader.send(pass, vec3(0.45, 0.45, 0.45))
     pass:setColor(0.7, 0.7, 0.7)
