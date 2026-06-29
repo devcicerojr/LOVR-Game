@@ -5,16 +5,14 @@ return {
   requires = { "model" , "animation_state", "transform", "tracks_collider"},
   update_fn = function(ecs, id, c, pass) -- draw function
     local entity = ecs.entities[id]
-    local cur_animation = nil
-    if entity.animation_state.current > 0 then
-      cur_animation = entity.model.model:getAnimationName(entity.animation_state.current)
-      if cur_animation then
-        -- entity.model.model:animate(cur_animation, game_anim_time * 3 %
-        -- entity.model.model:getAnimationDuration(cur_animation))
-      end
-    else
+    local car_hit_time = entity.animation_state.car_hit_time
+    if car_hit_time and car_hit_time > 0 then
+      local dur = entity.model.model:getAnimationDuration('falling')
+      entity.model.model:animate('falling', car_hit_time % dur)
+    elseif entity.animation_state.current <= 0 then
       entity.model.model:animate(1, 0)
     end
+    -- current > 0: body blend system owns the pose via setNodeOrientation()
     
     pass:setShader(outline_shader.shader)
     outline_shader.setDefaultVals(pass)

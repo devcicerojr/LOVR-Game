@@ -30,43 +30,47 @@ return {
     local velocity = ecs.entities[id].velocity.velocity
     local aabb_sensor = ecs.entities[id].aabb_sensor
     local acc_dec = entity.acc_dec_movement
+    acc_dec.impaired = car_braking
+
     local moving_forward = pr_control.up_pressed or pr_control.gc_dpad_up
     local moving_backward = pr_control.down_pressed or pr_control.gc_dpad_down
     local desired_dir = lovr.math.newVec3(0, 0, 0)
-    local desired_rot = lovr.math.newQuat(0, 0 , 0, 1)
+    -- Default to current facing so the player doesn't snap to forward while impaired
+    local desired_rot = lovr.math.newQuat(entity.transform.transform:getOrientation())
     local desired_speed = 0
     local forward_vec = vec3(0, 0, 1)
 
-    print(entity.transform.transform:getPosition())
-    -- Jump input
+    -- Jump input (blocked while impaired)
     local jump_held = lovr.system.isKeyDown("space") or pr_control.gc_btn_1
-    if (pr_control.space_pressed or pr_control.gc_btn_1_just_pressed) and entity.gravity.grounded then
-      local jump_vel = JUMP_FORCE
-      -- On a ramp the slope pushes the player upward; add that momentum to the jump
-      if entity.gravity.last_ground_was_ramp then
-        local gn      = entity.gravity.last_ground_normal
-        local acc_dec = entity.acc_dec_movement
-        if gn and acc_dec and gn.ny > 0.01 then
-          local vx       = acc_dec.current_speed.x
-          local vz       = acc_dec.current_speed.z
-          local launch_vy = -(gn.nx * vx + gn.nz * vz) / gn.ny
-          if launch_vy > 0 then
-            jump_vel = jump_vel + launch_vy * 0.5 -- using only half of launch_vy
+    if not acc_dec.impaired then
+      if (pr_control.space_pressed or pr_control.gc_btn_1_just_pressed) and entity.gravity.grounded then
+        local jump_vel = JUMP_FORCE
+        -- On a ramp the slope pushes the player upward; add that momentum to the jump
+        if entity.gravity.last_ground_was_ramp then
+          local gn      = entity.gravity.last_ground_normal
+          local acc_dec = entity.acc_dec_movement
+          if gn and acc_dec and gn.ny > 0.01 then
+            local vx       = acc_dec.current_speed.x
+            local vz       = acc_dec.current_speed.z
+            local launch_vy = -(gn.nx * vx + gn.nz * vz) / gn.ny
+            if launch_vy > 0 then
+              jump_vel = jump_vel + launch_vy * 0.5
+            end
           end
         end
+        entity.gravity.vertical_velocity = jump_vel
+        entity.gravity.grounded = false
+        entity.gravity.jump_cooldown = 0.15
+        entity.gravity.is_jumping = true
+        entity.gravity.jump_hold_time = 0
+        pr_control.space_pressed = false
+        pr_control.gc_btn_1_just_pressed = false
       end
-      entity.gravity.vertical_velocity = jump_vel
-      entity.gravity.grounded = false
-      entity.gravity.jump_cooldown = 0.15
-      entity.gravity.is_jumping = true
-      entity.gravity.jump_hold_time = 0
-      pr_control.space_pressed = false
-      pr_control.gc_btn_1_just_pressed = false
-    end
-    -- Variable height: hold button to keep boosting upward, up to MAX_JUMP_HOLD
-    if entity.gravity.is_jumping and jump_held and entity.gravity.jump_hold_time < MAX_JUMP_HOLD then
-      entity.gravity.jump_hold_time = entity.gravity.jump_hold_time + dt
-      entity.gravity.vertical_velocity = entity.gravity.vertical_velocity + JUMP_HOLD_BOOST * dt
+      -- Variable height: hold button to keep boosting upward, up to MAX_JUMP_HOLD
+      if entity.gravity.is_jumping and jump_held and entity.gravity.jump_hold_time < MAX_JUMP_HOLD then
+        entity.gravity.jump_hold_time = entity.gravity.jump_hold_time + dt
+        entity.gravity.vertical_velocity = entity.gravity.vertical_velocity + JUMP_HOLD_BOOST * dt
+      end
     end
     if not jump_held then
       entity.gravity.is_jumping = false
@@ -79,50 +83,53 @@ return {
     local col_depth = maxz - minz
     local player_controlling = false
 
-    moving_forward = true
-    if moving_forward then
-      desired_dir = desired_dir + vec3(0, 0, 1)
-      player_controlling = true
-    end
-    if moving_backward then
-      desired_dir = desired_dir + vec3(0, 0, -1)
-      player_controlling = true
-    end
-    if pr_control.a_pressed or pr_control.gc_dpad_left then
-      desired_dir = desired_dir + vec3(1, 0, 0)
-      player_controlling = true
-    end
-    if  pr_control.d_pressed or pr_control.gc_dpad_right then
-      desired_dir = desired_dir + vec3(-1, 0, 0)
-      player_controlling = true
-    end
-    local rotation_angle = 0
-    if pr_control.s_pressed or pr_control.gc_dpad_down then
-      desired_dir = vec3(0, 0, 0.1) -- stop movement if both forward and backward keys are pressed
-      player_controlling = false
-      -- rotation_angle = vec3(0, 0, 1):angle(vec3(0, 0, -1))
-    end
-    desired_dir = desired_dir + vec3(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
-    if desired_dir:length() > 0.001 then
-      rotation_angle = vec3(desired_dir):angle(forward_vec)
-      if desired_dir:dot(vec3(1, 0, 0)) < 0 then
-        rotation_angle = -rotation_angle
+    if not acc_dec.impaired then
+      moving_forward = true
+      if moving_forward then
+        desired_dir = desired_dir + vec3(0, 0, 1)
+        player_controlling = true
       end
-    end
-    desired_rot = quat(rotation_angle, 0, 1, 0)
+      if moving_backward then
+        desired_dir = desired_dir + vec3(0, 0, -1)
+        player_controlling = true
+      end
+      if pr_control.a_pressed or pr_control.gc_dpad_left then
+        desired_dir = desired_dir + vec3(1, 0, 0)
+        player_controlling = true
+      end
+      if pr_control.d_pressed or pr_control.gc_dpad_right then
+        desired_dir = desired_dir + vec3(-1, 0, 0)
+        player_controlling = true
+      end
+      local rotation_angle = 0
+      if pr_control.s_pressed or pr_control.gc_dpad_down then
+        desired_dir = vec3(0, 0, 0.1)
+        player_controlling = false
+      end
+      desired_dir = desired_dir + vec3(-apply_dead_zone(pr_control.axes[1] or 0), 0, 0)
+      if desired_dir:length() > 0.001 then
+        rotation_angle = vec3(desired_dir):angle(forward_vec)
+        if desired_dir:dot(vec3(1, 0, 0)) < 0 then
+          rotation_angle = -rotation_angle
+        end
+      end
+      desired_rot = quat(rotation_angle, 0, 1, 0)
 
-    if player_controlling then
-      desired_speed = vec3(desired_dir):normalize():length() * velocity.z
-      -- entity.transform.transform:set(vec3(entity.transform.transform:getPosition()), desired_rot)
-    else
-      desired_dir = vec3(0, 0, 0)
-      desired_speed = 0
+      if player_controlling then
+        desired_speed = vec3(desired_dir):normalize():length() * velocity.z
+      else
+        desired_dir = vec3(0, 0, 0)
+        desired_speed = 0
+      end
     end
     local current_speed_len = acc_dec.current_speed:length()
     local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
     if car_braking then
-      -- Only decelerate Z; X carries through unchanged so player keeps their direction
-      acc_dec.current_speed.z = math.max(0, acc_dec.current_speed.z - CAR_BRAKE_DECEL * dt)
+      local z_old = acc_dec.current_speed.z
+      acc_dec.current_speed.z = math.max(0, z_old - CAR_BRAKE_DECEL * dt)
+      -- Scale X by the same proportion Z lost so both axes reach 0 together
+      local scale = z_old > 0 and (acc_dec.current_speed.z / z_old) or 0
+      acc_dec.current_speed.x = acc_dec.current_speed.x * scale
       if acc_dec.current_speed.z == 0 then car_braking = false end
     elseif desired_speed > 0 then
       -- Accelerate towards desired direction and speed (normalize so diagonal and
@@ -208,9 +215,29 @@ return {
         end
       end
 
-      -- Car collision: trigger braking when player body overlaps a car collider
-      if lovr_world:queryBox(position, vec3(col_width * 0.5, col_height * 0.8, col_depth * 0.5), 'car') and entity.gravity.grounded then
+      -- Car collision: trigger braking when player body overlaps a car collider.
+      -- Box is anchored at the player's feet (position.y) and extends upward, so it
+      -- naturally stops detecting once the player's feet clear the car's top.
+      if lovr_world:queryBox(
+        vec3(position.x, position.y + col_height * 0.4, position.z),
+        vec3(col_width * 0.5, col_height * 0.8, col_depth * 0.5),
+        'car'
+      ) then
+        if not car_braking then
+          acc_dec.car_hit = true
+          if entity.gravity.grounded then
+            entity.gravity.vertical_velocity = JUMP_FORCE
+            entity.gravity.grounded          = false
+            entity.gravity.jump_cooldown     = 0.15
+            entity.gravity.is_jumping        = false
+          end
+        end
         car_braking = true
+      end
+
+      -- Clear car_hit once the player is moving forward on Z again
+      if acc_dec.car_hit and not car_braking and acc_dec.current_speed.z > 0 then
+        acc_dec.car_hit = false
       end
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
