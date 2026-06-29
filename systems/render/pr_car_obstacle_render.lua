@@ -1,22 +1,18 @@
--- local ecs = require'../core/pr_ecs'
-
 return {
   phase = "render",
-  requires = { "is_car_obstacle", "model" , "transform"},
-  update_fn = function(ecs, id, c, pass) -- render
-    local entity_transform = ecs.entities[id].transform.transform
-    local model = ecs.entities[id].model.model
+  requires = { "is_car_obstacle", "textured_mesh", "transform" },
+  update_fn = function(ecs, id, c, pass)
+    local entity = ecs.entities[id]
+    local color = entity.textured_mesh.base_color
+    local mesh = entity.textured_mesh.mesh
+    local t = entity.transform.transform
+    local px, py, pz = t:getPosition()
 
-    if not model then
-      return
-    end
-
-    local position = vec3(entity_transform:getPosition())
-    local orientation = quat(entity_transform:getOrientation())
-
-    pass:setColor(1, 1, 1, 1)
-    pass:setDepthOffset(10000)
-    pass:draw(model, position, vec3(2, 1, 1),  0, 0, 1, 0)
-    pass:setDepthOffset()
+    pass:push('transform')
+    pass:push('state')
+    pass:setColor(color.x, color.y, color.z, color.w)
+    pass:draw(mesh, px, py, pz)
+    pass:pop('state')
+    pass:pop('transform')
   end
 }

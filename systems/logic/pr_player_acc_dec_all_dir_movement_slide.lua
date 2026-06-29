@@ -12,6 +12,8 @@ local JUMP_HOLD_BOOST = 38     -- extra upward acceleration (units/s²) while he
 local OBSTACLE_FILTER      = 'wall'
 local RAMP_SIDE_GRACE      = 0.3   -- seconds after leaving ramp before side check activates
 local ramp_side_cooldown   = 0
+local CAR_BRAKE_DECEL      = 20
+local car_braking          = false
 
 local function apply_dead_zone(val)
   if math.abs(val) < STICK_DEAD_ZONE then return 0 end
@@ -118,7 +120,11 @@ return {
     end
     local current_speed_len = acc_dec.current_speed:length()
     local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
-    if desired_speed > 0 then
+    if car_braking then
+      -- Decelerate Z gradually; X and Y unaffected
+      acc_dec.current_speed.z = math.max(0, acc_dec.current_speed.z - CAR_BRAKE_DECEL * dt)
+      if acc_dec.current_speed.z == 0 then car_braking = false end
+    elseif desired_speed > 0 then
       -- Accelerate towards desired direction and speed (normalize so diagonal and
       -- cardinal inputs apply equal acceleration magnitude).
       local desired_dir_norm = vec3(desired_dir):normalize()
@@ -200,6 +206,11 @@ return {
             acc_dec.current_speed.x = 0
           end
         end
+      end
+
+      -- Car collision: trigger braking when player body overlaps a car collider
+      if lovr_world:queryBox(position, vec3(col_width * 0.5, col_height * 0.8, col_depth * 0.5), 'car') and entity.gravity.grounded then
+        car_braking = true
       end
 
       local aabb_rotated_offset = vec3(aabb_sensor.sensor_offset):rotate(movement_rot)
