@@ -121,7 +121,7 @@ return {
     local current_speed_len = acc_dec.current_speed:length()
     local current_dir = current_speed_len > 0 and vec3(acc_dec.current_speed):normalize() or quat(entity.transform.transform:getOrientation()):direction()
     if car_braking then
-      -- Decelerate Z gradually; X and Y unaffected
+      -- Only decelerate Z; X carries through unchanged so player keeps their direction
       acc_dec.current_speed.z = math.max(0, acc_dec.current_speed.z - CAR_BRAKE_DECEL * dt)
       if acc_dec.current_speed.z == 0 then car_braking = false end
     elseif desired_speed > 0 then

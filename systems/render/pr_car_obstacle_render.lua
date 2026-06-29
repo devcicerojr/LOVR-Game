@@ -10,6 +10,7 @@ return {
 
     pass:push('transform')
     pass:push('state')
+    pass:setShader()
     pass:setColor(color.x, color.y, color.z, color.w)
     pass:draw(mesh, px, py, pz)
     pass:pop('state')

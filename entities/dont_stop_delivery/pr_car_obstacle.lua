@@ -2,6 +2,8 @@ local pr_component = require'../components/pr_components'
 local lovr_world = require'../core/pr_world'
 
 local SIZE = 2.4
+local ENGINE_SOUND_FILE = 'assets/sound_fx/loud_engine.wav'
+local ENGINE_SOUND_RADIUS = 3
 
 return function(ecs, spawn_pos)
   local id = ecs:newEntity()
@@ -54,12 +56,20 @@ return function(ecs, spawn_pos)
   collider:setKinematic(true)
   collider:setTag('car')
 
+  local source = lovr.audio.newSource(ENGINE_SOUND_FILE, { spatial = true, pitchable = false })
+  source:setSpatialization(1)
+  source:setFalloff(0, 0)
+  source:setRadius(ENGINE_SOUND_RADIUS)
+  source:setLooping(true)
+  source:setPosition(center)
+
   local entity_transform = lovr.math.newMat4(center, lovr.math.quat(0, 0, 0, 1))
   local mesh_color = lovr.math.newVec4(0.8, 0.3, 0.1, 1)
 
   ecs:addComponent(id, pr_component.TexturedMesh(mesh, nil, mesh_color))
   ecs:addComponent(id, pr_component.Transform(entity_transform))
   ecs:addComponent(id, pr_component.Collider(collider, "mesh", lovr.math.newMat4()))
+  ecs:addComponent(id, pr_component.AudioSource(source))
   ecs:addComponent(id, pr_component.IsCarObstacle())
 
   return id

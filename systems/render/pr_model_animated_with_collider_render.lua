@@ -29,7 +29,6 @@ return {
 
     local entity_pos = vec3(entity.transform.transform:getPosition())
     local entity_quat = quat(entity.transform.transform:getOrientation())
-    
 
     -- pass:setDepthOffset(-1, 1)
     pass:setSampler('nearest')

@@ -290,7 +290,7 @@ local function drawHUD(pass)
 	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40, 0, 1, 0, 0, 0, 'left', 'middle')
 
 	local cx, cy = get_crosshair_pos()
-	pass:setColor(1, 1, 1, 0.9)
+	pass:setColor(1, 1, 1, 0.3)
 	pass:circle(cx, cy, 0, 8, 0, 0, 0, 1, 'line')
 
 	-- Flying coin animations (DKC-style collect effect)
