@@ -215,14 +215,33 @@ return {
         end
       end
 
-      -- Car collision: trigger braking when player body overlaps a car collider.
-      -- Box is anchored at the player's feet (position.y) and extends upward, so it
-      -- naturally stops detecting once the player's feet clear the car's top.
-      if lovr_world:queryBox(
-        vec3(position.x, position.y + col_height * 0.4, position.z),
-        vec3(col_width * 0.5, col_height * 0.8, col_depth * 0.5),
-        'car'
-      ) then
+      -- Swept AABB check: cover the player's full path this frame so a fast car
+      -- can't tunnel through between updates regardless of framerate.
+      local CAR_HALF = 1.2  -- car SIZE=2.4
+      local det_hx = col_width  * 0.25
+      local det_hy = col_height * 0.4
+      local det_hz = col_depth  * 0.25
+      -- Build the swept box min/max for each axis (union of start and end positions)
+      local next_x = position.x + translate_val.x
+      local next_z = position.z + translate_val.z
+      local swept_min_x = math.min(position.x, next_x) - det_hx
+      local swept_max_x = math.max(position.x, next_x) + det_hx
+      local swept_cy    = position.y + col_height * 0.4
+      local swept_min_z = math.min(position.z, next_z) - det_hz
+      local swept_max_z = math.max(position.z, next_z) + det_hz
+      local car_overlapping = false
+      for cid, ce in pairs(ecs.entities) do
+        if ce.is_car_obstacle and ce.transform then
+          local cp = vec3(ce.transform.transform:getPosition())
+          if swept_max_x >= cp.x - CAR_HALF and swept_min_x <= cp.x + CAR_HALF and
+             math.abs(swept_cy - cp.y) < (det_hy + CAR_HALF) and
+             swept_max_z >= cp.z - CAR_HALF and swept_min_z <= cp.z + CAR_HALF then
+            car_overlapping = true
+            break
+          end
+        end
+      end
+      if car_overlapping then
         if not car_braking then
           acc_dec.car_hit = true
           if entity.gravity.grounded then

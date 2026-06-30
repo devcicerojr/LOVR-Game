@@ -43,17 +43,14 @@ return function(ecs, spawn_pos)
   local mesh = lovr.graphics.newMesh(format, vertices)
   mesh:setIndices(indices)
 
-  local collider_mesh = lovr.graphics.newMesh(format, vertices)
-  collider_mesh:setIndices(indices)
-
   local cx = spawn_pos.x
   local cy = spawn_pos.y + SIZE / 2
   local cz = spawn_pos.z
   local center = lovr.math.newVec3(cx, cy, cz)
 
-  local collider = lovr_world:newMeshCollider(collider_mesh)
-  collider:setPosition(center)
+  local collider = lovr_world:newBoxCollider(center, SIZE, SIZE, SIZE)
   collider:setKinematic(true)
+  collider:setSleepingAllowed(false)
   collider:setTag('car')
 
   local source = lovr.audio.newSource(ENGINE_SOUND_FILE, { spatial = true, pitchable = false })

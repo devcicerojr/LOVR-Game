@@ -333,7 +333,7 @@ function game_scene.load()
 	hidden_cursor = lovr.mouse.newCursor(img, 0, 0)
 	lovr.mouse.setCursor(hidden_cursor)
 	shoot_sfx = lovr.audio.newSource('assets/sound_fx/shootok.wav', { decode = true })
-	skate_sfx     = lovr.audio.newSource('assets/sound_fx/skatey.wav', { decode = true, loop = true })
+	skate_sfx     = lovr.audio.newSource('assets/sound_fx/skatey.wav', { decode = true, loop = true, pitchable = true })
 	skate_hit_sfx = lovr.audio.newSource('assets/sound_fx/skate_hit.wav', { decode = true })
 	skate_hit_sfx:setPitch(1.5)
 	prev_grounded   = false
@@ -477,10 +477,25 @@ function game_scene.update(dt)
 		local is_jumping = g and g.is_jumping or false
 
 		if skate_sfx then
-			if grounded and not skate_sfx:isPlaying() then
+			local acc_dec = ecs.entities[player].acc_dec_movement
+			local sx      = acc_dec and acc_dec.current_speed.x or 0
+			local sz      = acc_dec and acc_dec.current_speed.z or 0
+			local spd_len = math.sqrt(sx * sx + sz * sz)
+			local car_hit     = acc_dec and acc_dec.car_hit or false
+			local should_play = grounded and spd_len > 0.1 and not car_hit
+
+			if should_play and not skate_sfx:isPlaying() then
 				skate_sfx:play()
-			elseif not grounded and skate_sfx:isPlaying() then
+			elseif not should_play and skate_sfx:isPlaying() then
 				skate_sfx:stop()
+			end
+
+			if should_play then
+				local vel_comp  = ecs.entities[player].velocity
+				local max_speed = vel_comp and vel_comp.velocity.z or 40
+				local speed_t   = math.min(spd_len / max_speed, 1.0)
+				local dot       = math.abs(sz) / spd_len
+				skate_sfx:setPitch((0.7 + speed_t * 0.7) + 1.5 * (1.0 - dot))
 			end
 		end
 
