@@ -217,7 +217,7 @@ return {
 
       -- Swept AABB check: cover the player's full path this frame so a fast car
       -- can't tunnel through between updates regardless of framerate.
-      local CAR_HALF = 1.2  -- car SIZE=2.4
+      local CAR_HALF = 1.7  -- car SIZE=3.4
       local det_hx = col_width  * 0.25
       local det_hy = col_height * 0.4
       local det_hz = col_depth  * 0.25

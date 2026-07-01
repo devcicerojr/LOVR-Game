@@ -1,7 +1,7 @@
 local pr_component = require'../components/pr_components'
 local lovr_world = require'../core/pr_world'
 
-local SIZE = 2.4
+local SIZE = 3.4
 local ENGINE_SOUND_FILE = 'assets/sound_fx/loud_engine.wav'
 local ENGINE_SOUND_RADIUS = 3
 
