@@ -102,7 +102,7 @@ return {
         player_controlling = true
       end
       local rotation_angle = 0
-      if pr_control.s_pressed or pr_control.gc_dpad_down then
+      if pr_control.gc_dpad_down then
         desired_dir = vec3(0, 0, 0.1)
         player_controlling = false
       end
@@ -241,7 +241,22 @@ return {
           end
         end
       end
-      if car_overlapping then
+      -- Enemy swept AABB check (same approach as car)
+      local ENEMY_RADIUS = 1.0
+      local enemy_overlapping = false
+      for eid, ee in pairs(ecs.entities) do
+        if ee.is_enemy_1 and ee.transform then
+          local ep = vec3(ee.transform.transform:getPosition())
+          if swept_max_x >= ep.x - ENEMY_RADIUS and swept_min_x <= ep.x + ENEMY_RADIUS and
+             math.abs(swept_cy - ep.y) < (det_hy + ENEMY_RADIUS) and
+             swept_max_z >= ep.z - ENEMY_RADIUS and swept_min_z <= ep.z + ENEMY_RADIUS then
+            enemy_overlapping = true
+            break
+          end
+        end
+      end
+
+      if car_overlapping or enemy_overlapping then
         if not car_braking then
           acc_dec.car_hit = true
           if entity.gravity.grounded then

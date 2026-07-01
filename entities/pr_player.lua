@@ -60,5 +60,6 @@ return function(ecs, spawn_pos)
   -- ecs:addComponent(id, pr_component.FreeControls())
   -- ecs:addComponent(id, pr_component.AutoMoveForward())
   ecs:addComponent(id, pr_component.AllDirControls())
+  ecs:addComponent(id, pr_component.Shooter(2))
   return id
 end

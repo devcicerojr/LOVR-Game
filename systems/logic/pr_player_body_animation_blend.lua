@@ -29,7 +29,7 @@ return {
     local grav = entity.gravity
     
 
-    if pr_control.s_pressed or pr_control.gc_dpad_down then return end
+    if pr_control.gc_dpad_down then return end
 
     local q          = lovr.math.quat(entity.transform.transform:getOrientation())
     local player_yaw = get_yaw(q)

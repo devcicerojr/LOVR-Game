@@ -76,12 +76,21 @@ pr_components.HasGroundSensor = function ()
   return {type = "has_ground_sensor", data = {}}
 end
 
+pr_components.Health = function(current, max)
+  max = max or current or 100
+  return {type = "health", data = {current = current or max, max = max, hit_display_timer = 0}}
+end
+
 pr_components.IsCameraBlocker = function ()
   return {type = "is_camera_blocker", data = {is_blocking = false}}
 end
 
 pr_components.IsCarObstacle = function ()
   return {type = "is_car_obstacle", data = {}}
+end
+
+pr_components.IsEnemy1 = function ()
+  return {type = "is_enemy_1", data = {}}
 end
 
 pr_components.IsRamp = function (width, depth, thick)
@@ -162,6 +171,10 @@ end
 
 pr_components.SkyboxTexture = function (texture)
   return {type = "skybox_texture", data = {cube = texture or nil}}
+end
+
+pr_components.Shooter = function(shot_damage)
+  return {type = "shooter", data = {shot_damage = shot_damage or 1}}
 end
 
 pr_components.StateMachine = function(state_machine)

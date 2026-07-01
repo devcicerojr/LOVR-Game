@@ -28,9 +28,12 @@ local prev_dpad_up        = false
 local prev_dpad_down      = false
 local prev_w              = false
 local prev_s              = false
-local crosshair_y_frac     = 0.39   -- vertical position as fraction of H; driven by right stick
+local crosshair_y_frac     = 0.30   -- vertical position as fraction of H; driven by right stick
 local confirm_dialog_open  = false
 local confirm_dialog_index = 1   -- 1 = No (default), 2 = Yes
+local enemies_defeated     = 0
+local ENEMIES_TO_DEFEAT    = 20
+local victory_dialog_open  = false
 local prev_dpad_left      = false
 local prev_dpad_right     = false
 local prev_a              = false
@@ -59,8 +62,8 @@ local SPARK_SPEED       = 9
 local SPARK_LIFETIME    = 0.45
 local SPARK_GRAVITY          = 14
 local CROSSHAIR_Y_SPEED      = 0.25   -- fraction of H per second
-local CROSSHAIR_Y_MIN        = 0.05
-local CROSSHAIR_Y_MAX        = 0.55
+local CROSSHAIR_Y_MIN        = 0.30
+local CROSSHAIR_Y_MAX        = 0.40
 local CROSSHAIR_STICK_DEAD   = 0.12
 local GROUND_TILE_WIDTH = 4
 local GROUND_TILE_HEIGHT = 20
@@ -86,7 +89,9 @@ local render_systems = {
 	"collectable_blink_render",
 	"car_obstacle_render",
 	"ramp_render",
+	"enemy_1_render",
 	-- "dust_particles_render",
+	"enemy_1_shadow_render",
 	"blob_shadow_render"  -- must be last: blends over all opaque geometry
 }
 
@@ -102,6 +107,7 @@ local logic_systems = {
 	-- "player_acc_dec_all_dir_movement",
 	"player_acc_dec_all_dir_movement_slide",
 	"car_obstacle_update",
+	"enemy_1_update",
 	"ramp_update",
 
 	-- Runs after all movement so the collider reflects the current frame's transform.
@@ -124,7 +130,8 @@ local logic_systems = {
 
 local async_systems = {
 	"spawn_pattern",
-	"collectable_events"
+	"collectable_events",
+	"spawn_enemy_1"
 }
 
 local function build_level()
@@ -134,6 +141,19 @@ local function build_level()
 	local collectable_blink = (require'../entities/dont_stop_delivery/pr_collectable_blink')(ecs)
 	local side_walls_grid = (require'../entities/dont_stop_delivery/pr_side_walls_grid')(ecs)
 	local side_scenario_grid = (require'../entities/dont_stop_delivery/pr_side_scenario_grid')(ecs)
+end
+
+local function stopAllSounds()
+	if skate_sfx     then skate_sfx:stop()     end
+	if shoot_sfx     then shoot_sfx:stop()     end
+	if skate_hit_sfx then skate_hit_sfx:stop() end
+	if ecs then
+		for _, entity in pairs(ecs.entities) do
+			if entity.audio_source and entity.audio_source.source then
+				entity.audio_source.source:stop()
+			end
+		end
+	end
 end
 
 function game_scene.unload()
@@ -149,16 +169,26 @@ function game_scene.unload()
 	ecs = nil
 	player = nil
 	game_scene.is_paused = false
+	enemies_defeated     = 0
+	victory_dialog_open  = false
 	flying_coins = {}
 	laser_beam   = nil
 	sparks       = {}
-	shoot_sfx    = nil
-	if skate_sfx then skate_sfx:stop() end
+	stopAllSounds()
+	shoot_sfx     = nil
 	skate_sfx     = nil
 	skate_hit_sfx = nil
 	lovr.mouse.setCursor(nil)
 	hidden_cursor = nil
 end
+
+pr_event_bus:on('enemy_1_defeated', function()
+	enemies_defeated = enemies_defeated + 1
+	if enemies_defeated >= ENEMIES_TO_DEFEAT then
+		victory_dialog_open = true
+		stopAllSounds()
+	end
+end)
 
 -- TODO: move it to some async system event
 function game_scene.player_respawn()
@@ -280,6 +310,22 @@ local function drawConfirmDialog(pass)
 	pass:setColor(1, 1, 1, 1)
 end
 
+local function drawVictoryDialog(pass)
+	local W, H = scene_resolution.width, scene_resolution.height
+	pass:setBlendMode('alpha', 'alphamultiply')
+	pass:setColor(0, 0, 0, 0.78)
+	pass:plane(W / 2, H / 2, 0, W, H)
+	pass:setBlendMode('none')
+
+	pass:setColor(1, 1, 1, 1)
+	pass:text("All Enemies Defeated!", W / 2, H * 0.40, 0, 72)
+
+	pass:setColor(0.95, 0.75, 0.1, 1)
+	pass:text("Return to Title", W / 2, H * 0.58, 0, 48)
+
+	pass:setColor(1, 1, 1, 1)
+end
+
 local function drawHUD(pass)
 	local W, H = scene_resolution.width, scene_resolution.height
 	pass:setShader()
@@ -288,6 +334,10 @@ local function drawHUD(pass)
 	pass:setProjection(1, lovr.math.mat4():orthographic(0, W, 0, H, -1, 1))
 	pass:setColor(1, 0.9, 0.1)
 	pass:text('Coins: ' .. tostring(coin_count), 60, 54, 0, 40, 0, 1, 0, 0, 0, 'left', 'middle')
+
+	pass:setColor(1, 1, 1, 1)
+	pass:text(tostring(enemies_defeated) .. '/' .. tostring(ENEMIES_TO_DEFEAT),
+		W - 60, 54, 0, 40, 0, 1, 0, 0, 0, 'right', 'middle')
 
 	local cx, cy = get_crosshair_pos()
 	pass:setColor(1, 1, 1, 0.3)
@@ -321,6 +371,38 @@ local function drawHUD(pass)
 		end
 	end
 	pass:setBlendMode('none')
+
+	-- Enemy health bars projected from world space to HUD coordinates
+	if ecs then
+		local BAR_W   = 120
+		local BAR_H   = 12
+		local BORDER  = 2
+		local RADIUS  = 1.0
+
+		for _, entity in pairs(ecs.entities) do
+			if entity.is_enemy_1 and entity.transform and entity.health
+			   and entity.health.hit_display_timer > 0 then
+				local ex, ey, ez = entity.transform.transform:getPosition()
+				local sx, sy     = worldToHUD(ex, ey + RADIUS + 0.6, ez)
+
+				if sx and sy then
+					local ratio   = math.max(0, math.min(1, entity.health.current / entity.health.max))
+					local fill_w  = BAR_W * ratio
+					local r       = math.min(1.0, 2.0 * (1.0 - ratio))
+					local g       = math.min(1.0, 2.0 * ratio)
+
+					pass:setColor(0.1, 0.1, 0.1, 1)
+					pass:plane(sx, sy, 0, BAR_W + BORDER * 2, BAR_H + BORDER * 2)
+
+					if fill_w > 0 then
+						pass:setColor(r, g, 0.0, 1)
+						pass:plane(sx - (BAR_W - fill_w) * 0.5, sy, 0, fill_w, BAR_H)
+					end
+				end
+			end
+		end
+	end
+
 	pass:setColor(1, 1, 1)
 end
 
@@ -344,10 +426,12 @@ function game_scene.load()
 	skate_sfx:setVolume(0.3)
 	game_scene.is_paused               = false
 	game_scene.return_to_title_requested = false
-	crosshair_y_frac    = 0.39
+	crosshair_y_frac    = 0.34
 	pause_menu_index    = 1
 	confirm_dialog_open  = false
 	confirm_dialog_index = 1
+	enemies_defeated     = 0
+	victory_dialog_open  = false
 	game_anim_time   = 0
 	pr_event_bus:on('coin_collected', function(ecs, id)
 		local entity = ecs.entities[id]
@@ -370,6 +454,19 @@ local MAX_DT = 1 / 30  -- cap at 30 fps equivalent to prevent position spikes fr
 
 function game_scene.update(dt)
 	if not ecs then return end
+
+	if victory_dialog_open then
+		local confirm = pr_control.enter_pressed or pr_control.space_pressed
+		                or pr_control.gc_btn_1_just_pressed or pr_control.gc_btn_8_just_pressed
+		if confirm then
+			pr_control.enter_pressed         = false
+			pr_control.space_pressed         = false
+			pr_control.gc_btn_1_just_pressed = false
+			pr_control.gc_btn_8_just_pressed = false
+			game_scene.return_to_title_requested = true
+		end
+		return
+	end
 
 	if not game_scene.is_paused then
 		if pr_control.enter_pressed or pr_control.escape_pressed or pr_control.gc_btn_8_just_pressed then
@@ -463,6 +560,8 @@ function game_scene.update(dt)
 
 	local stick_y = pr_control.axes[4] or 0
 	if math.abs(stick_y) < CROSSHAIR_STICK_DEAD then stick_y = 0 end
+	if pr_control.w_pressed then stick_y = stick_y - 1.0 end
+	if pr_control.s_pressed then stick_y = stick_y + 1.0 end
 	crosshair_y_frac = math.max(CROSSHAIR_Y_MIN, math.min(CROSSHAIR_Y_MAX,
 		crosshair_y_frac + stick_y * CROSSHAIR_Y_SPEED * dt))
 
@@ -540,12 +639,19 @@ function game_scene.update(dt)
 	local mouse_is_down    = lovr.mouse.isDown(1) or pr_control.gc_btn_6
 	local mouse_just_fired = mouse_is_down and not mouse_was_down
 	mouse_was_down = mouse_is_down
-	if mouse_just_fired and shoot_sfx then
+
+	local player_impaired = false
+	if ecs and player and ecs.entities[player] then
+		local adc = ecs.entities[player].acc_dec_movement
+		player_impaired = adc and adc.car_hit or false
+	end
+
+	if mouse_just_fired and not player_impaired and shoot_sfx then
 		shoot_sfx:stop()
 		shoot_sfx:play()
 	end
 
-	if mouse_is_down and ecs and player and ecs.entities[player] then
+	if mouse_is_down and not player_impaired and ecs and player and ecs.entities[player] then
 		local ox, oy, oz, dx, dy, dz = cursorToWorldRay()
 		if ox then
 			local px, py, pz = ecs.entities[player].transform.transform:getPosition()
@@ -561,6 +667,18 @@ function game_scene.update(dt)
 				ez = hit and hz or ez,
 				t  = LASER_DURATION,
 			}
+			-- Apply shot damage to enemy on the first frame of each click
+			if mouse_just_fired and hit and hit:getTag() == 'enemy_1' then
+				local damage = ecs.entities[player].shooter and ecs.entities[player].shooter.shot_damage or 2
+				for _, entity in pairs(ecs.entities) do
+					if entity.is_enemy_1 and entity.collider and entity.collider.collider == hit then
+						entity.health.current         = math.max(0, entity.health.current - damage)
+					entity.health.hit_display_timer = 0.8
+						break
+					end
+				end
+			end
+
 			-- Spawn impact sparks on the first frame of each press
 			if mouse_just_fired and hit then
 				local nx = hnx or 0
@@ -653,7 +771,9 @@ function game_scene.draw(dpass)
 	dpass:setSampler('nearest')
 	dpass:fill(gTexture)
 	drawHUD(dpass)
-	if game_scene.is_paused then
+	if victory_dialog_open then
+		drawVictoryDialog(dpass)
+	elseif game_scene.is_paused then
 		drawPauseOverlay(dpass)
 		if confirm_dialog_open then
 			drawConfirmDialog(dpass)

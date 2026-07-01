@@ -1,6 +1,6 @@
 local settings = {
-  tags = {'wall', 'coin', 'car', 'ramp'},
-  staticTags = {'wall', 'coin', 'car', 'ramp'},
+  tags = {'wall', 'coin', 'car', 'ramp', 'enemy_1'},
+  staticTags = {'wall', 'coin', 'car', 'ramp', 'enemy_1'},
   maxColliders = 16384,
   threadSafe = true,
   allowSleep = false,
